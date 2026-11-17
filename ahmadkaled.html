@@ -3,70 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم السحابية - قرية المتابعين</title>
+    <title>لوحة إدارة المدينة - أحمد خالد</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: Tahoma, Arial, sans-serif; }
         body { background: #f0f2f5; padding: 15px; direction: rtl; }
-        .container { max-width: 500px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #2c3e50; margin-bottom: 15px; font-size: 20px; }
+        .container { max-width: 600px; margin: 0 auto 20px auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #2c3e50; margin-bottom: 15px; font-size: 19px; }
         .form-group { margin-bottom: 12px; }
-        label { display: block; margin-bottom: 4px; color: #34495e; font-weight: bold; font-size: 14px; }
+        label { display: block; margin-bottom: 4px; color: #34495e; font-weight: bold; font-size: 13px; }
         input, select { width: 100%; padding: 9px; border: 1px solid #bdc3c7; border-radius: 6px; font-size: 14px; }
-        button { background: #27ae60; color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .checkbox-group { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
+        .checkbox-group input { width: auto; }
+        button { background: #27ae60; color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; }
         button:hover { background: #219653; }
-        .status { margin-top: 15px; text-align: center; font-size: 14px; font-weight: bold; }
-        .store-section { margin-top: 20px; padding-top: 15px; border-top: 2px dashed #e0e0e0; }
-        .store-link-box { background: #e8f8f5; padding: 10px; border-radius: 6px; word-break: break-all; font-size: 13px; color: #16a085; margin-top: 5px; text-align: center; font-weight: bold; }
+        .status { margin-top: 10px; text-align: center; font-size: 14px; font-weight: bold; }
+        
+        /* جدول السكان */
+        .users-list { display: flex; flex-direction: column; gap: 10px; }
+        .user-card { border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; background: #f8fafc; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .user-info h4 { color: #1e293b; font-size: 15px; margin-bottom: 4px; }
+        .user-info p { color: #64748b; font-size: 12px; }
+        .user-actions { display: flex; gap: 6px; }
+        .btn-small { padding: 6px 10px; font-size: 12px; border-radius: 5px; width: auto; }
+        .btn-upgrade { background: #2980b9; }
+        .btn-car { background: #f39c12; }
+        .btn-del { background: #c0392b; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h2>🎛️ إدارة القرية (سحابي - Firebase)</h2>
+        <h2>🏙️ إضافة مواطن جديد (إحداثيات تلقائية ذكية)</h2>
         <form id="interactionForm">
             <div class="form-group">
-                <label for="username">اسم المتابع الأساسي:</label>
-                <input type="text" id="username" required placeholder="مثال: أحمد خالد">
+                <label for="username">اسم المتابع الأساسي (حساب إنستغرام):</label>
+                <input type="text" id="username" required placeholder="مثال: @ahmad_99">
             </div>
 
             <div class="form-group">
-                <label for="taggedFriend">الشخص الذي تم عمل تاغ له (شخص واحد فقط):</label>
-                <input type="text" id="taggedFriend" required placeholder="اسم صديق واحد (بدون تاغات عشوائية)">
+                <label for="taggedFriend">الصديق الذي تم عمل تاغ له (شخص واحد فقط):</label>
+                <input type="text" id="taggedFriend" required placeholder="مثال: @samer_20">
             </div>
 
             <div class="form-group">
-                <label for="actionType">نوع التفاعل والترقية:</label>
+                <label for="actionType">نوع العقار والمستوى:</label>
                 <select id="actionType">
-                    <option value="1">فولو + تعليق + تاغ (بيت عادي - مستوى 1)</option>
-                    <option value="2">رد وتفاعل مستمر (فيلا - مستوى 2)</option>
-                    <option value="3">شراء من المتجر / دعم (برج تجاري - مستوى 3)</option>
+                    <option value="1">أرض + بيت عادي (مستوى 1)</option>
+                    <option value="2">أرض + فيلا فاخرة (مستوى 2)</option>
+                    <option value="3">أرض + برج تجاري ذهبي (مستوى 3)</option>
                 </select>
             </div>
 
-            <div class="form-group">
-                <label for="xPos">الموقع الأفقي (X):</label>
-                <input type="number" id="xPos" value="0" step="1">
+            <div class="checkbox-group">
+                <input type="checkbox" id="hasCar">
+                <label for="hasCar" style="margin:0;">إضافة سيارة خاصة في كراج المنزل 🚗</label>
             </div>
 
-            <div class="form-group">
-                <label for="zPos">الموقع العمقي (Z):</label>
-                <input type="number" id="zPos" value="0" step="1">
-            </div>
-
-            <button type="submit" id="submitBtn">حفظ وإرسال للقرية الحية 🚀</button>
+            <button type="submit">بناء العقار تلقائياً في مكان فارغ 🚀</button>
         </form>
         <div class="status" id="statusMsg"></div>
+    </div>
 
-        <div class="store-section">
-            <h2>🛍️ متجر القرية الافتراضي</h2>
-            <p style="font-size: 13px; color: #666; text-align: center;">رابط المتجر الخاص بالقرية:</p>
-            <div class="store-link-box" id="storeLinkDisplay"></div>
+    <div class="container">
+        <h2>👥 جميع سكان المدينة (<span id="usersCount">0</span>)</h2>
+        <div class="users-list" id="usersList">
+            <p style="text-align:center; color:#777;">جاري تحميل السكان...</p>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyCVJclfpEp9Jo9879C3RfZKiEdBUibwrxI",
@@ -81,55 +88,146 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const villagersRef = collection(db, "villagers");
 
-        const currentDomain = window.location.origin;
-        const pathParts = window.location.pathname.split('/');
-        pathParts.pop();
-        const basePath = pathParts.join('/');
-        document.getElementById('storeLinkDisplay').innerText = `${currentDomain}${basePath}/store.html`;
+        // خوارزمية توليد إحداثيات تلقائية متباعدة (تتجنب الطرق، المنتزه، حديقة الحيوان، المتجر، والبيوت الأخرى)
+        function generateSmartCoords(existingHouses) {
+            const minDistance = 13; // مسافة أمان بين كل بيت وآخر
+            for (let attempt = 0; attempt < 200; attempt++) {
+                // توليد إحداثيات بين -85 و +85
+                const x = Math.floor(Math.random() * 170) - 85;
+                const z = Math.floor(Math.random() * 170) - 85;
+
+                // 1. تجنب الطرق الرئيسية (0, 45, -45)
+                if (Math.abs(x) < 10 || Math.abs(z) < 10) continue;
+                if (Math.abs(x - 45) < 9 || Math.abs(x + 45) < 9) continue;
+                if (Math.abs(z - 45) < 9 || Math.abs(z + 45) < 9) continue;
+
+                // 2. تجنب المعالم العامة (المنتزه [22,-22]، حديقة الحيوان [-22,-22]، المتجر [22,22])
+                if (Math.hypot(x - 22, z + 22) < 18) continue;
+                if (Math.hypot(x + 22, z + 22) < 18) continue;
+                if (Math.hypot(x - 22, z - 22) < 16) continue;
+
+                // 3. التحقق من البعد عن جميع البيوت الموجودة مسبقاً
+                let tooClose = false;
+                for (const h of existingHouses) {
+                    if (Math.hypot(x - h.x, z - h.z) < minDistance) {
+                        tooClose = true;
+                        break;
+                    }
+                }
+                if (!tooClose) return { x, z };
+            }
+            return { x: Math.floor(Math.random() * 160) - 80, z: Math.floor(Math.random() * 160) - 80 };
+        }
 
         const form = document.getElementById('interactionForm');
         const statusMsg = document.getElementById('statusMsg');
 
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
-            const name = document.getElementById('username').value.trim();
+            const username = document.getElementById('username').value.trim();
             const friend = document.getElementById('taggedFriend').value.trim();
-            const level = document.getElementById('actionType').value;
-            const x = Number(document.getElementById('xPos').value);
-            const z = Number(document.getElementById('zPos').value);
+            const level = Number(document.getElementById('actionType').value);
+            const hasCar = document.getElementById('hasCar').checked;
 
-            if (friend.includes(' ') && friend.includes('@')) {
+            // التحقق من منع التاغ المتعدد
+            if ((friend.match(/@/g) || []).length > 1 || friend.includes(' ')) {
                 statusMsg.style.color = "#c0392b";
-                statusMsg.innerText = "❌ يُسمح بعمل تاغ لشخص واحد فقط!";
+                statusMsg.innerText = "❌ يُسمح بعمل تاغ لشخص واحد فقط بدون مسافات!";
                 return;
             }
 
-            let color = 0xe67e22;
-            if (level == '2') color = 0x3498db;
-            if (level == '3') color = 0xf1c40f;
-
             statusMsg.style.color = "#2980b9";
-            statusMsg.innerText = "جاري الحفظ في قاعدة البيانات السحابية...";
+            statusMsg.innerText = "جاري البحث عن قطعة أرض فارغة وبناء المنزل...";
 
             try {
-                await addDoc(collection(db, "villagers"), {
-                    name: `${name} (تاغ: ${friend})`,
-                    levels: Number(level),
-                    x: x,
-                    z: z,
+                const snap = await getDocs(villagersRef);
+                const existing = [];
+                snap.forEach(d => existing.push(d.data()));
+
+                const coords = generateSmartCoords(existing);
+                let color = 0xe67e22;
+                if (level === 2) color = 0x3498db;
+                if (level === 3) color = 0xf1c40f;
+
+                await addDoc(villagersRef, {
+                    username: username,
+                    name: `${username} (تاغ: ${friend})`,
+                    levels: level,
+                    hasCar: hasCar,
+                    carColor: 0xe74c3c,
+                    x: coords.x,
+                    z: coords.z,
                     color: color,
                     timestamp: new Date()
                 });
 
                 statusMsg.style.color = "#27ae60";
-                statusMsg.innerText = "✅ تم بنجاح! ظهر المبنى في القرية الحية.";
+                statusMsg.innerText = `✅ تم البناء بنجاح في الإحداثيات (X: ${coords.x}, Z: ${coords.z})!`;
                 form.reset();
             } catch (error) {
                 statusMsg.style.color = "#c0392b";
-                statusMsg.innerText = "❌ حدث خطأ أثناء الحفظ: " + error.message;
+                statusMsg.innerText = "❌ خطأ: " + error.message;
             }
         });
+
+        // عرض جميع المستخدمين في لوحة التحكم مع أزرار الترقية والحذف
+        const usersList = document.getElementById('usersList');
+        const usersCount = document.getElementById('usersCount');
+
+        onSnapshot(villagersRef, (snapshot) => {
+            usersList.innerHTML = '';
+            usersCount.innerText = snapshot.size;
+
+            if (snapshot.empty) {
+                usersList.innerHTML = '<p style="text-align:center; color:#777;">لا يوجد سكان في المدينة بعد.</p>';
+                return;
+            }
+
+            snapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                const id = docSnap.id;
+                const lvl = data.levels || 1;
+                const carStatus = data.hasCar ? "🚗 يملك سيارة" : "بدون سيارة";
+
+                const card = document.createElement('div');
+                card.className = 'user-card';
+                card.innerHTML = `
+                    <div class="user-info">
+                        <h4>${data.name}</h4>
+                        <p>المستوى: <b>${lvl}</b> | ${carStatus} | الموقع: (${data.x}, ${data.z})</p>
+                    </div>
+                    <div class="user-actions">
+                        <button class="btn-small btn-upgrade" onclick="upgradeHouse('${id}', ${lvl})">⬆️ ترقية</button>
+                        <button class="btn-small btn-car" onclick="toggleCar('${id}', ${!data.hasCar})">🚗 سيارة</button>
+                        <button class="btn-small btn-del" onclick="deleteHouse('${id}')">🗑️ حذف</button>
+                    </div>
+                `;
+                usersList.appendChild(card);
+            });
+        });
+
+        window.upgradeHouse = async (id, currentLvl) => {
+            const nextLvl = currentLvl >= 3 ? 1 : currentLvl + 1;
+            const colors = { 1: 0xe67e22, 2: 0x3498db, 3: 0xf1c40f };
+            await updateDoc(doc(db, "villagers", id), {
+                levels: nextLvl,
+                color: colors[nextLvl]
+            });
+        };
+
+        window.toggleCar = async (id, newState) => {
+            await updateDoc(doc(db, "villagers", id), {
+                hasCar: newState
+            });
+        };
+
+        window.deleteHouse = async (id) => {
+            if (confirm("هل أنت متأكد من حذف هذا العقار من المدينة؟")) {
+                await deleteDoc(doc(db, "villagers", id));
+            }
+        };
     </script>
 </body>
 </html>
