@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم السحابية - قرية المتابعين</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Tahoma, Arial, sans-serif; }
+        body { background: #f0f2f5; padding: 15px; direction: rtl; }
+        .container { max-width: 500px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #2c3e50; margin-bottom: 15px; font-size: 20px; }
+        .form-group { margin-bottom: 12px; }
+        label { display: block; margin-bottom: 4px; color: #34495e; font-weight: bold; font-size: 14px; }
+        input, select { width: 100%; padding: 9px; border: 1px solid #bdc3c7; border-radius: 6px; font-size: 14px; }
+        button { background: #27ae60; color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        button:hover { background: #219653; }
+        .status { margin-top: 15px; text-align: center; font-size: 14px; font-weight: bold; }
+        .store-section { margin-top: 20px; padding-top: 15px; border-top: 2px dashed #e0e0e0; }
+        .store-link-box { background: #e8f8f5; padding: 10px; border-radius: 6px; word-break: break-all; font-size: 13px; color: #16a085; margin-top: 5px; text-align: center; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>🎛️ إدارة القرية (سحابي - Firebase)</h2>
+        <form id="interactionForm">
+            <div class="form-group">
+                <label for="username">اسم المتابع الأساسي:</label>
+                <input type="text" id="username" required placeholder="مثال: أحمد خالد">
+            </div>
+
+            <div class="form-group">
+                <label for="taggedFriend">الشخص الذي تم عمل تاغ له (شخص واحد فقط):</label>
+                <input type="text" id="taggedFriend" required placeholder="اسم صديق واحد (بدون تاغات عشوائية)">
+            </div>
+
+            <div class="form-group">
+                <label for="actionType">نوع التفاعل والترقية:</label>
+                <select id="actionType">
+                    <option value="1">فولو + تعليق + تاغ (بيت عادي - مستوى 1)</option>
+                    <option value="2">رد وتفاعل مستمر (فيلا - مستوى 2)</option>
+                    <option value="3">شراء من المتجر / دعم (برج تجاري - مستوى 3)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="xPos">الموقع الأفقي (X):</label>
+                <input type="number" id="xPos" value="0" step="1">
+            </div>
+
+            <div class="form-group">
+                <label for="zPos">الموقع العمقي (Z):</label>
+                <input type="number" id="zPos" value="0" step="1">
+            </div>
+
+            <button type="submit" id="submitBtn">حفظ وإرسال للقرية الحية 🚀</button>
+        </form>
+        <div class="status" id="statusMsg"></div>
+
+        <div class="store-section">
+            <h2>🛍️ متجر القرية الافتراضي</h2>
+            <p style="font-size: 13px; color: #666; text-align: center;">رابط المتجر الخاص بالقرية:</p>
+            <div class="store-link-box" id="storeLinkDisplay"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyCVJclfpEp9Jo9879C3RfZKiEdBUibwrxI",
+          authDomain: "ahmad-662ee.firebaseapp.com",
+          databaseURL: "https://ahmad-662ee-default-rtdb.firebaseio.com",
+          projectId: "ahmad-662ee",
+          storageBucket: "ahmad-662ee.firebasestorage.app",
+          messagingSenderId: "740891153734",
+          appId: "1:740891153734:web:1d7c6cd6214a2409618147",
+          measurementId: "G-JCJW8S9CVH"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const currentDomain = window.location.origin;
+        const pathParts = window.location.pathname.split('/');
+        pathParts.pop();
+        const basePath = pathParts.join('/');
+        document.getElementById('storeLinkDisplay').innerText = `${currentDomain}${basePath}/store.html`;
+
+        const form = document.getElementById('interactionForm');
+        const statusMsg = document.getElementById('statusMsg');
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('username').value.trim();
+            const friend = document.getElementById('taggedFriend').value.trim();
+            const level = document.getElementById('actionType').value;
+            const x = Number(document.getElementById('xPos').value);
+            const z = Number(document.getElementById('zPos').value);
+
+            if (friend.includes(' ') && friend.includes('@')) {
+                statusMsg.style.color = "#c0392b";
+                statusMsg.innerText = "❌ يُسمح بعمل تاغ لشخص واحد فقط!";
+                return;
+            }
+
+            let color = 0xe67e22;
+            if (level == '2') color = 0x3498db;
+            if (level == '3') color = 0xf1c40f;
+
+            statusMsg.style.color = "#2980b9";
+            statusMsg.innerText = "جاري الحفظ في قاعدة البيانات السحابية...";
+
+            try {
+                await addDoc(collection(db, "villagers"), {
+                    name: `${name} (تاغ: ${friend})`,
+                    levels: Number(level),
+                    x: x,
+                    z: z,
+                    color: color,
+                    timestamp: new Date()
+                });
+
+                statusMsg.style.color = "#27ae60";
+                statusMsg.innerText = "✅ تم بنجاح! ظهر المبنى في القرية الحية.";
+                form.reset();
+            } catch (error) {
+                statusMsg.style.color = "#c0392b";
+                statusMsg.innerText = "❌ حدث خطأ أثناء الحفظ: " + error.message;
+            }
+        });
+    </script>
+</body>
+</html>
