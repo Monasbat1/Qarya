@@ -1,97 +1,336 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>القرية التفاعلية - العرض الرئيسي</title>
-    <link rel="stylesheet" href="store.css">
-    <style>
-        .village-map {
-            position: relative;
-            width: 100%;
-            height: 450px;
-            background: linear-gradient(135deg, #1a2f1a, #0d1a0d);
-            border-radius: 12px;
-            border: 2px solid #333;
-            margin-bottom: 20px;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .village-zone {
-            position: absolute;
-            background: rgba(255, 204, 0, 0.1);
-            border: 1px dashed #ffcc00;
-            padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        .house-zone { top: 30px; right: 50px; width: 180px; }
-        .vehicle-zone { bottom: 30px; left: 50px; width: 180px; }
-        .actions-bar {
-            display: flex;
-            justify-content: space-between;
-            background: #1e1e1e;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #333;
-            align-items: center;
-        }
-        .engagement-rules {
-            font-size: 0.85rem;
-            color: #b0b0b0;
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>قرية المتابعين الموسعة</title>
+<style>
+:root{--bg:#0f172a;--fg:#f8fafc;--card:rgba(15,23,42,.9);--ac:#f59e0b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root{--bg:#e2e8f0;--fg:#0f172a;--card:rgba(255,255,255,.94)}}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font-family:system-ui,Tahoma,sans-serif;overflow:hidden;touch-action:none}
+canvas{display:block}
+.card{position:fixed;background:var(--card);border-radius:14px;padding:10px;font-size:14px;z-index:5}
+#login{inset:0;margin:auto;height:fit-content;width:min(86vw,340px);text-align:center}
+input,select{padding:9px;border-radius:10px;border:1px solid #64748b;font-size:16px;background:#fff;color:#111}
+#login input{width:88%;margin:8px 0;text-align:center;direction:ltr}
+button{background:var(--ac);color:#111;border:0;border-radius:10px;padding:8px 12px;font-size:14px;font-weight:700;cursor:pointer}
+#err{color:#f87171;min-height:18px}
+#hud{top:calc(env(safe-area-inset-top,0px) + 6px);right:8px;display:none}
+#near{top:calc(env(safe-area-inset-top,0px) + 6px);left:8px;display:none}
+#toast{top:60px;left:50%;transform:translateX(-50%);display:none;white-space:nowrap;z-index:10}
+#bar{bottom:calc(env(safe-area-inset-bottom,0px) + 14px);right:8px;display:none;flex-direction:column;gap:6px}
+#panel{top:10%;right:5vw;left:5vw;max-height:75vh;overflow:auto;display:none}
+.row{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:6px 0;border-bottom:1px solid #64748b55}
+#joy{position:fixed;left:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);width:110px;height:110px;border-radius:50%;background:#ffffff22;border:2px solid #ffffff55;display:none;z-index:4}
+#knob{position:absolute;left:35px;top:35px;width:40px;height:40px;border-radius:50%;background:#fff9}
+</style>
 </head>
 <body>
-    <div class="market-container">
-        <!-- شريط المعلومات العلوي -->
-        <header class="market-header">
-            <div class="stats">
-                <span>👤 المستخدم: <b id="player-name">أبو يعقوب</b></span>
-                <span>⭐ النقاط المكتسبة: <b id="user-points">1,250</b></span>
-                <a href="index.html" style="color: #ffcc00; text-decoration: none; font-weight: bold;">🛒 الانتقال للمتجر</a>
-            </div>
-            <h1>خريطة القرية التفاعلية</h1>
-        </header>
+<div id="login" class="card">
+  <h2>🏘️ قرية المتابعين</h2>
+  <div>اكتب يوزرك فقط ليظهر بيتك</div>
+  <input id="u" placeholder="username" autocapitalize="off" autocomplete="off">
+  <div id="err"></div>
+  <button id="go">دخول</button>
+  <div style="opacity:.7;margin-top:8px;font-size:12px">تجربة: ahmad ، sara ، omar ، lina ، admin (إدارة)</div>
+</div>
+<div id="hud" class="card"></div>
+<div id="near" class="card"></div>
+<div id="toast" class="card"></div>
+<div id="bar" class="card">
+  <button id="bs">🛒 المتجر</button>
+  <button id="bc">💬 الدردشة</button>
+  <button id="bn">👥 الجيران</button>
+  <button id="bh">🏠 بيتي</button>
+  <button id="bd" style="display:none">🚗 قيادة</button>
+  <button id="bx" style="display:none">🚪 خروج</button>
+  <button id="ba" style="display:none">⚙️ الإدارة</button>
+</div>
+<div id="panel" class="card"></div>
+<div id="joy"><div id="knob"></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const users=[
+ {u:'ahmad',c:'SY',l:1,p:[-45,28],h:[0x2b1b12,0x7a4a2a,0x2563eb]},{u:'sara',c:'SA',l:5,p:[0,28],h:[0x111111,0xc1121f,0xffffff]},
+ {u:'omar',c:'TR',l:3,p:[45,28],h:[0x3a2a1a,0x3a2a1a,0x16a34a]},{u:'lina',c:'DE',l:10,p:[-45,-28],h:[0xd9b45b,0xd9b45b,0xdb2777]},
+ {u:'yusuf',c:'EG',l:2,p:[0,-28],h:[0x111111,0x111111,0xf59e0b]},{u:'mona',c:'SY',l:8,p:[45,-28],h:[0x111111,0x6d28d9,0xe5e7eb]},{u:'admin',c:'SY',l:30,p:[45,70],h:[0x111111,0xd4af37,0xffffff],admin:1}];
+const flags={SY:['#007a3d','#fff','#111'],SA:['#006c35','#006c35','#006c35'],TR:['#e30a17','#e30a17','#e30a17'],DE:['#111','#dd0000','#ffce00'],EG:['#ce1126','#fff','#111']};
+let INSIDE=false;
 
-        <!-- خريطة القرية المرئية -->
-        <div class="village-map">
-            <div class="village-zone house-zone">
-                <h3>🏡 البيت الملكي</h3>
-                <p>الحالة: مطور (المستوى 2)</p>
-            </div>
-            <div class="village-zone vehicle-zone">
-                <h3>🏎️ المرآب</h3>
-                <p>السيارة: رياضية مفعلة</p>
-            </div>
-            <div style="text-align: center; color: #7f8c8d;">
-                <h2>[ مساحة التفاعل الحية لبيئة القرية ]</h2>
-                <p>تظهر هنا الأصول والممتلكات الخاصة بالمستخدم فور شرائها واستلام نقاط التفاعل.</p>
-            </div>
-        </div>
+// 30 مستوى مع أسعار تصاعدية دقيقة
+const costs={}; for(let i=2;i<=30;i++) costs[i]=i*150;
 
-        <!-- لوحة التفاعل ونظام النقاط -->
-        <div class="actions-bar">
-            <div class="engagement-rules">
-                <p>📌 قواعد التفاعل على إنستغرام:</p>
-                <span>تعليق = 5 نقاط | مشاركة = 15 نقطة | إشارة (Tag) = 25 نقطة</span>
-            </div>
-            <div>
-                <button onclick="simulateEngagement(25)" style="background: #00ffcc; color: #121212; border: none; padding: 10px 20px; font-weight: bold; border-radius: 5px; cursor: pointer;">محاكاة تفاعل جديد</button>
-            </div>
-        </div>
-    </div>
+const SHOP={
+ dsn:[['m','عصري (خشب وزجاج)',0],['c','كلاسيكي بسقف أحمر',300],['r','قصر حجري فاخر',600]],
+ car:[['sedan','🚗 سيارة عائلية',200],['sport','🏎️ سيارة رياضية',500],['limo','🚐 ليموزين فاخرة',1000],['truck','🛻 بيك أب',350]],
+ tw:[['t1','🗼 برج مراقبة',400],['t2','🏰 برج قلعة ملكية',800],['space','🚀 صاروخ استكشافي',1500]],
+ park:[['p1','⛲ حديقة بنافورة',300],['p2','🎠 منتزه ألعاب ترفيهي',700],['pool','🏊 مسبح خارجي',1200]],
+ floor:[['f1','أرضية حجرية',150],['f2','أرضية خشبية فاخرة',250],['f3','أرضية رخام ملكي',500]],
+ furn:[['u1','🪑 طقم جلسة خارجية',200],['u2','🛋️ بيرغولا وأريكة',450],['u3','🎪 أرجوحة ومظلة',350],['statue','🗿 تمثال ذهبي',2000]]};
 
-    <script>
-        function simulateEngagement(points) {
-            let pointsElem = document.getElementById('user-points');
-            let currentPoints = parseInt(pointsElem.innerText.replace(',', ''));
-            let newPoints = currentPoints + points;
-            pointsElem.innerText = newPoints.toLocaleString();
-            alert(`تم تسجيل تفاعل جديد! أُضيفَت ${points} نقطة إلى رصيدك.`);
-        }
-    </script>
+const CAT={dsn:'🏠 تصميم البيت',car:'🚗 السيارات',tw:'🗼 الأبراج',park:'🌳 المنتزهات والحدائق',floor:'🧱 الأرضيات',furn:'🪑 الأثاث والديكور'};
+const own=new Set();
+users.forEach((u,i)=>{u.s=['m','c','r','m','c','r'][i];u.it={car:['sedan','sport',null,'truck',null,'sedan'][i],tw:[null,null,null,'t1',null,'t2'][i],park:[null,'p1',null,'p2','p1',null][i],floor:[null,'f1','f2','f3',null,'f1'][i],furn:['u1',null,'u2',null,'u3','u1'][i]}});
+Object.assign(users[6],{s:'c',it:{car:'limo',tw:'space',park:'pool',floor:'f3',furn:'statue'}});
+let me=null,coins=5000,HM={},ST=[],COLS=[];
+
+const R=new THREE.WebGLRenderer({antialias:true});
+R.setSize(innerWidth,innerHeight);R.setPixelRatio(Math.min(devicePixelRatio,2));
+document.body.appendChild(R.domElement);
+const S=new THREE.Scene();S.background=new THREE.Color(0x8ec9f0);S.fog=new THREE.Fog(0x8ec9f0,150,500);
+const C=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,.1,800);
+const HL=new THREE.HemisphereLight(0xffffff,0x557755,.95);S.add(HL);
+const sun=new THREE.DirectionalLight(0xffffff,.8);sun.position.set(80,100,40);S.add(sun);
+const M=c=>new THREE.MeshLambertMaterial({color:c});
+function box(w,h,d,c,x,y,z,p){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),M(c));m.position.set(x,y,z);(p||S).add(m);return m}
+function cyl(r1,r2,h,c,x,y,z,p,s){const m=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,s||16),M(c));m.position.set(x,y,z);(p||S).add(m);return m}
+function label(t){const k=document.createElement('canvas');k.width=256;k.height=64;const g=k.getContext('2d');
+ g.fillStyle='#000a';g.fillRect(0,0,256,64);g.fillStyle='#fff';g.font='bold 28px sans-serif';g.textAlign='center';g.fillText(t,128,42);
+ return new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(k)}))}
+function tag(t,x,y,z,sx,sy,p){const s=label(t);s.position.set(x,y,z);s.scale.set(sx,sy,1);(p||S).add(s)}
+const sc=(x,z,hx,hz)=>ST.push([x-hx,x+hx,z-hz,z+hz]);
+
+const hgt=(x,z)=>{const d=Math.max(Math.abs(x),Math.abs(z)*1.1),f=Math.min(Math.max((d-180)/80,0),1),q=f*f*(3-2*f);return q*(25+15*Math.sin(x*.03+1)*Math.cos(z*.03)+8*Math.sin(x*.08+z*.07))};
+const TR={rn:[]};{const g=TR.g=new THREE.PlaneGeometry(700,700,140,140);g.rotateX(-Math.PI/2);const p=g.attributes.position,cl=[],c1=new THREE.Color(0x5aa14f),c2=new THREE.Color(0x3b7a3a),c3=new THREE.Color(0x8d8a80),t=new THREE.Color();
+ for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),h=hgt(x,z);p.setY(i,h);t.copy(c1).lerp(c2,Math.min(h/15,1)).lerp(c3,Math.max((h-25)/15,0));cl.push(t.r,t.g,t.b)}
+ g.setAttribute('color',new THREE.Float32BufferAttribute(cl,3));g.computeVertexNormals();S.add(new THREE.Mesh(g,new THREE.MeshLambertMaterial({vertexColors:true})))}
+
+// شوارع رئيسية وفرعية واسعة
+box(350,.1,12,0x8a7a62,0,0,0);box(12,.1,350,0x8a7a62,0,0,0);
+box(350,.1,8,0x8a7a62,0,0,50);box(350,.1,8,0x8a7a62,0,0,-50);
+box(8,.1,350,0x8a7a62,50,0,0);box(8,.1,350,0x8a7a62,-50,0,0);
+
+const STN=(()=>{const k=document.createElement('canvas');k.width=k.height=128;const g=k.getContext('2d');g.fillStyle='#6f6a60';g.fillRect(0,0,128,128);
+ for(let r=0;r<8;r++){let x=-(r%2)*10;while(x<128){const w=18+Math.random()*16,v=Math.floor((Math.random()-.5)*50);g.fillStyle='rgb('+(150+v)+','+(144+v)+','+(132+v)+')';g.fillRect(x+1.5,r*16+1.5,w-3,13);x+=w}}
+ const t=new THREE.CanvasTexture(k);t.wrapS=t.wrapT=THREE.RepeatWrapping;return t})();
+function sMat(rx,ry){const t=STN.clone();t.needsUpdate=true;t.repeat.set(rx,ry);return new THREE.MeshLambertMaterial({map:t})}
+function boxS(w,h,d,x,y,z,p){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),sMat(Math.max(w,d)/3,h/2.5));m.position.set(x,y,z);(p||S).add(m);return m}
+function cylS(r1,r2,h,x,y,z,p){const m=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,14),sMat(4,h/2.5));m.position.set(x,y,z);(p||S).add(m);return m}
+function roof(w,len,hh,c,x,y,z,p){const r=w/1.732,m=cyl(r,r,len,c,x,y+hh/3,z,p,3);m.rotation.x=-Math.PI/2;m.scale.z=hh/(1.5*r);return m}
+
+function classic(g,l,L){const w=6.5+l*.5,d=6+l*.3,z=-2.5,fz=z+d/2,up=l>5?3.5:0;
+ boxS(w+.3,1.3,d+.3,0,.85,z,g);box(w,3.2+up,d,0xf3efe6,0,3.1+up/2,z,g);
+ roof(w+1.4,d+1.2,3.2+l*.3,0xb8483f,0,4.7+up,z,g);
+ box(1,2.1,.15,0x6b3f22,0,2.55,fz+.08,g);[-1,1].forEach(s=>box(1.1,1.4,.15,0x9fd3ff,s*w/3,2.9,fz+.08,g));
+ L.push([-w/2-.3,w/2+.3,z-d/2-.2,fz+2.4])}
+function rustic(g,l,L){const w=6+l*.6,d=6,z=-2.5,h=3.6+(l>5?3:0),fz=z+d/2;
+ boxS(w,h,d,0,h/2+.2,z,g);roof(w+1,d+1,2.8,0x3d4046,0,h+.2,z,g);
+ box(1.3,2.3,.2,0x5a3a22,w/2-1.5,1.35,fz+.08,g);box(1.4,1.4,.2,0x9fd3ff,-w/4,2.4,fz+.08,g);
+ L.push([-w/2,w/2,z-d/2,fz+.4])}
+
+function carG(k,g,x,z){
+ const col=k==='sport'?0xdc2626:k==='limo'?0x111111:k==='truck'?0x2b6cb0:0xf5f5f5,lo=k==='sport'?.55:k==='limo'?.7:.75,len=k==='limo'?5.5:4;
+ box(1.9,.7,len,col,x,lo,z,g);box(1.7,.65,len*.5,col,x,lo+.65,z-.1,g);
+ [[-1,-1.3],[1,-1.3],[-1,1.3],[1,1.3]].forEach(a=>{cyl(.4,.4,.3,0x111111,x+a[0]*.95,.4,z+a[1],g,12).rotation.z=Math.PI/2});return g}
+function ball(r,c,x,y,z,p){const m=new THREE.Mesh(new THREE.SphereGeometry(r,10,8),new THREE.MeshBasicMaterial({color:c}));m.position.set(x,y,z);p.add(m);return m}
+
+function decor(g,lv){
+ const GD=0xd4af37,fl=[0xef4444,0xf59e0b,0xec4899,0xa855f7];
+ if(lv>=5)for(let k=0;k<6;k++)box(.6,.5,.6,fl[k%4],k<3?-2.6:2.6,.5,3+(k%3)*1.6,g);
+ if(lv>=10)[-2.4,2.4].forEach(x=>{boxS(.8,2.2,.8,x,1.3,8,g);ball(.3,0xffe9a0,x,2.7,8,g)});
+ if(lv>=15)[-7.35,7.35].forEach(x=>box(.5,.8,14,0x2f7d32,x,.7,0,g));
+ if(lv>=20){cyl(.1,.1,12,GD,0,6,-2,g,6);ball(.5,GD,0,12.5,-2,g)}
+ if(lv>=30){cyl(0,1.2,2,GD,0,16,-2,g,8);ball(1.4,0xfff1b0,0,15,-2,g).material.transparent=true;ball(1.6,0xffaa00,0,15,-2,g).material.transparent=true;ball(1.6,0xffaa00,0,15,-2,g).material.opacity=.3}
+}
+
+function items(g,u,L){const it=u.it||{};
+ if(it.floor){const f=it.floor,m=new THREE.Mesh(new THREE.BoxGeometry(16,.04,16),f==='f1'?sMat(5,5):M(f==='f2'?0xa5733d:0xe8e6e1));m.position.set(0,.22,0);g.add(m)}
+ if(it.car&&!u.dr){carG(it.car,g,6,2.6);L.push([5,7,.5,4.7])}
+ if(it.tw){const x=-6.6,z=-6.6,tp=it.tw;
+  if(tp==='space'){cylS(1.2,1.8,12,x,6,z,g);cyl(0,1.5,4,0xdc2626,x,14,z,g,12)}
+  else{const b=tp==='t2';cylS(1.5,1.7,b?10:8,x,b?5.2:4.2,z,g);cyl(1.9,1.9,.5,0x7a7d80,x,b?10.3:8.3,z,g,12)}
+  L.push([x-1.8,x+1.8,z-1.8,z+1.8])}
+ if(it.park){const x=-5.6,z=3.2,pk=it.park;
+  if(pk==='pool'){box(4,.2,3,0x38bdf8,x,.2,z,g);box(4.4,.2,3.4,0xd4af37,x,.1,z,g)}
+  else if(pk==='p1'){cylS(1.4,1.4,.6,x,.5,z,g);cyl(1.1,1.1,.1,0x5ec8ff,x,.82,z,g,16)}
+  else{[-1.4,1.4].forEach(a=>box(.2,2.6,.2,0x2563eb,x+a,1.5,z,g));box(3,.2,.2,0x2563eb,x,2.8,z,g)}
+  L.push([x-1.6,x+1.6,z-1.6,z+1.6])}
+ if(it.furn){const x=6,z=-1,fn=it.furn;
+  if(fn==='statue'){cylS(.8,1,.4,x,.2,z,g);cyl(.4,.4,2.5,0xd4af37,x,1.5,z,g);ball(.7,0xd4af37,x,3,z,g)}
+  else if(fn==='u1'){box(1.4,.1,1.4,0x8b5a2b,x,.85,z,g);cyl(.1,.1,.85,0x555555,x,.42,z,g,8)}
+  else{box(2,.5,.8,0x7c3aed,x,.45,z,g)}
+  L.push([x-1.4,x+1.4,z-1.4,z+1.4])}
+}
+
+function build(u){
+ if(HM[u.u])S.remove(HM[u.u]);
+ const g=new THREE.Group(),lv=u.l,l=lv<=10?1:lv<=20?2:3,L=[],rot=u.p[1]>0;
+ box(16,.2,16,0x5f9f4d,0,.1,0,g);box(3.6,.06,12,0xd9d3c4,0,.23,2,g);
+ if(u.s==='c')classic(g,l,L);else if(u.s==='r')rustic(g,l,L);else{boxS(6,3,5,0,1.5,-2,g);roof(7,6,3,0x4b4e57,0,4,-2,g);L.push([-3,3,-4.5,.5]);}
+ tag('@'+u.u,0,l===1?9:13,-2,5,1.25,g);items(g,u,L);decor(g,lv);
+ g.position.set(u.p[0],0,u.p[1]);g.rotation.y=rot?Math.PI:0;S.add(g);HM[u.u]=g;
+ u.cols=L.map(r=>rot?[u.p[0]-r[1],u.p[0]-r[0],u.p[1]-r[3],u.p[1]-r[2]]:[u.p[0]+r[0],u.p[0]+r[1],u.p[1]+r[2],u.p[1]+r[3]]);
+ if(!INSIDE)COLS=ST.concat(...users.map(x=>x.cols||[]));
+}
+
+function avatar(ht,hb,dr){const g=new THREE.Group();
+ cyl(.28,.75,1.5,dr,0,1.45,0,g,16);
+ const l1=new THREE.Group(),l2=new THREE.Group();
+ [[l1,-.2],[l2,.2]].forEach(a=>{a[0].position.set(a[1],.95,0);cyl(.1,.09,.9,0x9b2d3a,0,-.45,0,a[0],8);box(.28,.16,.4,0x111111,0,-.92,.06,a[0]);g.add(a[0])});
+ [-1,1].forEach(s=>{box(.14,.8,.14,0xfbeee8,s*.45,1.8,0,g);const e=cyl(0,.18,.5,0xfbeee8,s*.6,2.95,0,g,6);e.rotation.z=-s*1.3;box(.3,.5,.3,hb,s*.62,2.4,-.1,g)});
+ const hd=new THREE.Mesh(new THREE.SphereGeometry(.55,20,16),M(0xfbeee8));hd.position.y=2.95;g.add(hd);
+ const hr=new THREE.Mesh(new THREE.SphereGeometry(.6,20,12,0,6.2832,0,1.25),M(ht));hr.position.y=2.97;g.add(hr);
+ box(.95,.2,.12,ht,0,3.3,.52,g);box(1,1.5,.3,hb,0,2.35,-.45,g);
+ g.userData={l1,l2};return g}
+const P=avatar(0x111111,0xc1121f,0xffffff);S.add(P);
+
+users.forEach(build);
+users.forEach(u=>{const a=avatar(u.h[0],u.h[1],u.h[2]),r=u.p[1]>0,x=r?u.p[0]+3.5:u.p[0]-3.5,z=r?u.p[1]-6:u.p[1]+6;a.position.set(x,0,z);a.rotation.y=r?Math.PI:0;S.add(a);sc(x,z,.6,.6)});
+COLS=ST.concat(...users.map(x=>x.cols));
+
+// معالم القرية الكبرى والسوق والأعلام
+cyl(0,14,16,0xd9b36b,-90,8,-100,S,4);tag('🏛️ المعلم الرئيسي',-90,18,-100,8,2);sc(-90,-100,10,10);
+cyl(2,2.8,32,0xcfc7b8,90,16,-100,S,6);tag('🗼 برج المتابعين الكشميري',90,34,-100,9,2);sc(90,-100,4,4);
+
+for(let i=0;i<7;i++){const x=-54+i*18;box(8,1,5,0x8b5a2b,x,.5,-140);cyl(0,6,3,0xe11d48,x,4.5,-140,S,4);sc(x,-140,4,2)}
+tag('🛒 السوق المركزي الضخم',0,10,-140,12,3);
+
+function flagTex(cs){const k=document.createElement('canvas');k.width=96;k.height=64;const g=k.getContext('2d');cs.forEach((c,i)=>{g.fillStyle=c;g.fillRect(0,i*21.4,96,22)});return new THREE.CanvasTexture(k)}
+const cnt={};users.forEach(u=>cnt[u.c]=(cnt[u.c]||0)+1);
+Object.keys(cnt).forEach((c,i,a)=>{const x=-40+i*80/Math.max(a.length-1,1),h=10+cnt[c]*4;
+ cyl(.18,.18,h,0xdddddd,x,h/2,-12);
+ const f=new THREE.Mesh(new THREE.PlaneGeometry(5,3.3),new THREE.MeshBasicMaterial({map:flagTex(flags[c]),side:2}));f.position.set(x+2.5,h-1.6,-12);S.add(f);
+ tag(c+' ×'+cnt[c],x,h+2.5,-12,3.5,.9)});
+COLS=ST.concat(...users.map(x=>x.cols));
+
+// غابة ضخمة تحيط بالمدينة
+TR.N=500;{const N=500,D=new THREE.Object3D(),Z=new THREE.Matrix4().makeScale(0,0,0),col=new THREE.Color(),pal=[0x2f7d32,0x3a8f3e,0x1f6b34,0xe0a82e,0xd9783f],
+ tr=new THREE.InstancedMesh(new THREE.CylinderGeometry(.35,.5,2.4,6),M(0x6b4423),N),cn=new THREE.InstancedMesh(new THREE.ConeGeometry(2.1,5.5,8),M(0xffffff),N),bl=new THREE.InstancedMesh(new THREE.SphereGeometry(2.3,8,6),M(0xffffff),N);
+ for(let i=0;i<N;i++){let x=(Math.random()-.5)*600,z=(Math.random()-.5)*600;
+  if(Math.abs(x)<120&&Math.abs(z)<120){tr.setMatrixAt(i,Z);cn.setMatrixAt(i,Z);bl.setMatrixAt(i,Z);continue}
+  const y=hgt(x,z),s=.8+Math.random()*1.2,pine=Math.random()<.5;
+  D.position.set(x,y+1.2*s,s);D.scale.set(s,s,s);D.updateMatrix();tr.setMatrixAt(i,D.matrix);
+  D.position.y=y+(pine?5.1:4.4)*s;D.updateMatrix();(pine?cn:bl).setMatrixAt(i,D.matrix);(pine?bl:cn).setMatrixAt(i,Z);
+  TR.rn[i]=Math.random();cn.setColorAt(i,col);bl.setColorAt(i,col);sc(x,z,s,s)}
+ TR.cn=cn;TR.bl=bl;[tr,cn,bl].forEach(m=>{m.frustumCulled=false;S.add(m)})
+}
+
+// أعمدة إنارة الشوارع
+const LP=[];for(let a=-140;a<=140;a+=20){LP.push([a,7.5],[a,-7.5]);if(a!==0)LP.push([7.5,a],[-7.5,a])}
+const LM=new THREE.MeshBasicMaterial({color:0xffe9a0}),LH=new THREE.InstancedMesh(new THREE.SphereGeometry(1.6,10,8),new THREE.MeshBasicMaterial({color:0xffe9a0,transparent:true,opacity:.2,depthWrite:false}),LP.length),
+ LPo=new THREE.InstancedMesh(new THREE.CylinderGeometry(.12,.16,6,6),M(0x333333),LP.length),LHd=new THREE.InstancedMesh(new THREE.SphereGeometry(.5,10,8),LM,LP.length);
+{const D=new THREE.Object3D();LP.forEach((a,i)=>{D.position.set(a[0],3,a[1]);D.updateMatrix();LPo.setMatrixAt(i,D.matrix);D.position.y=6.2;D.updateMatrix();LHd.setMatrixAt(i,D.matrix);LH.setMatrixAt(i,D.matrix);sc(a[0],a[1],.3,.3)});
+ [LPo,LHd,LH].forEach(m=>{m.frustumCulled=false;S.add(m)})}
+
+// الفصول والطقس
+const ENV={season:'summer',night:false,lamps:true};
+const SEA={spring:{sky:0x9fd8f5,g:[0x7dbb5a,0x4f9a45],t:[0x7cc46b,0x9bd36f],pc:0xffc0d9,n:600,sp:2.5},
+ summer:{sky:0x8ec9f0,g:[0x5aa14f,0x3b7a3a],t:[0x2f7d32,0x3a8f3e],n:0,sp:0},
+ autumn:{sky:0xd8c8a8,g:[0x9a8a3c,0x7a5a2a],t:[0xe0a82e,0xd9783f],pc:0xe07b2e,n:500,sp:2.2},
+ winter:{sky:0xc8d6e5,g:[0xf4f8fb,0xdfe8ee],t:[0xe8f0f5,0xcfe0ea],pc:0xffffff,n:1200,sp:4}};
+const PG=new THREE.BufferGeometry(),PA=new Float32Array(3600);for(let i=0;i<1200;i++){PA[i*3]=(Math.random()-.5)*100;PA[i*3+1]=Math.random()*40;PA[i*3+2]=(Math.random()-.5)*100}
+PG.setAttribute('position',new THREE.BufferAttribute(PA,3));
+const PT=new THREE.Points(PG,new THREE.PointsMaterial({size:.45,color:0xffffff}));PT.frustumCulled=false;PT.visible=false;S.add(PT);
+function paint(){const g=TR.g,p=g.attributes.position,a=SEA[ENV.season].g,c1=new THREE.Color(a[0]),c2=new THREE.Color(a[1]),c3=new THREE.Color(ENV.season==='winter'?0xffffff:0x8d8a80),t=new THREE.Color(),cl=g.attributes.color;
+ for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),h=p.getY(i);t.copy(c1).lerp(c2,Math.min(h/15,1)).lerp(c3,Math.max((h-25)/15,0));cl.setXYZ(i,t.r,t.g,t.b)}cl.needsUpdate=true}
+function recolor(){const pal=SEA[ENV.season].t,c=new THREE.Color();for(let i=0;i<TR.N;i++){if(TR.rn[i]===undefined)continue;c.setHex(pal[Math.floor(TR.rn[i]*pal.length)]);TR.cn.setColorAt(i,c);TR.bl.setColorAt(i,c)}TR.cn.instanceColor.needsUpdate=true;TR.bl.instanceColor.needsUpdate=true}
+function setEnv(){const e=SEA[ENV.season],nt=ENV.night&&!INSIDE,c=new THREE.Color(e.sky).multiplyScalar(nt?.12:1);S.background=c;S.fog.color.copy(c);HL.intensity=nt?.4:.95;sun.intensity=nt?.1:.8;PT.visible=!!e.n&&!INSIDE;if(e.n){PT.material.color.setHex(e.pc);PG.setDrawRange(0,e.n)}LM.color.setHex(ENV.lamps?0xffe9a0:0x555555);LH.visible=ENV.lamps}
+paint();recolor();setEnv();
+
+// دخول البيت والتنقل
+const IX=2000,IL=new THREE.PointLight(0xffd9a0,0,34);S.add(IL);
+const TH={m:{w:0x4a4f57,f:0x7a4e2d,s:0x555a63,r:0x9aa0a4,a:0x2b2f36},c:{w:0x8fb07a,f:0xb9824a,s:0x9aa0a4,r:0xb5cdb0,a:0x8b5a2b},r:{w:0xc4b2a2,f:0x9a6a3a,s:0x3f6b44,r:0x8b3a2f,a:0x6b3f22}};
+let IN=null,INC=[],inF=1,inH=null,FG=[],CF=0,BD=[-145,145,-145,145],DR=null;
+function buildIn(u){if(IN)S.remove(IN);const g=new THREE.Group(),lv=u.l,F=inF=lv<=10?1:lv<=20?2:3,th=TH[u.s||'m'];INC=[];FG=[];S.add(g);IN=g;
+ for(let f=0;f<F;f++){const fg=new THREE.Group();g.add(fg);FG.push(fg);const Y=f*5;
+  const b=(w,h,d,c,x,y,z)=>box(w,h,d,c,IX+x,Y+y,z,fg),K=(x,z,w,d)=>INC.push([IX+x-w/2,IX+x+w/2,z-d/2,z+d/2,f]);
+  [[0,-6,0,14],[0,6,Math.PI,14],[7,0,Math.PI/2,12],[-7,0,-Math.PI/2,12]].forEach(a=>{const w=new THREE.Mesh(new THREE.PlaneGeometry(a[3],4.6),new THREE.MeshLambertMaterial({color:th.w,side:THREE.BackSide}));w.position.set(IX+a[0],Y+2.3,a[1]);w.rotation.y=a[2];fg.add(w)});
+  b(14,.4,12,th.f,0,-.2,0);b(2,.5,1.1,th.a,3.4,.25,-2.8);K(3.4,-2.8,2,1.1);
+  if(f===0){b(2,.05,1,0x6b3f22,0,.03,5.4);tag('🚪 الخروج',IX,1.6,5.4,3,.75,fg);tag('@'+u.u,IX,4.2,0,4,1,fg)}}
+}
+function gyIn(x,z,py){const y=Math.round(py/5)*5;return Math.abs(y-py)<.6&&y<=(inF-1)*5?y:null}
+function recol(){COLS=ST.concat(...users.map(x=>x.cols||[]))}
+function goIn(u){if(DR){toast('انزل من السيارة أولاً');return}INSIDE=true;inH=u;buildIn(u);COLS=INC;BD=[IX-6.6,IX+6.6,-5.4,5.4];P.position.set(IX,0,4.2);P.rotation.y=Math.PI;yaw=0;pit=.85;dst=15;IL.intensity=1.1;$('near').style.display='none';panel.style.display='none';setEnv()}
+function exitHome(){INSIDE=false;if(IN)S.remove(IN);IN=null;FG=[];CF=0;BD=[-145,145,-145,145];recol();IL.intensity=0;P.position.y=0;tp(inH||me);yaw=0;pit=.5;dst=20;setEnv()}
+
+function carW(){const r=me.p[1]>0;return r?[me.p[0]-6,me.p[1]-2.6]:[me.p[0]+6,me.p[1]+2.6]}
+function startDrive(){if(!me.it.car){toast('اشترِ سيارة من المتجر أولاً');return}const w=carW();me.dr=true;build(me);const g=carG(me.it.car,new THREE.Group(),0,0);S.add(g);DR={g,x:w[0],z:w[1],a:me.p[1]>0?Math.PI:0,v:0};P.visible=false;P.position.set(w[0],0,w[1]);panel.style.display='none';$('near').style.display='none';pit=.45;dst=16}
+function stopDrive(){if(!DR)return;S.remove(DR.g);P.position.set(DR.x+Math.cos(DR.a)*2.5,0,DR.z-Math.sin(DR.a)*2.5);DR=null;P.visible=true;me.dr=false;build(me)}
+
+// لوحة الإدارة الكاملة
+function adm(){panel.innerHTML='<b>⚙️ لوحة الإدارة الشاملة</b><div class="row"><span>💡 أعمدة الإنارة</span><button id="a1">'+(ENV.lamps?'مضاءة ✓':'مطفأة')+'</button></div><div class="row"><span>🌙 الوقت</span><button id="a2">'+(ENV.night?'ليل':'نهار')+'</button></div><div class="row"><span>🍃 الفصل</span><span>'+['spring','summer','autumn','winter'].map((k,i)=>'<button data-s="'+k+'" '+(ENV.season===k?'disabled':'')+'>'+['🌸','☀️','🍂','❄️'][i]+'</button>').join(' ')+'</span></div><div class="row"><span>🪙 إضافة نقاط لأي لاعب</span><select id="au">'+users.map(x=>'<option>@'+x.u+'</option>').join('')+'</select><button id="addc"> +500 🪙</button></div>';
+ $('a1').onclick=()=>{ENV.lamps=!ENV.lamps;setEnv();adm()};$('a2').onclick=()=>{ENV.night=!ENV.night;setEnv();adm()};
+ panel.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{setSeason(b.dataset.s);adm()});
+ $('addc').onclick=()=>{const un=$('au').value.replace('@',''),usr=users.find(x=>x.u===un);if(usr){coins+=500;upd();toast('✅ تمت إضافة 500 نقطة إلى @'+un)}}
+}
+
+// التحكم والحركة
+const keys={};addEventListener('keydown',e=>keys[e.key.toLowerCase()]=1);addEventListener('keyup',e=>keys[e.key.toLowerCase()]=0);
+let jx=0,jy=0;const J=document.getElementById('joy'),K=document.getElementById('knob');
+function jm(e){const t=e.touches[0],r=J.getBoundingClientRect();let dx=t.clientX-(r.left+55),dy=t.clientY-(r.top+55);const d=Math.hypot(dx,dy),m=45;if(d>m){dx*=m/d;dy*=m/d}K.style.left=35+dx+'px';K.style.top=35+dy+'px';jx=dx/m;jy=dy/m;e.preventDefault()}
+J.addEventListener('touchstart',jm,{passive:false});J.addEventListener('touchmove',jm,{passive:false});
+J.addEventListener('touchend',()=>{jx=jy=0;K.style.left=K.style.top='35px'});
+const hit=(x,z,r)=>{r=r||.6;return COLS.some(c=>(c[4]===undefined||c[4]===CF)&&x>c[0]-r&&x<c[1]+r&&z>c[2]-r&&z<c[3]+r)};
+let yaw=0,pit=.5,dst=20,pd=0;const pts=new Map(),cv=R.domElement;
+cv.addEventListener('pointerdown',e=>{pts.set(e.pointerId,[e.clientX,e.clientY]);cv.setPointerCapture(e.pointerId);if(pts.size===2){const a=[...pts.values()];pd=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1])}});
+cv.addEventListener('pointermove',e=>{const o=pts.get(e.pointerId);if(!o)return;if(pts.size===1){yaw-=(e.clientX-o[0])*.006;pit=Math.max(.12,Math.min(1.45,pit+(e.clientY-o[1])*.005))}pts.set(e.pointerId,[e.clientX,e.clientY]);if(pts.size===2){const a=[...pts.values()],d=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);if(pd)dst=Math.max(5,Math.min(150,dst*pd/d));pd=d}});
+['pointerup','pointercancel'].forEach(n=>cv.addEventListener(n,e=>{pts.delete(e.pointerId);pd=0}));
+cv.addEventListener('wheel',e=>{dst=Math.max(5,Math.min(150,dst*(1+e.deltaY*.001)))},{passive:true});
+
+const clock=new THREE.Clock();
+function loop(){requestAnimationFrame(loop);const dt=Math.min(clock.getDelta(),.05),T=clock.elapsedTime;
+ if(me){
+  let x=jx+((keys.d||keys.arrowright)?1:0)-((keys.a||keys.arrowleft)?1:0),z=jy+((keys.s||keys.arrowdown)?1:0)-((keys.w||keys.arrowup)?1:0);
+  if(DR){const th=-z,st=x,tv=th>=0?th*25:th*10;DR.v+=(tv-DR.v)*Math.min(1,dt*2.2);DR.a-=st*dt*1.8*Math.sign(DR.v)*Math.min(Math.abs(DR.v)/6,1);
+   const nx=Math.max(-145,Math.min(145,DR.x+Math.sin(DR.a)*DR.v*dt)),nz=Math.max(-145,Math.min(145,DR.z+Math.cos(DR.a)*DR.v*dt));
+   if(!hit(nx,DR.z,1.2))DR.x=nx;if(!hit(DR.x,nz,1.2))DR.z=nz;
+   DR.g.position.set(DR.x,0,DR.z);DR.g.rotation.y=DR.a;P.position.set(DR.x,0,DR.z);
+  }else{const cs=Math.cos(yaw),sn=Math.sin(yaw);{const a=x*cs+z*sn,b=-x*sn+z*cs;x=a;z=b}
+   const l=Math.hypot(x,z);let mv=0;
+   if(l>.05){const n=Math.min(l,1)/l,px=P.position.x,pz=P.position.z,nx=Math.max(BD[0],Math.min(BD[1],px+x*n*10*dt)),nz=Math.max(BD[2],Math.min(BD[3],pz+z*n*10*dt)),ok=(a,b)=>!hit(a,b)&&(!INSIDE||gyIn(a,b,P.position.y)!==null);
+    if(ok(nx,pz))P.position.x=nx;if(ok(P.position.x,nz))P.position.z=nz;P.rotation.y=Math.atan2(x,z);mv=1}
+   const s=mv?Math.sin(T*10)*.6:0;P.userData.l1.rotation.x=s;P.userData.l2.rotation.x=-s;
+   if(INSIDE){const y=gyIn(P.position.x,P.position.z,P.position.y);if(y!==null)P.position.y+=(y-P.position.y)*Math.min(1,dt*14);CF=Math.round(P.position.y/5);FG.forEach((q,i)=>q.visible=i<=Math.floor(P.position.y/5+.05));IL.position.set(IX,CF*5+3.6,0);if(CF===0&&P.position.z>5.2&&Math.abs(P.position.x-IX)<1.5)exitHome()}
+   else near()}
+  const ty=DR?1.5:P.position.y+2.5,cp=Math.cos(pit);C.position.set(P.position.x+Math.sin(yaw)*cp*dst,ty+Math.sin(pit)*dst,P.position.z+Math.cos(yaw)*cp*dst);C.lookAt(P.position.x,ty,P.position.z);
+  if(PT.visible){const a=PG.attributes.position.array,sp=SEA[ENV.season].sp,n=SEA[ENV.season].n;for(let i=0;i<n;i++){a[i*3+1]-=sp*dt;a[i*3]+=Math.sin(T+i)*dt*.6;if(a[i*3+1]<0)a[i*3+1]+=40}PG.attributes.position.needsUpdate=true;PT.position.set(P.position.x,0,P.position.z)}
+  const cw=carW(),nc=!!me.it.car&&!INSIDE&&(!!DR||Math.hypot(P.position.x-cw[0],P.position.z-cw[1])<9),st=(nc?1:0)+''+(INSIDE?1:0)+(DR?1:0);
+  if(st!==loop.s){loop.s=st;$('bd').style.display=nc?'block':'none';$('bd').textContent=DR?'🚶 نزول':'🚗 قيادة';$('bx').style.display=INSIDE?'block':'none'}}
+ else{const t=T*.1;C.position.set(Math.sin(t)*110,48,Math.cos(t)*110);C.lookAt(0,3,0)}
+ R.render(S,C)}
+loop();
+addEventListener('resize',()=>{R.setSize(innerWidth,innerHeight);C.aspect=innerWidth/innerHeight;C.updateProjectionMatrix()});
+
+// الواجهة والدردشة والجيران وتحصيل النقاط
+const $=id=>document.getElementById(id),hud=$('hud'),panel=$('panel');
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pub=[{u:'sara',t:'أهلاً بالجميع في القرية الموسعة 👋'},{u:'omar',t:'منزل جديد ومستويات رائعة'}],pm={};
+let tab='pub',tgt=null,nr=null;
+function toast(t){const e=$('toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display='none',3000)}
+function upd(){hud.innerHTML='👤 @'+me.u+' · 🏠 مستوى '+me.l+' · 🪙 '+coins}
+function tp(u){P.position.set(u.p[0],0,u.p[1]>0?u.p[1]-11:u.p[1]+11)}
+function show(k,fn){if(panel.style.display==='block'&&panel.dataset.k===k){panel.style.display='none';return}panel.dataset.k=k;panel.style.display='block';fn()}
+
+function near(){let b=null,bd=16;users.forEach(u=>{const d=Math.hypot(P.position.x-u.p[0],P.position.z-u.p[1]);if(d<bd){bd=d;b=u}});
+ if(b!==nr){nr=b;const n=$('near');if(!b){n.style.display='none';return}n.style.display='block';
+  n.innerHTML=(b===me?'🏠 بيتك ':'🏠 جار: @'+b.u+' <button id="nc">💬</button> ')+'<button id="nd">🚪 دخول</button>';
+  $('nd').onclick=()=>goIn(b);const c=$('nc');if(c)c.onclick=()=>openChat(b.u)}}
+
+function chat(){const o=users.filter(x=>x!==me);tgt=tgt||o[0].u;const m=tab==='pub'?pub:(pm[[me.u,tgt].sort().join('|')]||[]);
+ panel.innerHTML='<div style="display:flex;gap:6px;margin-bottom:8px"><button id="t1">🌍 عام</button><button id="t2">🔒 خاص</button>'+(tab==='pri'?'<select id="sel">'+o.map(x=>'<option '+(x.u===tgt?'selected':'')+'>'+x.u+'</option>').join('')+'</select>':'')+'</div><div id="ms" style="height:28vh;overflow:auto">'+(m.map(a=>'<div class="row"><span><b>@'+esc(a.u)+'</b> '+esc(a.t)+'</span></div>').join('')||'<i>لا رسائل بعد</i>')+'</div><div style="display:flex;gap:6px;margin-top:8px"><input id="ci" style="flex:1;min-width:0"><button id="cs">إرسال</button></div>';
+ $('t1').onclick=()=>{tab='pub';chat()};$('t2').onclick=()=>{tab='pri';chat()};const s=$('sel');if(s)s.onchange=()=>{tgt=s.value;chat()};
+ $('cs').onclick=()=>{const v=$('ci').value.trim().slice(0,200);if(!v)return;const list=tab==='pub'?pub:(pm[[me.u,tgt].sort().join('|')]=pm[[me.u,tgt].sort().join('|')]||[]);list.push({u:me.u,t:v});chat()};
+ const e=$('ms');e.scrollTop=e.scrollHeight}
+function openChat(u){tab='pri';tgt=u;panel.dataset.k='c';panel.style.display='block';chat()}
+function nbr(){panel.innerHTML='<b>👥 الجيران والقرية</b>'+users.filter(x=>x!==me).map(x=>'<div class="row"><span>@'+x.u+' · '+x.c+' · مستوى '+x.l+'</span><span><button data-v="'+x.u+'">زيارة</button> <button data-c="'+x.u+'">💬</button></span></div>').join('');
+ panel.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{tp(users.find(x=>x.u===b.dataset.v));panel.style.display='none'});
+ panel.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>openChat(b.dataset.c))}
+
+$('go').onclick=()=>{const v=$('u').value.trim().replace(/^@/,'').toLowerCase(),f=users.find(x=>x.u===v);
+ if(!f){$('err').textContent='يوزر غير مسجّل أو غير موجود';return}
+ me=f;$('ba').style.display=me.admin?'block':'none';[me.s,...Object.values(me.it)].forEach(v=>v&&own.add(v));$('login').style.display='none';hud.style.display='block';$('bar').style.display='flex';J.style.display='block';upd();tp(me)};
+$('bh').onclick=()=>{panel.style.display='none';if(DR)stopDrive();if(INSIDE)exitHome();tp(me)};
+$('bc').onclick=()=>show('c',()=>chat());
+$('bn').onclick=()=>show('n',nbr);
+
+function shop(){const n=me.l+1;let h='<b>🛒 المتجر الشامل</b><div class="row"><span>'+(n>30?'بيتك في أعلى مستوى 👑':'ترقية البيت إلى مستوى '+n+' — 🪙 '+costs[n])+'</span>'+(n>30?'':'<button id="up">ترقية</button>')+'</div>';
+ Object.keys(SHOP).forEach(k=>{h+='<div style="margin-top:8px"><b>'+CAT[k]+'</b></div>';SHOP[k].forEach(a=>{const on=(k==='dsn'?me.s:me.it[k])===a[0],ow=own.has(a[0])||a[2]===0||on;h+='<div class="row"><span>'+a[1]+(ow?'':' — 🪙 '+a[2])+'</span><button data-k="'+k+'" data-i="'+a[0]+'">'+(on?'✓ مُفعّل':ow?'تفعيل':'شراء')+'</button></div>'})});
+ panel.innerHTML=h;const b=$('up');if(b)b.onclick=()=>{if(coins<costs[n]){toast('رصيدك لا يكفي 🪙');return}coins-=costs[n];me.l=n;build(me);upd();shop()};
+ panel.querySelectorAll('[data-k]').forEach(x=>x.onclick=()=>{const k=x.dataset.k,i=x.dataset.i,a=SHOP[k].find(q=>q[0]===i);
+  if(!(own.has(i)||a[2]===0)){if(coins<a[2]){toast('رصيدك لا يكفي 🪙');return}coins-=a[2];own.add(i)}
+  if(k==='dsn')me.s=i;else me.it[k]=(me.it[k]===i?null:i);build(me);upd();const t=panel.scrollTop;shop();panel.scrollTop=t})}
+$('bs').onclick=()=>show('s',shop);
+$('bd').onclick=()=>DR?stopDrive():startDrive();$('bx').onclick=exitHome;$('ba').onclick=()=>show('a',adm);
+</script>
 </body>
 </html>
