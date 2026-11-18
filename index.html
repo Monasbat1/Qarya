@@ -1,243 +1,660 @@
+```html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>القرية التفاعلية</title>
-    <link rel="stylesheet" href="store.css">
+    <title>القرية التفاعلية - Qaryatna Village</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* تنسيقات خريطة القرية الأساسية */
-        .village-map {
-            position: relative;
-            width: 100%;
-            height: 500px;
-            background: radial-gradient(circle at center, #1f3a1f 0%, #0d180d 100%);
-            border-radius: 12px;
-            border: 2px solid #333;
-            margin-bottom: 20px;
-            overflow: hidden;
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #0e131b;
+            color: #ffffff;
+            overflow-x: hidden;
         }
-        .village-zone {
-            position: absolute;
-            background: rgba(30, 30, 30, 0.85);
-            border: 2px solid #ffcc00;
-            padding: 12px;
-            border-radius: 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-        }
-        .village-zone:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(255, 204, 0, 0.4);
-        }
-        .house-zone { top: 40px; right: 40px; width: 170px; }
-        .vehicle-zone { bottom: 40px; left: 40px; width: 170px; }
-        .shop-building { 
-            top: 50%; left: 50%; 
-            transform: translate(-50%, -50%); 
-            width: 190px; 
-            border-color: #00ffcc; 
-            background: rgba(0, 255, 204, 0.12);
-        }
-        .shop-building:hover { transform: translate(-50%, -50%) scale(1.08); }
 
-        /* تنسيق النافذة المنبثقة للمتجر داخل القرية */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 15px;
-            box-sizing: border-box;
+        /* حركة تنفس لطيفة للشخصية داخل القرية */
+        @keyframes avatarWalk {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(-12px, -4px) scale(1.03); }
+            50% { transform: translate(0, -8px) scale(1); }
+            75% { transform: translate(12px, -4px) scale(1.03); }
         }
-        .modal-content {
-            background: #181818;
-            border: 2px solid #ffcc00;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 950px;
-            max-height: 85vh;
-            overflow-y: auto;
-            padding: 20px;
-            position: relative;
+        .avatar-roam {
+            animation: avatarWalk 5s ease-in-out infinite;
         }
-        .close-btn {
-            position: sticky;
-            top: 0;
-            float: left;
-            background: #ff4444;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 10;
+
+        /* نبض خفيف لبيت متجر القرية لجذب الانتباه */
+        @keyframes shopPulse {
+            0%, 100% { filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.55)); }
+            50% { filter: drop-shadow(0 12px 22px rgba(255, 204, 0, 0.45)); }
         }
-        .actions-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: space-between;
-            background: #1e1e1e;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #333;
-            align-items: center;
+        .shop-house {
+            animation: shopPulse 3s ease-in-out infinite;
         }
+
+        /* حركة ترقية العناصر */
+        @keyframes popIn {
+            0% { transform: scale(0.6); opacity: 0; }
+            70% { transform: scale(1.12); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .pop-in {
+            animation: popIn 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* شريط التمرير المخصص داخل المتجر */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #131924; }
+        ::-webkit-scrollbar-thumb { background: #fbbf24; border-radius: 99px; }
     </style>
 </head>
-<body>
-    <div class="market-container">
-        <!-- الشريط العلوي للقرية -->
-        <header class="market-header">
-            <div class="stats">
-                <span>👤 <b id="player-name">أبو يعقوب</b></span>
-                <span>💰 الرصيد: <b id="user-coins">1,450,230</b></span>
-                <span>💎 الجواهر: <b id="user-gems">8,890</b></span>
-                <span>⭐ النقاط: <b id="user-points">1,250</b></span>
-            </div>
-            <h1>القرية التفاعلية</h1>
-        </header>
+<body class="min-h-screen flex flex-col justify-between p-2 sm:p-4 select-none">
 
-        <!-- مساحة القرية (الواجهة الرئيسية) -->
-        <div class="village-map" id="village-area">
-            <!-- منطقة المنزل -->
-            <div class="village-zone house-zone">
-                <h3>🏡 منزلي</h3>
-                <p id="house-status">المستوى 1 (أساسي)</p>
-            </div>
-
-            <!-- مبنى المتجر في قلب القرية -->
-            <div class="village-zone shop-building" onclick="toggleStore(true)">
-                <h3>🏪 متجر القرية</h3>
-                <p style="color: #00ffcc; font-weight: bold;">اضغط للدخول والتسوق</p>
+    <!-- ========================================================= -->
+    <!-- 1. الشريط العلوي (Top HUD)                                -->
+    <!-- ========================================================= -->
+    <header class="max-w-6xl w-full mx-auto bg-[#151c28]/95 border border-slate-800 rounded-2xl p-3 sm:px-5 sm:py-3.5 shadow-2xl backdrop-blur-md mb-3">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <!-- هوية اللاعب -->
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center text-slate-950 font-black text-2xl shadow-lg border border-amber-200/40">
+                    👑
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="font-extrabold text-base sm:text-lg text-white tracking-wide" id="player-name">أبو يعقوب</h1>
+                        <span class="text-[11px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2.5 py-0.5 rounded-full font-bold">
+                            عمدة القرية
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-400">قرية Qaryatna التفاعلية</p>
+                </div>
             </div>
 
-            <!-- منطقة المرآب -->
-            <div class="village-zone vehicle-zone">
-                <h3>🏎️ المرآب</h3>
-                <p id="garage-status">لا توجد سيارة حالياً</p>
+            <!-- عدادات الموارد والنقاط -->
+            <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                <!-- العملات -->
+                <div class="bg-[#0c1017] border border-slate-800/90 px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-inner">
+                    <span class="text-lg">💰</span>
+                    <div>
+                        <span class="text-[10px] text-slate-400 block leading-none">العملات</span>
+                        <span class="font-extrabold text-sm sm:text-base text-amber-400" id="user-coins">1,450,230</span>
+                    </div>
+                </div>
+
+                <!-- الجواهر -->
+                <div class="bg-[#0c1017] border border-slate-800/90 px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-inner">
+                    <span class="text-lg">💎</span>
+                    <div>
+                        <span class="text-[10px] text-slate-400 block leading-none">الجواهر</span>
+                        <span class="font-extrabold text-sm sm:text-base text-cyan-400" id="user-gems">8,890</span>
+                    </div>
+                </div>
+
+                <!-- نقاط التفاعل -->
+                <div class="bg-[#0c1017] border border-slate-800/90 px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-inner">
+                    <span class="text-lg">⭐</span>
+                    <div>
+                        <span class="text-[10px] text-slate-400 block leading-none">نقاط التفاعل</span>
+                        <span class="font-extrabold text-sm sm:text-base text-purple-400" id="user-points">1,250</span>
+                    </div>
+                </div>
             </div>
         </div>
+    </header>
 
-        <!-- شريط التفاعل السريع -->
-        <div class="actions-bar">
-            <div style="font-size: 0.85rem; color: #b0b0b0;">
-                📌 <b>نقاط إنستغرام:</b> تعليق (5) | مشاركة (15) | تاغ (25)
+    <!-- ========================================================= -->
+    <!-- 2. خريطة القرية التفاعلية (Clean Organized Village Map)   -->
+    <!-- ========================================================= -->
+    <main class="max-w-6xl w-full mx-auto flex-1 flex flex-col">
+        <div class="relative w-full flex-1 min-h-[520px] sm:min-h-[580px] rounded-2xl border-2 border-slate-800 overflow-hidden shadow-2xl bg-[#2c5e36]">
+            
+            <!-- طبقة التضاريس والطرق المنظمة (SVG Clean Top-Down Map) -->
+            <svg viewBox="0 0 1200 650" preserveAspectRatio="xMidYMid slice" class="absolute inset-0 w-full h-full z-0 pointer-events-none">
+                <defs>
+                    <!-- تدرجات العشب والتضاريس الهادئة -->
+                    <radialGradient id="meadowGrad" cx="50%" cy="50%" r="70%">
+                        <stop offset="0%" stop-color="#45874c"/>
+                        <stop offset="60%" stop-color="#356e3c"/>
+                        <stop offset="100%" stop-color="#26522c"/>
+                    </radialGradient>
+                    <!-- تدرج التلال الخلفية -->
+                    <linearGradient id="hillGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#224a28"/>
+                        <stop offset="100%" stop-color="#326939"/>
+                    </linearGradient>
+                    <!-- تدرج المجرى المائي -->
+                    <linearGradient id="riverGrad" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#0ea5e9"/>
+                        <stop offset="100%" stop-color="#0284c7"/>
+                    </linearGradient>
+                </defs>
+
+                <!-- الخلفية العشبية الأساسية -->
+                <rect width="1200" height="650" fill="url(#meadowGrad)"/>
+
+                <!-- تلال شمالية ناعمة في الأفق -->
+                <path d="M 0,110 Q 250,45 550,95 T 1200,80 L 1200,0 L 0,0 Z" fill="url(#hillGrad)" opacity="0.85"/>
+                <path d="M 0,145 Q 350,85 700,130 T 1200,115 L 1200,0 L 0,0 Z" fill="#2b5c32" opacity="0.65"/>
+
+                <!-- جدول مائي هادئ في أقصى اليمين -->
+                <path d="M 1110,0 C 1080,180 1150,340 1090,650 L 1200,650 L 1200,0 Z" fill="#1e40af" opacity="0.25"/>
+                <path d="M 1125,0 C 1095,180 1165,340 1105,650" fill="none" stroke="url(#riverGrad)" stroke-width="28" stroke-linecap="round"/>
+                <path d="M 1125,0 C 1095,180 1165,340 1105,650" fill="none" stroke="#bae6fd" stroke-width="3" stroke-dasharray="14,18" opacity="0.6"/>
+
+                <!-- شبكة الطرق الحجرية المنظمة التي تربط مناطق القرية -->
+                <!-- الطريق الأفقي الرئيسي -->
+                <path d="M 140,340 L 1040,340" stroke="#785c42" stroke-width="54" stroke-linecap="round"/>
+                <path d="M 140,340 L 1040,340" stroke="#c2a382" stroke-width="40" stroke-linecap="round"/>
+                <path d="M 160,340 L 1020,340" stroke="#a68665" stroke-width="2" stroke-dasharray="12,12"/>
+
+                <!-- الطريق العمودي المتقاطع في الساحة -->
+                <path d="M 600,150 L 600,545" stroke="#785c42" stroke-width="50" stroke-linecap="round"/>
+                <path d="M 600,150 L 600,545" stroke="#c2a382" stroke-width="36" stroke-linecap="round"/>
+
+                <!-- الساحة المركزية الدائرية المرصوفة -->
+                <circle cx="600" cy="340" r="105" fill="#785c42"/>
+                <circle cx="600" cy="340" r="95" fill="#d6bc9c"/>
+                <circle cx="600" cy="340" r="82" fill="none" stroke="#b09170" stroke-width="2" stroke-dasharray="8,6"/>
+
+                <!-- منصات/قطع أراضي مرتبة للمباني -->
+                <!-- قطعة أرض منزلي (أعلى اليمين) -->
+                <rect x="780" y="135" width="210" height="145" rx="22" fill="#2c5932" stroke="#86efac" stroke-width="2" stroke-dasharray="6,6" opacity="0.75"/>
+                <!-- قطعة أرض المرآب (أسفل اليمين بجانب الطريق) -->
+                <rect x="780" y="405" width="210" height="140" rx="22" fill="#2c5932" stroke="#7dd3fc" stroke-width="2" stroke-dasharray="6,6" opacity="0.75"/>
+                <!-- قطعة أرض ساحة الشخصيات (أسفل اليسار) -->
+                <rect x="210" y="405" width="210" height="140" rx="22" fill="#2c5932" stroke="#d8b4fe" stroke-width="2" stroke-dasharray="6,6" opacity="0.75"/>
+                <!-- قطعة أرض حي الجيران (أعلى اليسار) -->
+                <rect x="210" y="135" width="210" height="145" rx="22" fill="#2c5932" opacity="0.5"/>
+
+                <!-- أشجار وزهور وأعمدة إنارة موزعة بنظام وهدوء -->
+                <!-- أشجار -->
+                <g>
+                    <circle cx="120" cy="180" r="24" fill="#166534"/><circle cx="114" cy="174" r="18" fill="#22c55e"/>
+                    <circle cx="115" cy="480" r="26" fill="#166534"/><circle cx="109" cy="474" r="19" fill="#22c55e"/>
+                    <circle cx="480" cy="165" r="22" fill="#166534"/><circle cx="475" cy="160" r="16" fill="#22c55e"/>
+                    <circle cx="720" cy="165" r="22" fill="#166534"/><circle cx="715" cy="160" r="16" fill="#22c55e"/>
+                    <circle cx="480" cy="520" r="22" fill="#166534"/><circle cx="475" cy="515" r="16" fill="#22c55e"/>
+                    <circle cx="720" cy="520" r="22" fill="#166534"/><circle cx="715" cy="515" r="16" fill="#22c55e"/>
+                    <circle cx="1045" cy="210" r="22" fill="#166534"/><circle cx="1040" cy="205" r="16" fill="#22c55e"/>
+                    <circle cx="1045" cy="475" r="22" fill="#166534"/><circle cx="1040" cy="470" r="16" fill="#22c55e"/>
+                </g>
+
+                <!-- أحواض زهور ملونة عند مداخل الساحة -->
+                <g>
+                    <circle cx="495" cy="295" r="6" fill="#f43f5e"/><circle cx="506" cy="290" r="5" fill="#fbbf24"/>
+                    <circle cx="705" cy="295" r="6" fill="#f43f5e"/><circle cx="694" cy="290" r="5" fill="#fbbf24"/>
+                    <circle cx="495" cy="385" r="6" fill="#38bdf8"/><circle cx="506" cy="390" r="5" fill="#fbbf24"/>
+                    <circle cx="705" cy="385" r="6" fill="#38bdf8"/><circle cx="694" cy="390" r="5" fill="#fbbf24"/>
+                </g>
+
+                <!-- أعمدة إنارة ريفية حول الساحة -->
+                <g fill="#1e293b">
+                    <rect x="515" y="255" width="4" height="22" rx="2"/><circle cx="517" cy="253" r="5" fill="#fef08a"/>
+                    <rect x="681" y="255" width="4" height="22" rx="2"/><circle cx="683" cy="253" r="5" fill="#fef08a"/>
+                    <rect x="515" y="405" width="4" height="22" rx="2"/><circle cx="517" cy="403" r="5" fill="#fef08a"/>
+                    <rect x="681" y="405" width="4" height="22" rx="2"/><circle cx="683" cy="403" r="5" fill="#fef08a"/>
+                </g>
+            </svg>
+
+            <!-- شريط علوي صغير داخل الخريطة -->
+            <div class="relative z-10 p-3 flex items-center justify-between pointer-events-none">
+                <div class="bg-slate-950/75 border border-emerald-500/30 px-3 py-1 rounded-xl backdrop-blur-md text-xs font-bold text-emerald-300 flex items-center gap-2 shadow">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                    اضغط على بيت "متجر القرية" في الوسط للتسوق
+                </div>
+                <div id="fountain-badge" class="hidden bg-cyan-950/90 border border-cyan-400 px-3 py-1 rounded-xl text-xs font-bold text-cyan-300 shadow-lg">
+                    ⛲ النافورة الحجرية مفعّلة
+                </div>
             </div>
-            <div style="display: flex; gap: 10px;">
-                <button onclick="toggleStore(true)" style="background: #ffcc00; color: #121212; border: none; padding: 10px 18px; font-weight: bold; border-radius: 6px; cursor: pointer;">🛒 فتح المتجر</button>
-                <button onclick="simulateEngagement(25)" style="background: #00ffcc; color: #121212; border: none; padding: 10px 18px; font-weight: bold; border-radius: 6px; cursor: pointer;">⚡ محاكاة تفاعل (+25)</button>
+
+            <!-- ========================================================= -->
+            <!-- العناصر التفاعلية الموزعة بانتظام فوق الخريطة             -->
+            <!-- ========================================================= -->
+
+            <!-- 1. حي الجيران (أعلى اليسار) لإعطاء روح القرية -->
+            <div onclick="showToast('🏘️ منازل أهل القرية والجيران')" class="cursor-pointer absolute top-[17%] left-[14%] sm:left-[18%] z-10 flex flex-col items-center group">
+                <div class="flex items-end gap-1 drop-shadow-[0_8px_10px_rgba(0,0,0,0.6)] transition-transform group-hover:scale-105">
+                    <span class="text-4xl sm:text-5xl">🏡</span>
+                    <span class="text-3xl sm:text-4xl">🏘️</span>
+                </div>
+                <span class="mt-1 bg-slate-900/80 border border-slate-700 text-slate-300 text-[11px] font-bold px-2.5 py-0.5 rounded-full backdrop-blur-sm">
+                    حي الجيران
+                </span>
+            </div>
+
+            <!-- 2. منزلي (أعلى اليمين - يتغير شكله وحالته عند الترقية) -->
+            <div id="zone-house" onclick="showToast('🏡 منزلك الحالي: ' + currentAssets.house)" class="cursor-pointer absolute top-[16%] right-[13%] sm:right-[17%] z-10 flex flex-col items-center group">
+                <div id="house-visual" class="text-5xl sm:text-6xl drop-shadow-[0_10px_14px_rgba(0,0,0,0.7)] transition-transform duration-300 group-hover:scale-110">
+                    🏠
+                </div>
+                <div class="mt-1 bg-slate-950/90 border border-emerald-400/60 px-3 py-1 rounded-xl text-center shadow-lg backdrop-blur-md">
+                    <span class="text-[10px] text-emerald-400 font-bold block leading-none">منزلي</span>
+                    <span id="house-label" class="text-xs font-extrabold text-white">بيت ريفي بسيط</span>
+                </div>
+            </div>
+
+            <!-- 3. بيت "متجر القرية" في المنتصف (مرسوم كبيت صغير لطيف بسقف قرميدي ولافتة واضحة) -->
+            <div onclick="toggleStore(true)" title="اضغط لفتح متجر القرية"
+                 class="shop-house cursor-pointer absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center group transition-transform duration-200 hover:scale-105 active:scale-95">
+                
+                <!-- رسم SVG لبيت صغير لطيف بسقف قرميدي ومظلة متجر -->
+                <svg width="136" height="114" viewBox="0 0 140 118" class="overflow-visible">
+                    <!-- ظل البيت على الساحة -->
+                    <ellipse cx="70" cy="108" rx="58" ry="10" fill="rgba(0,0,0,0.45)"/>
+                    <!-- مدخنة -->
+                    <rect x="96" y="16" width="14" height="24" rx="2" fill="#9a3412" stroke="#431407" stroke-width="2"/>
+                    <rect x="93" y="13" width="20" height="5" rx="2" fill="#7c2d12"/>
+                    <!-- جسم البيت -->
+                    <rect x="24" y="48" width="92" height="56" rx="6" fill="#fef3c7" stroke="#92400e" stroke-width="2.5"/>
+                    <!-- السقف القرميدي الأحمر/البرتقالي -->
+                    <polygon points="12,52 70,12 128,52" fill="#dc2626" stroke="#7f1d1d" stroke-width="2.5" stroke-linejoin="round"/>
+                    <polygon points="22,52 70,19 118,52" fill="#ef4444"/>
+                    <!-- مظلة المتجر المخططة -->
+                    <path d="M 20,56 L 120,56 L 125,68 L 15,68 Z" fill="#f59e0b" stroke="#78350f" stroke-width="2"/>
+                    <path d="M 38,56 L 54,56 L 54,68 L 36,68 Z M 72,56 L 88,56 L 88,68 L 72,68 Z M 104,56 L 118,56 L 122,68 L 104,68 Z" fill="#ffffff"/>
+                    <!-- الباب الخشبي -->
+                    <rect x="58" y="72" width="24" height="32" rx="4" fill="#78350f" stroke="#451a03" stroke-width="2"/>
+                    <circle cx="77" cy="89" r="2.2" fill="#fbbf24"/>
+                    <!-- نوافذ مضيئة -->
+                    <rect x="32" y="74" width="18" height="18" rx="3" fill="#38bdf8" stroke="#0369a1" stroke-width="2"/>
+                    <line x1="41" y1="74" x2="41" y2="92" stroke="#0369a1" stroke-width="1.5"/>
+                    <line x1="32" y1="83" x2="50" y2="83" stroke="#0369a1" stroke-width="1.5"/>
+
+                    <rect x="90" y="74" width="18" height="18" rx="3" fill="#38bdf8" stroke="#0369a1" stroke-width="2"/>
+                    <line x1="99" y1="74" x2="99" y2="92" stroke="#0369a1" stroke-width="1.5"/>
+                    <line x1="90" y1="83" x2="108" y2="83" stroke="#0369a1" stroke-width="1.5"/>
+                </svg>
+
+                <!-- لافتة خشبية/ذهبية واضحة مكتوب عليها "متجر القرية" -->
+                <div class="-mt-2 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-slate-950 font-black text-xs sm:text-sm px-4 py-1 rounded-xl border-2 border-amber-900 shadow-xl flex items-center gap-1.5">
+                    <span>🏪</span>
+                    <span>متجر القرية</span>
+                </div>
+            </div>
+
+            <!-- النافورة الحجرية (تظهر بجانب الساحة عند شرائها من المتجر) -->
+            <div id="village-fountain" class="hidden absolute top-[63%] left-1/2 -translate-x-1/2 z-10 flex flex-col items-center">
+                <div class="text-4xl drop-shadow-[0_6px_8px_rgba(0,0,0,0.7)]">⛲</div>
+            </div>
+
+            <!-- 4. ساحة الشخصيات (أسفل اليسار - تتحرك فيها الشخصية المشتراة) -->
+            <div onclick="showToast('🧑 شخصيتك الحالية: ' + currentAssets.avatar)" class="cursor-pointer absolute bottom-[11%] left-[13%] sm:left-[17%] z-10 flex flex-col items-center group">
+                <div id="avatar-visual" class="avatar-roam text-5xl sm:text-6xl drop-shadow-[0_10px_12px_rgba(0,0,0,0.7)]">
+                    🧑
+                </div>
+                <div class="mt-1 bg-slate-950/90 border border-purple-400/60 px-3 py-1 rounded-xl text-center shadow-lg backdrop-blur-md">
+                    <span class="text-[10px] text-purple-300 font-bold block leading-none">ساحة الشخصيات</span>
+                    <span id="avatar-label" class="text-xs font-extrabold text-white">مواطن افتراضي</span>
+                </div>
+            </div>
+
+            <!-- 5. المرآب / ساحة السيارة (أسفل اليمين بجانب الطريق - تظهر فيه السيارة فوراً) -->
+            <div onclick="showToast('🏎️ حالة المرآب: ' + currentAssets.car)" class="cursor-pointer absolute bottom-[11%] right-[13%] sm:right-[17%] z-10 flex flex-col items-center group">
+                <div id="garage-visual" class="text-5xl sm:text-6xl drop-shadow-[0_10px_12px_rgba(0,0,0,0.7)] transition-transform duration-300 group-hover:scale-110">
+                    🅿️
+                </div>
+                <div class="mt-1 bg-slate-950/90 border border-sky-400/60 px-3 py-1 rounded-xl text-center shadow-lg backdrop-blur-md">
+                    <span class="text-[10px] text-sky-300 font-bold block leading-none">المرآب</span>
+                    <span id="garage-label" class="text-xs font-extrabold text-white">ساحة فارغة</span>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ========================================================= -->
+    <!-- 3. شريط التفاعل السفلي (Instagram Engagement Rules)       -->
+    <!-- ========================================================= -->
+    <footer class="max-w-6xl w-full mx-auto bg-[#151c28]/95 border border-slate-800 rounded-2xl p-3 sm:px-5 sm:py-3.5 mt-3 shadow-2xl">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-3">
+            <!-- قواعد نقاط إنستغرام -->
+            <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 text-xs">
+                <span class="text-amber-400 font-extrabold">📌 قواعد نقاط إنستغرام:</span>
+                <span class="bg-[#0c1017] border border-slate-800 px-2.5 py-1 rounded-xl text-slate-300">💬 تعليق = <b class="text-white">5 نقاط</b></span>
+                <span class="bg-[#0c1017] border border-slate-800 px-2.5 py-1 rounded-xl text-slate-300">🔁 مشاركة = <b class="text-white">15 نقطة</b></span>
+                <span class="bg-[#0c1017] border border-slate-800 px-2.5 py-1 rounded-xl text-slate-300">🏷️ تاغ = <b class="text-white">25 نقطة</b></span>
+            </div>
+
+            <!-- أزرار التحكم -->
+            <div class="flex items-center gap-2 w-full md:w-auto justify-center">
+                <button onclick="toggleStore(true)" class="flex-1 md:flex-none bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs sm:text-sm py-2.5 px-4 rounded-xl transition cursor-pointer shadow-lg active:scale-95">
+                    🏪 فتح المتجر
+                </button>
+                <button onclick="simulateInstagramEngagement()" class="flex-1 md:flex-none bg-gradient-to-r from-emerald-400 to-cyan-400 hover:opacity-95 text-slate-950 font-extrabold text-xs sm:text-sm py-2.5 px-4 rounded-xl transition cursor-pointer shadow-lg active:scale-95">
+                    ⚡ محاكاة تفاعل جديد
+                </button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ========================================================= -->
+    <!-- 4. نافذة المتجر المنبثقة فوق القرية (Store Modal)         -->
+    <!-- ========================================================= -->
+    <div id="store-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6">
+        <div class="bg-[#151c28] border-2 border-amber-400 rounded-2xl w-full max-w-4xl max-h-[88vh] flex flex-col shadow-2xl overflow-hidden pop-in">
+            
+            <!-- رأس المتجر -->
+            <div class="bg-[#0c1017] p-4 border-b border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl">🏪</span>
+                    <div>
+                        <h2 class="font-black text-lg text-amber-400">متجر القرية التفاعلية</h2>
+                        <p class="text-xs text-slate-400">اختر ما يناسبك ليظهر مباشرة في خريطة قريتك</p>
+                    </div>
+                </div>
+                <button onclick="toggleStore(false)" class="bg-rose-500/20 hover:bg-rose-500 text-rose-300 hover:text-white border border-rose-500/40 px-3.5 py-2 rounded-xl font-bold text-xs transition cursor-pointer">
+                    ✖ إغلاق
+                </button>
+            </div>
+
+            <!-- تبويبات الأقسام الثلاثة -->
+            <div class="flex border-b border-slate-800 bg-[#101620] p-2 gap-2 overflow-x-auto">
+                <button onclick="switchTab('avatars')" id="tab-avatars" class="tab-btn flex-1 py-2.5 px-4 rounded-xl font-extrabold text-xs sm:text-sm bg-amber-400 text-slate-950 transition cursor-pointer whitespace-nowrap">
+                    🧑 الشخصيات
+                </button>
+                <button onclick="switchTab('vehicles')" id="tab-vehicles" class="tab-btn flex-1 py-2.5 px-4 rounded-xl font-extrabold text-xs sm:text-sm bg-[#151c28] text-slate-300 hover:text-white transition cursor-pointer whitespace-nowrap">
+                    🏎️ السيارات
+                </button>
+                <button onclick="switchTab('upgrades')" id="tab-upgrades" class="tab-btn flex-1 py-2.5 px-4 rounded-xl font-extrabold text-xs sm:text-sm bg-[#151c28] text-slate-300 hover:text-white transition cursor-pointer whitespace-nowrap">
+                    🏰 المنازل والتحسينات
+                </button>
+            </div>
+
+            <!-- قائمة المنتجات -->
+            <div class="p-4 sm:p-6 overflow-y-auto flex-1">
+                
+                <!-- القسم 1: الشخصيات -->
+                <div id="section-avatars" class="store-section grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="bg-[#0c1017] border border-slate-800 hover:border-cyan-400 rounded-2xl p-4 text-center flex flex-col justify-between transition">
+                        <div>
+                            <div class="text-5xl my-3">💂‍♂️</div>
+                            <h3 class="font-extrabold text-base text-white">حارس نخبة</h3>
+                            <p class="text-xs text-slate-400 mt-1">حماية وهيبة خاصة داخل ساحة القرية</p>
+                        </div>
+                        <div class="mt-4">
+                            <span class="block font-black text-cyan-400 text-base mb-2">💎 450</span>
+                            <button onclick="purchaseAsset('avatar', 'حارس نخبة', '💂‍♂️', 450, 'gem')" class="w-full bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-extrabold py-2.5 rounded-xl text-xs transition cursor-pointer">
+                                شراء وتفعيل
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#0c1017] border border-slate-800 hover:border-cyan-400 rounded-2xl p-4 text-center flex flex-col justify-between transition">
+                        <div>
+                            <div class="text-5xl my-3">🕴️</div>
+                            <h3 class="font-extrabold text-base text-white">مواطن عصري</h3>
+                            <p class="text-xs text-slate-400 mt-1">إطلالة رسمية أنيقة لوجهاء القرية</p>
+                        </div>
+                        <div class="mt-4">
+                            <span class="block font-black text-cyan-400 text-base mb-2">💎 320</span>
+                            <button onclick="purchaseAsset('avatar', 'مواطن عصري', '🕴️', 320, 'gem')" class="w-full bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-extrabold py-2.5 rounded-xl text-xs transition cursor-pointer">
+                                شراء وتفعيل
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#0c1017] border border-slate-800 hover:border-cyan-400 rounded-2xl p-4 text-center flex flex-col justify-between transition">
+                        <div>
+                            <div class="text-5xl my-3">🧭</div>
+                            <h3 class="font-extrabold text-base text-white">مستكشف</h3>
+                            <p class="text-xs text-slate-400 mt-1">مغامر جاهز لاستكشاف كافة أرجاء المنطقة</p>
+                        </div>
+                        <div class="mt-4">
+                            <span class="block font-black text-cyan-400 text-base mb-2">💎 360</span>
+                            <button onclick="purchaseAsset('avatar', 'مستكشف', '🧭', 360, 'gem')" class="w-full bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-extrabold py-2.5 rounded-xl text-xs transition cursor-pointer">
+                                شراء وتفعيل
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- القسم 2: السيارات -->
+                <div id="section-vehicles" class="store-section hidden grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="bg-[#0c1017] border border-slate-800 hover:border-amber-400 rounded-2xl p-4 text-center flex flex-col justify-between transition">
+                        <div>
+                            <div class="text-5xl my-3">🏎️</div>
+                            <h3 class="font-extrabold text-base text-white">سيارة رياضية</h3>
+                            <p class="text-xs text-slate-400 mt-1">سرعة فائقة وتصميم رياضي جذاب</p>
+                        </div>
+                        <div class="mt-4">
+                            <span class="block font-black text-amber-400 text-base mb-2">💰 450,000</span>
+                            <button onclick="purchaseAsset('car', 'سيارة رياضية', '🏎️', 450000, 'coin')" class="w-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold py-2.5 rounded-xl text-xs transition cursor-pointer">
+                                شراء وركن في المرآب
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#0c1017] border border-slate-800 hover:border-amber-400 rounded-2xl p-4 text-center flex flex-col justify-between transition">
+                        <div>
+                            <div class="text-5xl my-3">🚙</div>
+                            <h3 class="font-extrabold text-base text-white">دفع رباعي</h3>
+                            <p class="text-xs text-slate-400 mt-1">قوة وثبات على جميع طرق وتلال القرية</p>
+                        </div>
+                        <div class="mt-4">
+                            <span class="block font-black text-amber-400 text-base mb-2">💰 650,000</span>
+                            <button onclick="purchaseAsset('car', 'دفع رباعي', '🚙', 650000, 'coin')" class="w-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold py-2.5 rounded-xl text-xs transition cursor-pointer">
+                                شراء وركن في المرآب
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#0c1017] border border-slate-800 hover:border-amber-400 rounded-2xl p-4 text-center flex flex-col justify-between transition">
+                        <div>
+                            <div class="text-5xl my-3">🚗</div>
+                            <h3 class="font-extrabold text-base text-white">سيارة كلاسيكية</h3>
+                            <p class="text-xs text-slate-400 mt-1">أصالة وفخامة تليق بأعيان القرية</p>
+                        </div>
+                        <div class="mt-4">
+                            <span class="block font-black text-amber-400 text-base mb-2">💰 300,000</span>
+                            <button onclick="purchaseAsset('car', 'سيارة كلاسيكية', '🚗', 300000, 'coin')" class="w-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold py-2.5 rounded-xl text-xs transition cursor-pointer">
+                                شراء وركن في المرآب
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- القسم 3: المنازل والتحسينات -->
+                <div id="section-upgrades" class="store-section hidden grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="bg-[#0c1017] border border-slate-800 hover:border-emerald-400 rounded-2xl p-4 text-center flex flex-col justify-between transition">
+                        <div>
+                            <div class="text-5xl my-3">🏡</div>
+                            <h3 class="font-extrabold text-base text-white">فيلا حديثة</h3>
+                            <p class="text-xs text-slate-400 mt-1">ترقية منزلك إلى فيلا واسعة بحديقة جميلة</p>
+                        </div>
+                        <div class="mt-4">
+                            <span class="block font-black text-amber-400 text-base mb-2">💰 350,000</span>
+                            <button onclick="purchaseAsset('house', 'فيلا حديثة', '🏡', 350000, 'coin')" class="w-full bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-extrabold py-2.5 rounded-xl text-xs transition cursor-pointer">
+                                ترقية المنزل
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#0c1017] border border-slate-800 hover:border-emerald-400 rounded-2xl p-4 text-center flex flex-col justify-between transition">
+                        <div>
+                            <div class="text-5xl my-3">🏰</div>
+                            <h3 class="font-extrabold text-base text-white">قصر ملكي</h3>
+                            <p class="text-xs text-slate-400 mt-1">أفخم مستوى معماري يميزك في القرية</p>
+                        </div>
+                        <div class="mt-4">
+                            <span class="block font-black text-amber-400 text-base mb-2">💰 750,000</span>
+                            <button onclick="purchaseAsset('house', 'قصر ملكي', '🏰', 750000, 'coin')" class="w-full bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-extrabold py-2.5 rounded-xl text-xs transition cursor-pointer">
+                                ترقية إلى قصر
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#0c1017] border border-slate-800 hover:border-cyan-400 rounded-2xl p-4 text-center flex flex-col justify-between transition">
+                        <div>
+                            <div class="text-5xl my-3">⛲</div>
+                            <h3 class="font-extrabold text-base text-white">نافورة حجرية</h3>
+                            <p class="text-xs text-slate-400 mt-1">إضافة نافورة جمالية في ساحة قريتك</p>
+                        </div>
+                        <div class="mt-4">
+                            <span class="block font-black text-amber-400 text-base mb-2">💰 200,000</span>
+                            <button onclick="purchaseAsset('fountain', 'نافورة حجرية', '⛲', 200000, 'coin')" class="w-full bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-extrabold py-2.5 rounded-xl text-xs transition cursor-pointer">
+                                بناء النافورة
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 
-    <!-- نافذة المتجر المنبثقة داخل القرية -->
-    <div class="modal-overlay" id="store-modal">
-        <div class="modal-content">
-            <button class="close-btn" onclick="toggleStore(false)">✖ إغلاق والعودة للقرية</button>
-            <h2 style="color: #ffcc00; margin-top: 0;">🏪 متجر القرية التفاعلية</h2>
-
-            <!-- قسم الشخصيات -->
-            <section class="market-section">
-                <h2>الشخصيات الواقعية</h2>
-                <div class="items-grid">
-                    <div class="item-card">
-                        <h3>حارس نخبة</h3>
-                        <p>قيمة الترقيات والتخصيص</p>
-                        <span class="price">💎 450</span>
-                        <button onclick="buyItem('حارس نخبة', 450, 'gem', 'avatar')">شراء</button>
-                    </div>
-                    <div class="item-card">
-                        <h3>مواطن عصري</h3>
-                        <p>شخصية مخصصة للمدينة</p>
-                        <span class="price">💎 320</span>
-                        <button onclick="buyItem('مواطن عصري', 320, 'gem', 'avatar')">شراء</button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- قسم السيارات -->
-            <section class="market-section">
-                <h2>السيارات الفاخرة</h2>
-                <div class="items-grid">
-                    <div class="item-card">
-                        <h3>سيارة رياضية</h3>
-                        <p>أداء عالي وسرعة فائقة</p>
-                        <span class="price">💰 500,000</span>
-                        <button onclick="buyItem('سيارة رياضية', 500000, 'coin', 'car')">شراء</button>
-                    </div>
-                    <div class="item-card">
-                        <h3>دفع رباعي</h3>
-                        <p>مناسبة للطرق الوعرة</p>
-                        <span class="price">💰 850,000</span>
-                        <button onclick="buyItem('دفع رباعي', 850000, 'coin', 'car')">شراء</button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- قسم التحسينات -->
-            <section class="market-section">
-                <h2>التحسينات الهيكلية</h2>
-                <div class="items-grid">
-                    <div class="item-card">
-                        <h3>قصر ملكي</h3>
-                        <p>ترقية شاملة للمنزل</p>
-                        <span class="price">💰 300,000</span>
-                        <button onclick="buyItem('قصر ملكي', 300000, 'coin', 'house')">شراء</button>
-                    </div>
-                </div>
-            </section>
+    <!-- صندوق الإشعارات العائم -->
+    <div id="toast-box" class="fixed top-20 left-1/2 -translate-x-1/2 z-[60] pointer-events-none transition-all duration-300 opacity-0 -translate-y-4">
+        <div id="toast-message" class="bg-[#151c28] border-2 border-emerald-400 text-white px-5 py-3 rounded-2xl shadow-2xl font-bold text-xs sm:text-sm flex items-center gap-2">
         </div>
     </div>
 
     <script>
-        let coins = 1450230;
-        let gems = 8890;
-        let points = 1250;
+        // حالة موارد اللاعب الابتدائية
+        let state = {
+            coins: 1450230,
+            gems: 8890,
+            points: 1250
+        };
 
-        function toggleStore(show) {
-            document.getElementById('store-modal').style.display = show ? 'flex' : 'none';
+        // حالة الأصول الظاهرة على خريطة القرية
+        let currentAssets = {
+            house: 'بيت ريفي بسيط',
+            car: 'ساحة فارغة',
+            avatar: 'مواطن افتراضي'
+        };
+
+        let toastTimer;
+
+        // عرض إشعار أنيق دون استخدام alert()
+        function showToast(message, isError = false) {
+            const box = document.getElementById('toast-box');
+            const msgEl = document.getElementById('toast-message');
+            
+            msgEl.innerText = message;
+            msgEl.style.borderColor = isError ? '#f43f5e' : '#34d399';
+            
+            box.classList.remove('opacity-0', '-translate-y-4');
+            box.classList.add('opacity-100', 'translate-y-0');
+
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                box.classList.remove('opacity-100', 'translate-y-0');
+                box.classList.add('opacity-0', '-translate-y-4');
+            }, 3200);
         }
 
-        function buyItem(itemName, price, currency, category) {
-            if (currency === 'coin' && coins >= price) {
-                coins -= price;
-                document.getElementById('user-coins').innerText = coins.toLocaleString();
-            } else if (currency === 'gem' && gems >= price) {
-                gems -= price;
-                document.getElementById('user-gems').innerText = gems.toLocaleString();
+        // فتح أو إغلاق نافذة المتجر المنبثقة
+        function toggleStore(open) {
+            const modal = document.getElementById('store-modal');
+            if (open) {
+                modal.classList.remove('hidden');
             } else {
-                alert('عذراً، رصيدك غير كافٍ لإتمام هذه العملية!');
-                return;
+                modal.classList.add('hidden');
             }
-
-            // تحديث العنصر مباشرة في خريطة القرية
-            if (category === 'car') {
-                document.getElementById('garage-status').innerText = `المفعّلة: ${itemName}`;
-                document.getElementById('garage-status').style.color = '#00ffcc';
-            } else if (category === 'house') {
-                document.getElementById('house-status').innerText = `المستوى: ${itemName}`;
-                document.getElementById('house-status').style.color = '#00ffcc';
-            }
-
-            alert(`مبارك! تم شراء (${itemName}) وإضافته لقريتك بنجاح.`);
-            toggleStore(false); // إغلاق المتجر تلقائياً ليرى اللاعب النتيجة في القرية
         }
 
-        function simulateEngagement(pts) {
-            points += pts;
-            coins += pts * 100; // تحويل النقاط لعملات كمثال
-            document.getElementById('user-points').innerText = points.toLocaleString();
-            document.getElementById('user-coins').innerText = coins.toLocaleString();
-            alert(`تم احتساب التفاعل (+${pts} نقطة) وإضافة المكافأة لرصيدك!`);
+        // التبديل بين تبويبات المتجر الثلاثة
+        function switchTab(tab) {
+            document.querySelectorAll('.store-section').forEach(section => {
+                section.classList.add('hidden');
+                section.classList.remove('grid');
+            });
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-amber-400', 'text-slate-950');
+                btn.classList.add('bg-[#151c28]', 'text-slate-300');
+            });
+
+            const activeSection = document.getElementById('section-' + tab);
+            activeSection.classList.remove('hidden');
+            activeSection.classList.add('grid');
+
+            const activeBtn = document.getElementById('tab-' + tab);
+            activeBtn.classList.remove('bg-[#151c28]', 'text-slate-300');
+            activeBtn.classList.add('bg-amber-400', 'text-slate-950');
+        }
+
+        // تحديث الأرقام في الشريط العلوي
+        function updateHUD() {
+            document.getElementById('user-coins').innerText = state.coins.toLocaleString();
+            document.getElementById('user-gems').innerText = state.gems.toLocaleString();
+            document.getElementById('user-points').innerText = state.points.toLocaleString();
+        }
+
+        // تنفيذ عملية الشراء وتحديث القرية فوراً
+        function purchaseAsset(category, name, icon, price, currency) {
+            if (currency === 'coin') {
+                if (state.coins < price) {
+                    showToast('⚠️ عذراً، رصيد العملات غير كافٍ!', true);
+                    return;
+                }
+                state.coins -= price;
+            } else if (currency === 'gem') {
+                if (state.gems < price) {
+                    showToast('⚠️ عذراً، رصيد الجواهر غير كافٍ!', true);
+                    return;
+                }
+                state.gems -= price;
+            }
+
+            updateHUD();
+            toggleStore(false);
+
+            if (category === 'avatar') {
+                currentAssets.avatar = name;
+                const avatarEl = document.getElementById('avatar-visual');
+                avatarEl.innerText = icon;
+                document.getElementById('avatar-label').innerText = name;
+                triggerPop(avatarEl);
+            } else if (category === 'car') {
+                currentAssets.car = name;
+                const garageEl = document.getElementById('garage-visual');
+                garageEl.innerText = icon;
+                document.getElementById('garage-label').innerText = name;
+                triggerPop(garageEl);
+            } else if (category === 'house') {
+                currentAssets.house = name;
+                const houseEl = document.getElementById('house-visual');
+                houseEl.innerText = icon;
+                document.getElementById('house-label').innerText = name;
+                triggerPop(houseEl);
+            } else if (category === 'fountain') {
+                const fountainEl = document.getElementById('village-fountain');
+                fountainEl.classList.remove('hidden');
+                document.getElementById('fountain-badge').classList.remove('hidden');
+                triggerPop(fountainEl);
+            }
+
+            showToast(`🎉 تم شراء (${name}) وإضافته إلى قريتك بنجاح!`);
+        }
+
+        // حركة ظهور عند تحديث عنصر في الخريطة
+        function triggerPop(element) {
+            element.classList.remove('pop-in');
+            void element.offsetWidth;
+            element.classList.add('pop-in');
+        }
+
+        // محاكاة تفاعل إنستغرام وإضافة النقاط والعملات
+        function simulateInstagramEngagement() {
+            const events = [
+                { title: 'تعليق جديد 💬', pts: 5, coins: 25000 },
+                { title: 'مشاركة منشور 🔁', pts: 15, coins: 75000 },
+                { title: 'تاغ لصديق 🏷️', pts: 25, coins: 125000 }
+            ];
+            const picked = events[Math.floor(Math.random() * events.length)];
+
+            state.points += picked.pts;
+            state.coins += picked.coins;
+            updateHUD();
+
+            showToast(`⚡ ${picked.title}: +${picked.pts} نقطة و +${picked.coins.toLocaleString()} عملة!`);
         }
     </script>
 </body>
 </html>
+```
