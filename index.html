@@ -3,343 +3,125 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>مدينة المتابعين - القرية التفاعلية الكاملة</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700&display=swap" rel="stylesheet">
+<title>قرية المتابعين الذكية - Firebase</title>
 <style>
-:root{--panel:#fffdf6;--ink:#2a2118;--line:#d8cfbd;--on:#4a3426;--onink:#fffdf6;--accent:#d97706;--accent2:#059669;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){color-scheme:dark;--panel:#1e2420;--ink:#f1ede2;--line:#3b453d;--on:#e8c9a0;--onink:#1e2420;--accent:#fbbf24;--accent2:#34d399}}
-html,body{height:100%;margin:0;overflow:hidden;background:#bfdcf2;font-family:"Cairo",system-ui,"Segoe UI",Tahoma,sans-serif;color:var(--ink);user-select:none}
-#c{position:absolute;inset:0;touch-action:none}
-#c canvas{display:block;width:100%;height:100%}
-
-.top{position:absolute;top:calc(env(safe-area-inset-top,0px) + 10px);inset-inline:12px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;pointer-events:none;z-index:10}
-.hud-group{display:flex;flex-wrap:wrap;gap:6px;pointer-events:auto}
-.tag{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 12px;font-weight:700;font-size:13px;display:flex;align-items:center;gap:6px;box-shadow:0 2px 8px rgba(0,0,0,0.12)}
-.tag span.val{color:var(--accent)}
-.tag span.pts{color:var(--accent2)}
-.btn-hud{font:inherit;font-weight:700;font-size:13px;border:1px solid var(--line);border-radius:10px;padding:6px 12px;background:var(--panel);color:var(--ink);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.12);transition:transform 0.1s}
-.btn-hud:active{transform:scale(0.96)}
-.btn-store{background:var(--on);color:var(--onink);border-color:var(--on)}
-.btn-pts{background:var(--accent2);color:#111;border:none}
-
-.bar{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);left:50%;transform:translateX(-50%);display:flex;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px;max-width:calc(100% - 20px);flex-wrap:wrap;justify-content:center;box-sizing:border-box;z-index:10}
-.bar input{font:inherit;font-size:13px;width:130px;border:1px solid var(--line);border-radius:9px;padding:6px 10px;background:transparent;color:var(--ink);min-height:38px;box-sizing:border-box}
-
-#joy{position:absolute;left:18px;bottom:calc(env(safe-area-inset-bottom,0px) + 84px);width:112px;height:112px;border-radius:50%;background:var(--panel);border:2px solid var(--line);opacity:0.88;display:block;touch-action:none;z-index:15}
-#knob{position:absolute;left:36px;top:36px;width:40px;height:40px;border-radius:50%;background:var(--on);pointer-events:none}
-
-#prompt{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(30,22,16,0.92);color:#fff5e0;border:2px solid var(--accent);padding:10px 20px;border-radius:12px;font-weight:700;font-size:15px;display:none;cursor:pointer;z-index:20}
-
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:100;justify-content:center;align-items:center;padding:16px}
-.modal-box{background:var(--panel);color:var(--ink);border:2px solid var(--line);border-radius:16px;width:100%;max-width:780px;max-height:85vh;display:flex;flex-direction:column;overflow:hidden}
-.modal-head{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line);background:rgba(0,0,0,0.03)}
-.modal-head h2{margin:0;font-size:18px;display:flex;align-items:center;gap:8px}
-.close-btn{background:#dc2626;color:#fff;border:none;border-radius:8px;padding:6px 12px;font:inherit;font-weight:700;cursor:pointer}
-.tabs{display:flex;gap:6px;padding:10px 18px;border-bottom:1px solid var(--line);overflow-x:auto}
-.tab-btn{font:inherit;font-weight:700;font-size:13px;padding:7px 14px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;white-space:nowrap}
-.tab-btn.active{background:var(--on);color:var(--onink);border-color:var(--on)}
-.modal-body{padding:16px 18px;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
-.card{border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;justify-content:space-between;background:rgba(255,255,255,0.02)}
-.card h3{margin:0 0 4px;font-size:15px}
-.card p{margin:0 0 10px;font-size:12px;opacity:0.8;line-height:1.4}
-.card-foot{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:8px;border-top:1px dashed var(--line)}
-.price{font-weight:700;font-size:13px;color:var(--accent)}
-.buy-btn{font:inherit;font-weight:700;font-size:12px;padding:6px 12px;border-radius:8px;border:none;background:var(--on);color:var(--onink);cursor:pointer}
-.buy-btn.owned{background:var(--accent2);color:#111}
-
-#toast{position:fixed;top:64px;left:50%;transform:translateX(-50%);background:#1e2420;color:#f1ede2;border:1px solid var(--accent);padding:8px 16px;border-radius:10px;font-size:13px;font-weight:700;z-index:200;opacity:0;pointer-events:none;transition:opacity 0.25s}
+:root{--bg:#0f172a;--fg:#f8fafc;--card:rgba(15,23,42,.95);--ac:#f59e0b;box-sizing:border-box}
+body{margin:0;height:100vh;background:var(--bg);color:var(--fg);font-family:system-ui,Tahoma,sans-serif;overflow:hidden;touch-action:none}
+canvas{display:block}
+.card{position:fixed;background:var(--card);border-radius:14px;padding:14px;font-size:14px;z-index:5;border:1px solid #334155}
+#login{inset:0;margin:auto;height:fit-content;width:min(88vw,340px);text-align:center}
+input{padding:10px;width:85%;border-radius:10px;border:1px solid #64748b;font-size:16px;background:#fff;color:#111;text-align:center;direction:ltr;margin:10px 0}
+button{background:var(--ac);color:#111;border:0;border-radius:10px;padding:9px 14px;font-size:14px;font-weight:700;cursor:pointer}
+#err{color:#f87171;min-height:18px;font-size:13px}
+#hud{top:10px;right:10px;display:none}
+#bar{bottom:15px;right:10px;display:none;flex-direction:column;gap:6px}
+#panel{top:12%;right:5vw;left:5vw;max-height:70vh;overflow:auto;display:none}
+.row{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid #334155}
+.vip-badge{background:linear-gradient(135deg,#f59e0b,#ec4899);color:#fff;padding:2px 6px;border-radius:6px;font-size:11px;font-weight:bold}
 </style>
 </head>
 <body>
-<div id="c"></div>
 
-<div class="top">
-  <div class="hud-group">
-    <div class="tag">💰 <span class="val" id="hud-coins">1,450,230</span></div>
-    <div class="tag">💎 <span class="val" id="hud-gems">8,890</span></div>
-    <div class="tag">⭐ <span class="pts" id="hud-pts">1,250</span></div>
-    <div class="tag" id="fb-status">🟢 متصل</div>
-  </div>
-  <div class="hud-group">
-    <button class="btn-hud btn-pts" onclick="earnEngagement(25)">⚡ تفاعل (+25)</button>
-    <button class="btn-hud btn-store" onclick="openStore('avatars')">🏪 متجر القرية</button>
-  </div>
+<div id="login" class="card">
+  <h2>🏘️ قرية المتابعين الذكية</h2>
+  <div style="font-size:13px;opacity:.8">أدخل يوزرك للدخول لبيتك الخاص</div>
+  <input id="u" placeholder="@username" autocomplete="off">
+  <div id="err"></div>
+  <button id="go">دخول القرية</button>
 </div>
 
-<div id="prompt" onclick="openStore('avatars')">🏪 اضغط للدخول إلى متجر القرية</div>
-<div id="toast"></div>
-<div id="joy"><div id="knob"></div></div>
-
-<div class="bar" id="bar">
-  <input id="u" type="text" placeholder="@اسم المستخدم" aria-label="اسم المستخدم" maxlength="30" dir="auto">
+<div id="hud" class="card"></div>
+<div id="bar" class="card">
+  <button id="bs">🛒 المتجر الشامل</button>
+  <button id="bc">💬 الدردشة</button>
+  <button id="bn">👥 الجيران</button>
+  <button id="bh">🏠 بيتي</button>
 </div>
+<div id="panel" class="card"></div>
 
-<div class="modal-overlay" id="store-modal" onclick="if(event.target===this)closeStore()">
-  <div class="modal-box">
-    <div class="modal-head">
-      <h2>🏪 متجر القرية التفاعلية</h2>
-      <button class="close-btn" onclick="closeStore()">✖ إغلاق</button>
-    </div>
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="avatars" onclick="switchTab('avatars')">🧍 الشخصيات</button>
-      <button class="tab-btn" data-tab="cars" onclick="switchTab('cars')">🏎️ السيارات</button>
-      <button class="tab-btn" data-tab="upgrades" onclick="switchTab('upgrades')">🏛️ التحسينات</button>
-    </div>
-    <div class="modal-body" id="store-grid"></div>
-  </div>
-</div>
-
+<!-- استدعاء مكتبات Three.js و Firebase SDK -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-<script>
-(function(){
-const firebaseConfig = {
-  apiKey: "AIzaSyDummyKeyForQaryatnaVillage",
-  authDomain: "qaryatna-village.firebaseapp.com",
-  databaseURL: "https://qaryatna-village-default-rtdb.firebaseio.com",
-  projectId: "qaryatna-village"
-};
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVJclfpEp9Jo9879C3RfZKiEdBUibwrxI",
+    authDomain: "ahmad-662ee.firebaseapp.com",
+    databaseURL: "https://ahmad-662ee-default-rtdb.firebaseio.com",
+    projectId: "ahmad-662ee",
+    storageBucket: "ahmad-662ee.firebasestorage.app",
+    messagingSenderId: "740891153734",
+    appId: "1:740891153734:web:1d7c6cd6214a2409618147",
+    measurementId: "G-JCJW8S9CVH"
+  };
 
-let db = null;
-try {
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-  db = firebase.database();
-} catch (e) {
-  document.getElementById('fb-status').textContent = '🟡 محلي';
-}
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
 
-const DEFAULT_STATE = {
-  username: 'أبو يعقوب', coins: 1450230, gems: 8890, points: 1250, houseStyle: 0,
-  equippedAvatar: null, equippedCar: null, owned: { avatars:[], cars:[], upgrades:[] }
-};
+  let me = null, coins = 1000;
+  const deviceKey = "village_user_device_lock";
+  const hud = document.getElementById('hud'), panel = document.getElementById('panel');
 
-let state = JSON.parse(localStorage.getItem('qaryatna_state')) || JSON.parse(JSON.stringify(DEFAULT_STATE));
+  const R = new THREE.WebGLRenderer({antialias:true});
+  R.setSize(innerWidth, innerHeight); document.body.appendChild(R.domElement);
+  const S = new THREE.Scene(); S.background = new THREE.Color(0x0f172a);
+  const C = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, .1, 500);
+  C.position.set(0, 30, 40); C.lookAt(0, 0, 0);
+  S.add(new THREE.AmbientLight(0xffffff, 1));
 
-function saveState(){
-  localStorage.setItem('qaryatna_state', JSON.stringify(state));
-  updateHUD();
-  if(db && state.username){
-    const safeKey = state.username.replace(/[^a-zA-Z0-9_\u0600-\u06FF]/g, '_') || 'guest';
-    db.ref('players/' + safeKey).set(state).catch(()=>{});
+  const plane = new THREE.Mesh(new THREE.PlaneGeometry(300, 300), new THREE.MeshLambertMaterial({color: 0x1e293b}));
+  plane.rotation.x = -Math.PI / 2; S.add(plane);
+
+  function updateHUD(){
+    hud.innerHTML = `👤 @${me.u} ${me.vip?'<span class="vip-badge">⭐ VIP</span>':''} · 🪙 ${me.coins} نقطة · 🏠 مستوى ${me.l}`;
   }
-}
 
-function loadFromFirebase(username){
-  if(!db || !username) return;
-  const safeKey = username.replace(/[^a-zA-Z0-9_\u0600-\u06FF]/g, '_');
-  db.ref('players/' + safeKey).once('value').then(snap => {
-    if(snap.exists()){
-      state = Object.assign({}, DEFAULT_STATE, snap.val());
-      localStorage.setItem('qaryatna_state', JSON.stringify(state));
-      applyAllOwnedAssets(); updateHUD();
+  document.getElementById('go').onclick = async () => {
+    let val = document.getElementById('u').value.trim().replace(/^@/,'').toLowerCase();
+    if(!val) { document.getElementById('err').textContent = 'الرجاء إدخال اليوزر'; return; }
+
+    const lockedUser = localStorage.getItem(deviceKey);
+    if(lockedUser && lockedUser !== val){
+      document.getElementById('err').textContent = `هذا الهاتف مرتبط بالحساب (${lockedUser}) ولا يمكن فتح حساب آخر عليه!`;
+      return;
     }
-  }).catch(()=>{});
-}
 
-function showToast(msg){
-  const t = document.getElementById('toast'); t.textContent = msg; t.style.opacity = '1';
-  clearTimeout(t._timer); t._timer = setTimeout(()=>{ t.style.opacity = '0'; }, 2800);
-}
+    // جلب بيانات المستخدم من Firebase Realtime Database
+    const dbRef = ref(db);
+    try {
+      const snapshot = await get(child(dbRef, `users/${val}`));
+      if (snapshot.exists()) {
+        me = snapshot.val();
+      } else {
+        // إنشاء مستخدم جديد تلقائياً إذا لم يكن موجوداً
+        me = {
+          u: val,
+          l: 1,
+          vip: false,
+          coins: 500,
+          p: [Math.random() * 60 - 30, Math.random() * 60 - 30],
+          it: {}
+        };
+        await set(ref(db, 'users/' + val), me);
+      }
 
-function updateHUD(){
-  document.getElementById('hud-coins').textContent = state.coins.toLocaleString();
-  document.getElementById('hud-gems').textContent = state.gems.toLocaleString();
-  document.getElementById('hud-pts').textContent = state.points.toLocaleString();
-}
+      localStorage.setItem(deviceKey, me.u);
+      document.getElementById('login').style.display = 'none';
+      hud.style.display = 'block';
+      document.getElementById('bar').style.display = 'flex';
+      updateHUD();
+    } catch (error) {
+      document.getElementById('err').textContent = 'خطأ في الاتصال بقاعدة البيانات';
+      console.error(error);
+    }
+  };
 
-window.earnEngagement = function(pts){
-  state.points += pts; state.coins += pts * 100; saveState();
-  showToast(`⚡ تفاعل (+${pts} مقترح)`);
-};
-
-const CATALOG = {
-  avatars: [
-    { id:'guard', name:'حارس نخبة', desc:'حارس أمن رسمي', price:450, currency:'gems', color:0x1e293b, accent:0xfbbf24 },
-    { id:'citizen', name:'مواطن عصري', desc:'مظهر يومي أنيق', price:320, currency:'gems', color:0x2563eb, accent:0x93c5fd }
-  ],
-  cars: [
-    { id:'sport', name:'سيارة رياضية', desc:'سرعة فائقة', price:500000, currency:'coins', color:0xdc2626 },
-    { id:'suv', name:'دفع رباعي', desc:'للطرق الوعرة', price:850000, currency:'coins', color:0x18181b }
-  ],
-  upgrades: [
-    { id:'fountain', name:'نافورة مياه', desc:'ديكور للحديقة', price:350000, currency:'coins' },
-    { id:'royal_trim', name:'إضاءة ملكية', desc:'تذهيب الواجهات', price:250000, currency:'coins' }
-  ]
-};
-
-let currentTab = 'avatars';
-window.openStore = function(tab){ document.getElementById('store-modal').style.display = 'flex'; switchTab(tab || currentTab); };
-window.closeStore = function(){ document.getElementById('store-modal').style.display = 'none'; };
-window.switchTab = function(tab){ currentTab = tab; document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab)); renderStoreGrid(); };
-
-function renderStoreGrid(){
-  const grid = document.getElementById('store-grid'); grid.innerHTML = '';
-  CATALOG[currentTab].forEach(item => {
-    const isOwned = state.owned[currentTab].includes(item.id);
-    const isEquipped = (currentTab==='avatars' && state.equippedAvatar===item.id) || (currentTab==='cars' && state.equippedCar===item.id) || (currentTab==='upgrades' && isOwned);
-    const card = document.createElement('div'); card.className = 'card';
-    card.innerHTML = `<div><h3>${item.name}</h3><p>${item.desc}</p></div><div class="card-foot"><span class="price">${isOwned ? 'مملوك' : (item.currency==='coins'?'💰':'💎') + item.price.toLocaleString()}</span><button class="buy-btn ${isOwned?'owned':''}" onclick="handleItemAction('${currentTab}','${item.id}')">${isEquipped?'✓ مُفعّل':(isOwned?'تفعيل':'شراء الآن')}</button></div>`;
-    grid.appendChild(card);
-  });
-}
-
-window.handleItemAction = function(cat, id){
-  const item = CATALOG[cat].find(x=>x.id===id); if(!item) return;
-  const isOwned = state.owned[cat].includes(id);
-  if(!isOwned){
-    if(item.currency==='coins' && state.coins>=item.price) state.coins-=item.price;
-    else if(item.currency==='gems' && state.gems>=item.price) state.gems-=item.price;
-    else return showToast('❌ رصيد غير كافي');
-    state.owned[cat].push(id); showToast(`🎉 تم شراء ${item.name}`);
-  } else { showToast(`✅ تم تفعيل ${item.name}`); }
-  if(cat==='avatars') state.equippedAvatar = id; if(cat==='cars') state.equippedCar = id;
-  applyAllOwnedAssets(); saveState(); renderStoreGrid();
-};
-
-var box=document.getElementById('c');
-var r=new THREE.WebGLRenderer({antialias:true}); r.setPixelRatio(Math.min(devicePixelRatio,2)); r.shadowMap.enabled=true; box.appendChild(r.domElement);
-var s=new THREE.Scene(); s.background=new THREE.Color(0xbfdcf2); s.fog=new THREE.Fog(0xbfdcf2,50,150);
-var cam=new THREE.PerspectiveCamera(72,1,0.1,300); s.add(new THREE.HemisphereLight(0xffffff,0x6b8a4a,0.85));
-
-var sun=new THREE.DirectionalLight(0xfff1d6,0.95); sun.position.set(30,50,30); sun.castShadow=true; sun.shadow.mapSize.set(2048,2048);
-s.add(sun);
-
-function M(c,o){return new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:0.9},o||{}))}
-function B(w,h,d,m,x,y,z,p){var o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;(p||s).add(o);return o}
-function tex(c){var k=document.createElement('canvas');k.width=k.height=128;var g=k.getContext('2d');g.fillStyle=c;g.fillRect(0,0,128,128);return new THREE.CanvasTexture(k)}
-
-/* التضاريس والجبال المحيطة */
-B(300, 2, 300, M(0x559e35), 0, -1, 0);
-for(var i=0; i<20; i++){
-  var m=new THREE.Mesh(new THREE.ConeGeometry(30+Math.random()*40, 60+Math.random()*40, 5), M(0x407324));
-  m.position.set((Math.random()-0.5)*260, 20, (Math.random()-0.5)*260); s.add(m);
-}
-
-/* الطرق الإسفلتية والساحة */
-var roadMat = M(0x2d3748, {roughness:0.6});
-B(20, 0.1, 300, roadMat, 0, 0, 0);
-B(300, 0.1, 20, roadMat, 0, 0, 0);
-var plaza = B(80, 0.15, 80, M(0x4a5568), 0, 0.05, 0);
-
-/* الأعلام */
-var flags = ['SA','AE','EG','KW','QA','BH','JO','IQ','MA','DZ','TN','YE','OM','SD','LB','PS'];
-flags.forEach((code, idx)=>{
-  var pole = B(0.2, 8, 0.2, M(0xcccccc), -35 + (idx%8)*10, 4, idx<8? -45:45);
-  var fMesh = B(4, 2.5, 0.1, M(0xffffff), -33.8 + (idx%8)*10, 7.7, idx<8? -45:45);
-});
-
-/* المبنى الأساسي */
-var house=new THREE.Group();s.add(house);
-var bodyM=M(0xffffff,{map:tex('#4a3426')}); var panelM=M(0xece9e2); var dark=M(0x23201d);
-B(7,6,0.3,bodyM,0,3,-2.85,house);B(0.3,6,6,bodyM,-3.35,3,0,house);B(0.3,6,6,bodyM,3.35,3,0,house);
-B(7.5,0.25,6.5,dark,0,6.12,0,house); B(7.3,0.5,0.4,bodyM,0,5.75,3.2,house);
-var glass=M(0xffe2b0,{transparent:true,opacity:0.35});
-B(2.8,0.4,0.2,dark,-0.1,3.35,3.4,house); B(1.2,5.2,0.14,panelM,-2.15,3,3.07,house);
-
-var dg=new THREE.Group();dg.position.set(1.5,0,3.1);house.add(dg);
-B(1.2,2.8,0.1,M(0x2b2b2b),0.6,1.4,0,dg);
-
-var u=document.getElementById('u');
-var uc=document.createElement('canvas');uc.width=512;uc.height=128;var ux=uc.getContext('2d'); var ut=new THREE.CanvasTexture(uc);
-function owner(n){
-  n=(n||'').replace(/^#/,'').trim()||'أبو يعقوب'; if(n[0]!=='@') n='@'+n;
-  ux.fillStyle='#1e221a'; ux.fillRect(0,0,512,128); ux.fillStyle='#fffae6'; ux.font='700 50px Cairo'; ux.textAlign='center'; ux.fillText(n,256,74); ut.needsUpdate=true;
-}
-u.value=state.username; owner(u.value);
-u.oninput=function(){ state.username=u.value||'أبو يعقوب'; owner(state.username); saveState(); };
-var sp=new THREE.Sprite(new THREE.SpriteMaterial({map:ut,fog:false})); sp.scale.set(6,1.5,1); sp.position.set(0,8,0); house.add(sp);
-
-/* متجر القرية */
-var storeGroup=new THREE.Group(); storeGroup.position.set(25, 0, -25); s.add(storeGroup);
-B(6, 4, 6, M(0xf7fafc), 0, 2, 0, storeGroup);
-var roof=new THREE.Mesh(new THREE.ConeGeometry(5, 3, 4), M(0x9b2c2c)); roof.rotation.y=Math.PI/4; roof.position.y=5.5; storeGroup.add(roof);
-var scv=document.createElement('canvas'); scv.width=512; scv.height=128; var sgx=scv.getContext('2d');
-sgx.fillStyle='#742a2a'; sgx.fillRect(0,0,512,128); sgx.fillStyle='#faf089'; sgx.font='700 60px Cairo'; sgx.textAlign='center'; sgx.fillText('🏪 متجر القرية',256,74);
-var sSign=new THREE.Mesh(new THREE.BoxGeometry(4, 1, 0.2), new THREE.MeshStandardMaterial({map:new THREE.CanvasTexture(scv)}));
-sSign.position.set(0, 3.8, 3.1); storeGroup.add(sSign);
-
-/* الأصول الديناميكية */
-var dynamicGroup=new THREE.Group(); s.add(dynamicGroup);
-function applyAllOwnedAssets(){
-  while(dynamicGroup.children.length>0) dynamicGroup.remove(dynamicGroup.children[0]);
-  if(state.equippedAvatar){
-    const av = B(0.4, 1, 0.4, M(0x3182ce), 0.6, 0.5, 3.8); dynamicGroup.add(av);
+  function animate(){
+    requestAnimationFrame(animate);
+    R.render(S, C);
   }
-  if(state.equippedCar){
-    const car = B(2, 0.6, 4, M(0xe53e3e), 10, 0.3, 0); dynamicGroup.add(car);
-  }
-  if(state.owned.upgrades.includes('fountain')){
-    const ftn = B(2, 1, 2, M(0x319795), -10, 0.5, -10); dynamicGroup.add(ftn);
-  }
-}
-
-/* الأشجار والحدائق */
-function createTree(x,z){
-  var t=new THREE.Group();
-  B(0.4, 2, 0.4, M(0x5a3e2b), 0, 1, 0, t);
-  var l=new THREE.Mesh(new THREE.SphereGeometry(1.5), M(0x2f855a)); l.position.y=3; t.add(l);
-  t.position.set(x,0,z); s.add(t);
-}
-for(var i=-100; i<=100; i+=20){
-  if(Math.abs(i)>30) { createTree(i, 40); createTree(i, -40); createTree(40, i); createTree(-40, i); }
-}
-
-applyAllOwnedAssets(); filterCategory=function(){} // Placeholder prevent error
-
-var yaw=0.5, pit=-0.2, px=0, pz=15, jx=0, jy=0, keys={}, ptrs={};
-window.addEventListener('pointerdown', e=>{ ptrs[e.pointerId]={x:e.clientX,y:e.clientY}; });
-window.addEventListener('pointermove', e=>{
-  if(!ptrs[e.pointerId]) return;
-  yaw += (e.clientX - ptrs[e.pointerId].x)*0.005;
-  pit = Math.max(-1.1, Math.min(1.1, pit + (e.clientY-ptrs[e.pointerId].y)*0.004));
-  ptrs[e.pointerId].x=e.clientX; ptrs[e.pointerId].y=e.clientY;
-});
-window.addEventListener('pointerup', e=>{ delete ptrs[e.pointerId]; });
-
-window.addEventListener('resize', ()=>{
-  r.setSize(window.innerWidth, window.innerHeight);
-  cam.aspect=window.innerWidth/window.innerHeight; cam.updateProjectionMatrix();
-});
-
-var joy=document.getElementById('joy'), kn=document.getElementById('knob'), jp=null;
-function jm(e){
-  var q=joy.getBoundingClientRect(), dx=e.clientX-q.left-56, dy=e.clientY-q.top-56, l=Math.hypot(dx,dy), m=40;
-  if(l>m){dx*=m/l; dy*=m/l;}
-  kn.style.transform=`translate(${dx}px,${dy}px)`; jx=dx/m; jy=-dy/m;
-}
-joy.addEventListener('pointerdown', e=>{ jp=e.pointerId; joy.setPointerCapture(jp); jm(e); });
-joy.addEventListener('pointermove', e=>{ if(e.pointerId===jp) jm(e); });
-function jend(e){ if(e.pointerId===jp){ jp=null; jx=jy=0; kn.style.transform=''; } }
-joy.addEventListener('pointerup', jend); joy.addEventListener('pointercancel', jend);
-
-window.addEventListener('keydown', e=>{ if(document.activeElement!==u) keys[e.key.toLowerCase()]=true; });
-window.addEventListener('keyup', e=>{ keys[e.key.toLowerCase()]=false; });
-
-var last=0, promptEl=document.getElementById('prompt');
-function loop(t){
-  requestAnimationFrame(loop);
-  var dt = Math.min((t-last)/1000, 0.05); last=t;
-
-  var nearStore = Math.hypot(px - 25, pz - (-25)) < 10;
-  promptEl.style.display = nearStore ? 'block' : 'none';
-
-  var f = jy + (keys['w']||keys['arrowup']?1:0) - (keys['s']||keys['arrowdown']?1:0);
-  var sd = jx + (keys['d']||keys['arrowright']?1:0) - (keys['a']||keys['arrowleft']?1:0);
-  var L = Math.hypot(f,sd); if(L>1){ f/=L; sd/=L; }
-
-  px += (-Math.sin(yaw)*f + Math.cos(yaw)*sd)*15*dt;
-  pz += (-Math.cos(yaw)*f - Math.sin(yaw)*sd)*15*dt;
-
-  cam.position.set(px, 2, pz);
-  cam.rotation.set(pit, yaw, 0, 'YXZ');
-  r.render(s, cam);
-}
-size=()=>{}; filterCategory=()=>{} // Dummy
-loop(0);
-})();
+  animate();
 </script>
 </body>
 </html>
