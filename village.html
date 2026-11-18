@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>القرية التفاعلية - العرض الرئيسي</title>
+    <link rel="stylesheet" href="store.css">
+    <style>
+        .village-map {
+            position: relative;
+            width: 100%;
+            height: 450px;
+            background: linear-gradient(135deg, #1a2f1a, #0d1a0d);
+            border-radius: 12px;
+            border: 2px solid #333;
+            margin-bottom: 20px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .village-zone {
+            position: absolute;
+            background: rgba(255, 204, 0, 0.1);
+            border: 1px dashed #ffcc00;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .house-zone { top: 30px; right: 50px; width: 180px; }
+        .vehicle-zone { bottom: 30px; left: 50px; width: 180px; }
+        .actions-bar {
+            display: flex;
+            justify-content: space-between;
+            background: #1e1e1e;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            align-items: center;
+        }
+        .engagement-rules {
+            font-size: 0.85rem;
+            color: #b0b0b0;
+        }
+    </style>
+</head>
+<body>
+    <div class="market-container">
+        <!-- شريط المعلومات العلوي -->
+        <header class="market-header">
+            <div class="stats">
+                <span>👤 المستخدم: <b id="player-name">أبو يعقوب</b></span>
+                <span>⭐ النقاط المكتسبة: <b id="user-points">1,250</b></span>
+                <a href="index.html" style="color: #ffcc00; text-decoration: none; font-weight: bold;">🛒 الانتقال للمتجر</a>
+            </div>
+            <h1>خريطة القرية التفاعلية</h1>
+        </header>
+
+        <!-- خريطة القرية المرئية -->
+        <div class="village-map">
+            <div class="village-zone house-zone">
+                <h3>🏡 البيت الملكي</h3>
+                <p>الحالة: مطور (المستوى 2)</p>
+            </div>
+            <div class="village-zone vehicle-zone">
+                <h3>🏎️ المرآب</h3>
+                <p>السيارة: رياضية مفعلة</p>
+            </div>
+            <div style="text-align: center; color: #7f8c8d;">
+                <h2>[ مساحة التفاعل الحية لبيئة القرية ]</h2>
+                <p>تظهر هنا الأصول والممتلكات الخاصة بالمستخدم فور شرائها واستلام نقاط التفاعل.</p>
+            </div>
+        </div>
+
+        <!-- لوحة التفاعل ونظام النقاط -->
+        <div class="actions-bar">
+            <div class="engagement-rules">
+                <p>📌 قواعد التفاعل على إنستغرام:</p>
+                <span>تعليق = 5 نقاط | مشاركة = 15 نقطة | إشارة (Tag) = 25 نقطة</span>
+            </div>
+            <div>
+                <button onclick="simulateEngagement(25)" style="background: #00ffcc; color: #121212; border: none; padding: 10px 20px; font-weight: bold; border-radius: 5px; cursor: pointer;">محاكاة تفاعل جديد</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function simulateEngagement(points) {
+            let pointsElem = document.getElementById('user-points');
+            let currentPoints = parseInt(pointsElem.innerText.replace(',', ''));
+            let newPoints = currentPoints + points;
+            pointsElem.innerText = newPoints.toLocaleString();
+            alert(`تم تسجيل تفاعل جديد! أُضيفَت ${points} نقطة إلى رصيدك.`);
+        }
+    </script>
+</body>
+</html>
