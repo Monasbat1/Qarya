@@ -238,12 +238,23 @@ const CAR_SPECS = {
   limo:  { name: 'ليموزين فاخرة', color: 0x111111, len: 5.4, w: 1.9,  h: 0.72, low: false }
 };
 
+const CAR_COLORS = {
+  red:    { label: 'أحمر ناري', hex: 0xdc2626 },
+  black:  { label: 'أسود ملكي', hex: 0x111827 },
+  white:  { label: 'أبيض لؤلؤي', hex: 0xf8fafc },
+  blue:   { label: 'أزرق معدني', hex: 0x2563eb },
+  gold:   { label: 'ذهبي فاخر', hex: 0xd4af37 }
+};
+
 const SHOP_ITEMS = [
   { id: 'upgrade_house', name: 'ترقية شكل البيت', icon: '🏡', price: 500 },
   { id: 'car_sedan', name: 'سيارة سيدان', icon: '🚗', price: 250 },
   { id: 'car_sport', name: 'سيارة رياضية', icon: '🏎️', price: 550 },
   { id: 'car_suv', name: 'دفع رباعي SUV', icon: '🚙', price: 450 },
   { id: 'car_limo', name: 'ليموزين فاخرة', icon: '🚐', price: 900 },
+  { id: 'car_spoiler', name: 'جناح وتطوير سيارة', icon: '🏁', price: 220 },
+  { id: 'color_gold', name: 'لون ذهبي للسيارة', icon: '✨', price: 180 },
+  { id: 'color_blue', name: 'لون أزرق للسيارة', icon: '🔵', price: 120 },
   { id: 'lanterns', name: 'إضاءة الحوش', icon: '🏮', price: 120 },
   { id: 'plants', name: 'حديقة وأشجار', icon: '🌴', price: 150 },
   { id: 'seating', name: 'جلسة خارجية', icon: '🪑', price: 200 },
@@ -304,87 +315,100 @@ function createAvatar(shirt = 0x231f1a) {
 const P = createAvatar();
 S.add(P);
 
-// بناء شكل السيارة حسب النوع (سيدان، رياضية، SUV، ليموزين)
-function buildCarMesh(type = 'sedan') {
+// بناء السيارة مع اللون المخصص وإضافة الجناح/التطوير الرياضي
+function buildCarMesh(type = 'sedan', colorKey = null, hasSpoiler = false) {
   const sp = CAR_SPECS[type] || CAR_SPECS.sedan;
+  const customHex = (colorKey && CAR_COLORS[colorKey]) ? CAR_COLORS[colorKey].hex : sp.color;
   const g = new THREE.Group();
   const baseY = sp.low ? 0.42 : 0.58;
-  box(sp.w, sp.h, sp.len, sp.color, 0, baseY, 0, g);
-  box(sp.w * 0.84, sp.h * 0.82, sp.len * 0.5, sp.color, 0, baseY + sp.h * 0.85, -0.15, g);
-  // زجاج مظلل
+
+  box(sp.w, sp.h, sp.len, customHex, 0, baseY, 0, g);
+  box(sp.w * 0.84, sp.h * 0.82, sp.len * 0.5, customHex, 0, baseY + sp.h * 0.85, -0.15, g);
   box(sp.w * 0.86, sp.h * 0.55, sp.len * 0.46, 0x1e293b, 0, baseY + sp.h * 0.85, -0.15, g);
+
+  // مصابيح أمامية مضيئة
+  [-sp.w * 0.32, sp.w * 0.32].forEach(lx => {
+    box(0.32, 0.16, 0.1, 0xfef08a, lx, baseY, sp.len * 0.5 + 0.04, g);
+  });
+
+  if (hasSpoiler) {
+    const rearZ = -sp.len * 0.45;
+    box(0.14, 0.35, 0.25, 0x111111, -sp.w * 0.35, baseY + sp.h * 0.65, rearZ, g);
+    box(0.14, 0.35, 0.25, 0x111111, sp.w * 0.35, baseY + sp.h * 0.65, rearZ, g);
+    box(sp.w * 0.96, 0.12, 0.35, 0x111111, 0, baseY + sp.h * 0.85, rearZ - 0.05, g);
+  }
 
   const wPos = sp.len > 4.6 ? [-1.6, 0, 1.6] : [-sp.len * 0.32, sp.len * 0.32];
   wPos.forEach(wz => {
     [-1, 1].forEach(sx => {
       const wh = cyl(0.38, 0.38, 0.28, 0x111111, sx * (sp.w * 0.52), 0.38, wz, g, 12);
       wh.rotation.z = Math.PI / 2;
+      if (hasSpoiler) {
+        const rim = cyl(0.2, 0.2, 0.3, 0xd4af37, sx * (sp.w * 0.52), 0.38, wz, g, 10);
+        rim.rotation.z = Math.PI / 2;
+      }
     });
   });
   return g;
 }
 
-// بناء أشكال منازل مختلفة كلياً مع كل ترقية (1 إلى 5+)
 function buildHouseArchitecture(g, lv, customStyle) {
   const style = Math.min(5, Math.max(1, Number(customStyle || lv || 1)));
 
   if (style === 1) {
-    // شكل 1: فيلا مودرن بيضاء مع كراج مفتوح ودرج وسور حديقة
     box(6.5, 3.0, 5.2, 0xf8fafc, -1.2, 1.5, -1.5, g);
     box(3.8, 3.8, 4.5, 0xffffff, -2.2, 1.9, -2.0, g);
-    box(1.1, 2.8, 4.6, 0x4a2e1b, -3.9, 1.4, -2.0, g); // فتحة خشبية جانبية
-    // سقف الكراج والمظلة العلوية
+    box(1.1, 2.8, 4.6, 0x4a2e1b, -3.9, 1.4, -2.0, g);
     box(4.6, 0.35, 5.2, 0xf1f5f9, 3.0, 2.6, 0.8, g);
-    box(4.2, 0.9, 0.2, 0xe2e8f0, 3.0, 3.1, 3.3, g); // درابزين السطح
+    box(4.2, 0.9, 0.2, 0xe2e8f0, 3.0, 3.1, 3.3, g);
     box(0.3, 2.6, 4.8, 0xf1f5f9, 5.1, 1.3, 0.8, g);
-    // درج أمامي وممر
     box(2.8, 0.3, 1.4, 0xcbd5e1, 0, 0.15, 2.2, g);
     box(1.1, 2.0, 0.2, 0x1e293b, -1.0, 1.0, 1.15, g);
     box(1.4, 1.1, 0.2, 0x1e293b, -2.8, 1.8, 1.15, g);
   } else if (style === 2) {
-    // شكل 2: فيلا عصرية بواجهة علوية بارزة وإطارات رمادية داكنة وخشب
     box(7.8, 3.2, 5.4, 0xf8fafc, 0, 1.6, -1.2, g);
-    box(8.6, 3.0, 6.0, 0x334155, 0, 4.6, -0.6, g); // طابق علوي داكن بارز
-    box(4.8, 2.0, 0.3, 0xb47b44, 1.2, 4.6, 2.45, g); // لوح خشبي علوي
-    box(2.2, 1.6, 0.3, 0x0f172a, -2.2, 4.6, 2.45, g); // نافذة زجاجية كبيرة
-    box(2.2, 1.5, 0.3, 0x0f172a, -2.2, 1.7, 1.55, g); // نافذة سفلية
-    box(1.2, 2.1, 0.3, 0x6b3f22, 0.2, 1.05, 1.55, g); // باب خشبي
+    box(8.6, 3.0, 6.0, 0x334155, 0, 4.6, -0.6, g);
+    box(4.8, 2.0, 0.3, 0xb47b44, 1.2, 4.6, 2.45, g);
+    box(2.2, 1.6, 0.3, 0x0f172a, -2.2, 4.6, 2.45, g);
+    box(2.2, 1.5, 0.3, 0x0f172a, -2.2, 1.7, 1.55, g);
+    box(1.2, 2.1, 0.3, 0x6b3f22, 0.2, 1.05, 1.55, g);
     box(3.4, 0.3, 1.5, 0xcbd5e1, 0.2, 0.15, 2.2, g);
   } else if (style === 3) {
-    // شكل 3: فيلا زجاجية مفتوحة مع مسبح خارجي أزرق سماوي
     box(9.2, 2.8, 5.0, 0xf1f5f9, 0, 1.4, -2.2, g);
     box(9.6, 2.6, 5.4, 0xe2e8f0, 0, 4.1, -1.8, g);
-    // واجهات زجاجية واسعة
     box(7.6, 1.8, 0.2, 0x38bdf8, 0, 4.1, 0.95, g);
     box(5.0, 1.7, 0.2, 0x38bdf8, -1.2, 1.3, 0.35, g);
-    // مسبح أمامي في الحوش
     box(5.6, 0.25, 3.4, 0xe2e8f0, -1.2, 0.12, 3.4, g);
     box(5.0, 0.28, 2.8, 0x22d3ee, -1.2, 0.15, 3.4, g);
   } else if (style === 4) {
-    // شكل 4: فيلا متعددة الكتل بأعمدة ودرابزين وشرفة علوية
     box(7.4, 3.0, 5.4, 0xe8dec5, -0.5, 1.5, -1.5, g);
     box(6.6, 2.8, 4.8, 0xf3ead8, -0.8, 4.4, -1.8, g);
-    box(2.8, 4.8, 3.6, 0xdfd3be, -3.2, 2.4, -1.2, g); // برج جانبي مرتفع
-    // أعمدة أمامية بيضاء
+    box(2.8, 4.8, 3.6, 0xdfd3be, -3.2, 2.4, -1.2, g);
     [-1.2, 1.8].forEach(cx => {
       box(0.45, 5.8, 0.45, 0xffffff, cx, 2.9, 1.4, g);
     });
-    // درابزين الشرفة
     box(7.6, 0.75, 0.2, 0x27272a, -0.4, 3.35, 1.35, g);
     box(8.0, 0.75, 0.2, 0x27272a, -0.4, 6.1, 1.35, g);
-    box(3.4, 0.3, 1.6, 0xd97706, 0.3, 0.15, 2.2, g); // ممر مبلط
+    box(3.4, 0.3, 1.6, 0xd97706, 0.3, 0.15, 2.2, g);
   } else {
-    // شكل 5+: قصر ملكي عصري متكامل بعدة طوابق وإضاءة ذهبية
     box(9.6, 3.2, 6.2, 0xf8fafc, 0, 1.6, -1.5, g);
     box(8.8, 3.0, 5.6, 0x1e293b, 0, 4.7, -1.8, g);
     box(5.4, 2.6, 4.2, 0xfdfbf7, 1.4, 7.5, -2.0, g);
-    // أعمدة وتفاصيل ذهبية
     [-3.6, -1.2, 1.2, 3.6].forEach(cx => {
       box(0.4, 6.0, 0.4, 0xd4af37, cx, 3.0, 1.75, g);
     });
     box(8.6, 1.6, 0.25, 0x38bdf8, 0, 4.7, 1.05, g);
-    box(5.2, 0.3, 3.4, 0x38bdf8, 0, 0.15, 3.3, g); // مسبح أمامي
+    box(5.2, 0.3, 3.4, 0x38bdf8, 0, 0.15, 3.3, g);
   }
+}
+
+function getCarInfo(v) {
+  const items = v.items || {};
+  const carType = v.carType || (items.car_limo ? 'limo' : items.car_sport ? 'sport' : items.car_suv ? 'suv' : items.car_sedan ? 'sedan' : null);
+  const colorKey = v.carColor || (items.color_gold ? 'gold' : items.color_blue ? 'blue' : null);
+  const hasSpoiler = !!(v.carSpoiler || items.car_spoiler);
+  const hasCar = !!(v.hasCar || carType);
+  return { hasCar, carType: carType || 'sedan', colorKey, hasSpoiler };
 }
 
 function buildDesertHouse(v) {
@@ -392,7 +416,6 @@ function buildDesertHouse(v) {
   const lv = v.levels || 1;
   const style = v.houseStyle || lv;
 
-  // أرضية الحوش والسور المحيط
   box(14, 0.15, 14, 0xcab082, 0, 0.08, 0, g);
   box(14, 1.2, 0.45, 0xc9af82, 0, 0.6, -6.75, g);
   box(0.45, 1.2, 14, 0xc9af82, -6.75, 0.6, 0, g);
@@ -429,9 +452,9 @@ function buildDesertHouse(v) {
     box(1.2, 0.4, 1.2, 0xd9a760, -4.5, 0.65, 2.6, g);
   }
 
-  const carType = v.carType || (items.car_limo ? 'limo' : items.car_sport ? 'sport' : items.car_suv ? 'suv' : items.car_sedan ? 'sedan' : null);
-  if (v.hasCar || carType) {
-    const carObj = buildCarMesh(carType || 'sedan');
+  const ci = getCarInfo(v);
+  if (ci.hasCar) {
+    const carObj = buildCarMesh(ci.carType, ci.colorKey, ci.hasSpoiler);
     carObj.position.set(3.4, 0, 1.5);
     g.add(carObj);
   }
@@ -529,7 +552,8 @@ function syncMyCoinsUI() {
     coins = me.coins;
   }
   document.getElementById('myCoinsBadge').textContent = '🪙 ' + coins;
-  document.getElementById('hudCoins').textContent = coins;
+  const hc = document.getElementById('hudCoins');
+  if (hc) hc.textContent = coins;
 }
 
 onSnapshot(collection(db, "villagers"), snap => {
@@ -548,8 +572,8 @@ onSnapshot(collection(db, "villagers"), snap => {
       me = updatedMe;
       if (typeof me.coins === 'number') coins = me.coins;
       document.getElementById('hudUser').textContent = `${me.username} (L${me.levels || 1})`;
-      const hasAnyCar = !!(me.hasCar || me.carType || (me.items && (me.items.car_sedan || me.items.car_sport || me.items.car_suv || me.items.car_limo)));
-      document.getElementById('btnDrive').style.display = hasAnyCar ? 'block' : 'none';
+      const ci = getCarInfo(me);
+      document.getElementById('btnDrive').style.display = ci.hasCar ? 'block' : 'none';
       if (INSIDE) buildInteriorScene(me);
     }
   }
@@ -586,7 +610,8 @@ window.enterZone = async (zone, goInside = false, openShopAfter = false) => {
         username: '@' + rawInput,
         name: `@${rawInput} (دخول مباشر)`,
         levels: 1, houseStyle: 1, coins: 1000,
-        hasCar: false, carType: null, items: {}, x, z, timestamp: new Date()
+        hasCar: false, carType: null, carColor: null, carSpoiler: false,
+        items: {}, x, z, timestamp: new Date()
       };
       const ref = await addDoc(collection(db, "villagers"), newHouse);
       found = { docId: ref.id, ...newHouse };
@@ -604,8 +629,8 @@ window.enterZone = async (zone, goInside = false, openShopAfter = false) => {
   document.getElementById('joy').style.display = 'block';
   document.getElementById('sideActions').style.display = 'flex';
   document.getElementById('hudUser').textContent = me ? `${me.username} (L${me.levels || 1})` : '@زائر';
-  const hasAnyCar = !!(me && (me.hasCar || me.carType || (me.items && (me.items.car_sedan || me.items.car_sport || me.items.car_suv || me.items.car_limo))));
-  document.getElementById('btnDrive').style.display = hasAnyCar ? 'block' : 'none';
+  const ci = me ? getCarInfo(me) : { hasCar: false };
+  document.getElementById('btnDrive').style.display = ci.hasCar ? 'block' : 'none';
 
   P.position.set(me ? me.x : 0, 0, me ? me.z + 9 : 10);
   if (goInside && me) toggleInside(true);
@@ -644,10 +669,10 @@ window.toggleDrive = () => {
     document.getElementById('btnDrive').textContent = '🚗 قيادة';
     return;
   }
-  const activeType = (me && (me.carType || (me.items && (me.items.car_limo ? 'limo' : me.items.car_sport ? 'sport' : me.items.car_suv ? 'suv' : 'sedan')))) || 'sedan';
-  const carObj = buildCarMesh(activeType);
+  const ci = me ? getCarInfo(me) : { carType: 'sedan', colorKey: null, hasSpoiler: false };
+  const carObj = buildCarMesh(ci.carType, ci.colorKey, ci.hasSpoiler);
   S.add(carObj);
-  DR = { g: carObj, x: P.position.x, z: P.position.z, a: 0, v: 0, type: activeType };
+  DR = { g: carObj, x: P.position.x, z: P.position.z, a: 0, v: 0, type: ci.carType, hasSpoiler: ci.hasSpoiler };
   P.visible = false;
   document.getElementById('btnDrive').textContent = '🚶 نزول';
 };
@@ -674,7 +699,7 @@ window.openShop = () => {
   const nextStyle = HOUSE_NAMES[Math.min(5, curLv + 1)] || HOUSE_NAMES[5];
   sh.innerHTML = `
     <div class="sheet-header">
-      <b>🛍️ تسوّق لبيتك (رصيدك: ${coins} 🪙)</b>
+      <b>🛍️ تسوّق لبيتك وسيارتك (رصيدك: ${coins} 🪙)</b>
       <button class="close-circle" onclick="closeSheet()">✕</button>
     </div>
     <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">شكل الترقية القادم: <b>${nextStyle}</b></div>
@@ -728,15 +753,22 @@ window.checkoutCart = async () => {
   let newStyle = me.houseStyle || newLevel;
   let hasCar = me.hasCar || false;
   let carType = me.carType || null;
+  let carColor = me.carColor || null;
+  let carSpoiler = me.carSpoiler || false;
 
   cart.forEach(c => {
     if (c.id === 'upgrade_house') {
       newLevel = Math.min(5, newLevel + 1);
       newStyle = Math.min(5, (newStyle || newLevel) + 1);
-    } else if (c.id.startsWith('car_')) {
-      const t = c.id.replace('car_', '');
+    } else if (c.id.startsWith('car_') && c.id !== 'car_spoiler') {
       hasCar = true;
-      carType = t;
+      carType = c.id.replace('car_', '');
+      newItems[c.id] = true;
+    } else if (c.id === 'car_spoiler') {
+      carSpoiler = true;
+      newItems.car_spoiler = true;
+    } else if (c.id.startsWith('color_')) {
+      carColor = c.id.replace('color_', '');
       newItems[c.id] = true;
     } else {
       newItems[c.id] = true;
@@ -744,7 +776,7 @@ window.checkoutCart = async () => {
   });
 
   await updateDoc(doc(db, "villagers", me.docId), {
-    items: newItems, levels: newLevel, houseStyle: newStyle, coins, hasCar, carType
+    items: newItems, levels: newLevel, houseStyle: newStyle, coins, hasCar, carType, carColor, carSpoiler
   });
 
   await addDoc(collection(db, "store_orders"), {
@@ -758,7 +790,7 @@ window.checkoutCart = async () => {
   updateCartUI();
   closeSheet();
   if (INSIDE) buildInteriorScene({ ...me, items: newItems });
-  toast('🎉 تم التطوير وتحديث البيت في القرية!');
+  toast('🎉 تم التطوير وتحديث البيت والسيارة!');
 };
 
 window.openNeighbors = () => {
@@ -832,7 +864,8 @@ function animate() {
     const cs = Math.cos(yaw), sn = Math.sin(yaw);
     const mx = jx * cs + jy * sn, mz = -jx * sn + jy * cs;
     if (DR) {
-      const speedMult = DR.type === 'sport' ? 30 : DR.type === 'limo' ? 24 : 20;
+      const baseSpd = DR.type === 'sport' ? 32 : DR.type === 'limo' ? 25 : 21;
+      const speedMult = DR.hasSpoiler ? baseSpd + 6 : baseSpd;
       DR.v += (-jy * speedMult - DR.v) * dt * 2;
       DR.a -= jx * dt * 2;
       DR.x += Math.sin(DR.a) * DR.v * dt;
