@@ -18,14 +18,13 @@
 html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); overflow: hidden; touch-action: none; }
 canvas { display: block; }
 
-/* شاشة الدخول والخريطة الذكية (وين تبي تروح؟) */
 #homeScreen {
   position: fixed; inset: 0; background: var(--bg); z-index: 20;
   display: flex; flex-direction: column; align-items: center; justify-content: space-between;
   padding: 20px 16px; overflow-y: auto;
 }
-.top-bar-home { width: 100%; display: flex; justify-content: space-between; align-items: center; }
-.badge-count { background: var(--dark); color: var(--gold); padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 14px; }
+.top-bar-home { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.badge-count { background: var(--dark); color: var(--gold); padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 13px; }
 .top-fan { background: var(--dark); color: #fff; padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: bold; margin-top: 8px; }
 
 .map-hub { position: relative; width: 310px; height: 270px; margin: 10px auto; }
@@ -57,7 +56,7 @@ canvas { display: block; }
   text-align: left; direction: ltr; width: 150px; background: transparent;
 }
 .btn-dark { background: var(--dark); color: #fff; border: none; padding: 10px 18px; border-radius: 20px; font-weight: bold; cursor: pointer; }
-.btn-gold { background: var(--gold); color: var(--dark); border: none; padding: 12px 18px; border-radius: 16px; font-weight: 800; cursor: pointer; }
+.btn-gold { background: var(--gold); color: var(--dark); border: none; padding: 11px 18px; border-radius: 16px; font-weight: 800; cursor: pointer; }
 
 .bottom-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: min(94vw, 400px); }
 .nav-card {
@@ -68,7 +67,6 @@ canvas { display: block; }
 .nav-card h4 { margin: 6px 0 2px; font-size: 14px; }
 .nav-card span { font-size: 11px; color: var(--muted); }
 
-/* واجهة اللعب العلوية (HUD) */
 #gameHUD {
   position: fixed; top: 12px; left: 12px; right: 12px; z-index: 10;
   display: none; justify-content: space-between; align-items: center; pointer-events: none;
@@ -76,14 +74,13 @@ canvas { display: block; }
 #gameHUD > * { pointer-events: auto; }
 .pill-btn {
   background: var(--card); color: var(--dark); border: none; padding: 8px 14px;
-  border-radius: 20px; font-weight: 800; font-size: 13px; box-shadow: 0 3px 10px rgba(0,0,0,0.12); cursor: pointer;
+  border-radius: 20px; font-weight: 800; font-size: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.12); cursor: pointer;
 }
 .cart-pill { background: var(--dark); color: var(--gold); display: flex; align-items: center; gap: 6px; }
-.house-title { text-align: center; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.6); }
+.house-title { text-align: center; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.65); }
 .house-title b { display: block; font-size: 15px; }
-.house-title small { font-size: 12px; opacity: 0.9; }
+.house-title small { font-size: 11px; opacity: 0.95; }
 
-/* أزرار التحكم السفلية وعصا المشي */
 #joy {
   position: fixed; left: 18px; bottom: 24px; width: 105px; height: 105px;
   border-radius: 50%; background: rgba(255,255,255,0.28); border: 2px solid rgba(255,255,255,0.6);
@@ -98,15 +95,14 @@ canvas { display: block; }
 }
 .action-btn {
   background: var(--card); color: var(--dark); border: none; padding: 10px 16px;
-  border-radius: 16px; font-weight: 800; font-size: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); cursor: pointer;
+  border-radius: 16px; font-weight: 800; font-size: 13px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); cursor: pointer;
 }
 .action-btn.gold { background: var(--gold); }
 
-/* النوافذ المنبثقة السفلية (المتجر، السلة، الفرجان) */
 .bottom-sheet {
   position: fixed; left: 0; right: 0; bottom: 0; background: var(--card);
   border-radius: 24px 24px 0 0; padding: 18px; z-index: 15;
-  box-shadow: 0 -6px 25px rgba(0,0,0,0.18); display: none; max-height: 62vh; overflow-y: auto;
+  box-shadow: 0 -6px 25px rgba(0,0,0,0.18); display: none; max-height: 66vh; overflow-y: auto;
 }
 .sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 .close-circle { width: 32px; height: 32px; border-radius: 50%; background: var(--pill); border: none; font-weight: bold; cursor: pointer; }
@@ -131,7 +127,6 @@ canvas { display: block; }
 
 <div id="toast"></div>
 
-<!-- 1. الشاشة الرئيسية (مطابقة لتصميم وين تبي تروح؟) -->
 <div id="homeScreen">
   <div style="width:100%; text-align:center;">
     <div class="top-bar-home">
@@ -179,12 +174,11 @@ canvas { display: block; }
   </div>
 </div>
 
-<!-- 2. واجهة اللعب ثلاثية الأبعاد -->
 <div id="gameHUD">
   <button class="pill-btn cart-pill" onclick="openCart()">🛍️ <span id="cartCount">0</span> · <span id="cartTotal">0</span> 🪙</button>
   <div class="house-title">
     <b id="hudUser">@guest</b>
-    <small id="hudSub">الحوش والجيران</small>
+    <small id="hudSub">الحوش والجيران · 🪙 <span id="hudCoins">1000</span></small>
   </div>
   <button class="pill-btn" onclick="backToMap()">‹ القرية</button>
 </div>
@@ -198,13 +192,12 @@ canvas { display: block; }
   <button class="action-btn gold" onclick="openShop()">🛍️ تسوّق</button>
 </div>
 
-<!-- 3. نوافذ المتجر والسلة والجيران -->
 <div id="bottomSheet" class="bottom-sheet"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCVJclfpEp9Jo9879C3RfZKiEdBUibwrxI",
@@ -220,7 +213,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// حالة اللعبة والبيانات المتزامنة مع Firestore
 let villagers = [];
 let publicProps = [];
 let me = null;
@@ -231,19 +223,35 @@ let DR = null;
 let currentZone = 'all';
 const deviceKey = "qaryatna_locked_user";
 
-// عناصر المتجر (خارجي وداخلي)
+const HOUSE_NAMES = {
+  1: 'فيلا مودرن بيضاء بكراج',
+  2: 'فيلا عصرية خشبية وداكنة',
+  3: 'فيلا زجاجية بمسبح',
+  4: 'قصر بأعمدة وشرفات',
+  5: 'قصر ملكي عصري متكامل'
+};
+
+const CAR_SPECS = {
+  sedan: { name: 'سيدان عائلية', color: 0xf1f5f9, len: 3.6, w: 1.75, h: 0.65, low: false },
+  sport: { name: 'رياضية سريعة', color: 0xdc2626, len: 3.9, w: 1.85, h: 0.52, low: true },
+  suv:   { name: 'دفع رباعي SUV', color: 0x1e293b, len: 4.1, w: 2.0,  h: 0.9,  low: false },
+  limo:  { name: 'ليموزين فاخرة', color: 0x111111, len: 5.4, w: 1.9,  h: 0.72, low: false }
+};
+
 const SHOP_ITEMS = [
-  { id: 'lanterns', name: 'إضاءة الحوش', icon: '🏮', price: 100, cat: 'ext' },
-  { id: 'plants', name: 'زرع ونخيل', icon: '🌴', price: 150, cat: 'ext' },
-  { id: 'seating', name: 'جلسة الحوش', icon: '🪑', price: 200, cat: 'ext' },
-  { id: 'car_red', name: 'سيارة رياضية', icon: '🚗', price: 500, cat: 'ext' },
-  { id: 'level_up', name: 'ترقية طابق', icon: '🏰', price: 600, cat: 'ext' },
-  { id: 'sofa_in', name: 'كنب مجلس', icon: '🛋️', price: 250, cat: 'int' },
-  { id: 'tv_in', name: 'شاشة بلازما', icon: '📺', price: 300, cat: 'int' },
-  { id: 'rug_in', name: 'سجادة فاخرة', icon: '🟫', price: 150, cat: 'int' }
+  { id: 'upgrade_house', name: 'ترقية شكل البيت', icon: '🏡', price: 500 },
+  { id: 'car_sedan', name: 'سيارة سيدان', icon: '🚗', price: 250 },
+  { id: 'car_sport', name: 'سيارة رياضية', icon: '🏎️', price: 550 },
+  { id: 'car_suv', name: 'دفع رباعي SUV', icon: '🚙', price: 450 },
+  { id: 'car_limo', name: 'ليموزين فاخرة', icon: '🚐', price: 900 },
+  { id: 'lanterns', name: 'إضاءة الحوش', icon: '🏮', price: 120 },
+  { id: 'plants', name: 'حديقة وأشجار', icon: '🌴', price: 150 },
+  { id: 'seating', name: 'جلسة خارجية', icon: '🪑', price: 200 },
+  { id: 'sofa_in', name: 'كنب مجلس', icon: '🛋️', price: 250 },
+  { id: 'tv_in', name: 'شاشة بلازما', icon: '📺', price: 300 },
+  { id: 'rug_in', name: 'سجادة فاخرة', icon: '🟫', price: 150 }
 ];
 
-// إعداد مشهد Three.js بالطابع الرملي الدافئ
 const R = new THREE.WebGLRenderer({ antialias: true });
 R.setSize(innerWidth, innerHeight);
 R.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -251,9 +259,9 @@ document.body.appendChild(R.domElement);
 
 const S = new THREE.Scene();
 S.background = new THREE.Color(0xdccaa8);
-S.fog = new THREE.Fog(0xdccaa8, 120, 380);
+S.fog = new THREE.Fog(0xdccaa8, 120, 400);
 
-const C = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.1, 600);
+const C = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.1, 650);
 S.add(new THREE.HemisphereLight(0xfff8eb, 0x9e845c, 1.0));
 const sun = new THREE.DirectionalLight(0xffffff, 0.65);
 sun.position.set(60, 110, 50);
@@ -269,21 +277,18 @@ function cyl(r1, r2, h, c, x, y, z, p, s) {
   m.position.set(x, y, z); (p || S).add(m); return m;
 }
 function makeLabel(text, bg = '#ffffff', fg = '#111111') {
-  const k = document.createElement('canvas'); k.width = 256; k.height = 64;
+  const k = document.createElement('canvas'); k.width = 280; k.height = 64;
   const g = k.getContext('2d');
-  g.fillStyle = bg; g.beginPath(); g.roundRect(10, 8, 236, 48, 20); g.fill();
-  g.fillStyle = fg; g.font = 'bold 26px sans-serif'; g.textAlign = 'center';
-  g.fillText(text, 128, 41);
-  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(k) }));
-  return sp;
+  g.fillStyle = bg; g.beginPath(); g.roundRect(10, 8, 260, 48, 20); g.fill();
+  g.fillStyle = fg; g.font = 'bold 25px sans-serif'; g.textAlign = 'center';
+  g.fillText(text, 140, 41);
+  return new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(k) }));
 }
 
-// أرضية القرية والشوارع الرملية
-box(500, 0.2, 500, 0xd4be96, 0, -0.1, 0);
-box(400, 0.05, 14, 0xbfa57a, 0, 0.02, 0);
-box(14, 0.05, 400, 0xbfa57a, 0, 0.02, 0);
+box(520, 0.2, 520, 0xd4be96, 0, -0.1, 0);
+box(420, 0.05, 14, 0xbfa57a, 0, 0.02, 0);
+box(14, 0.05, 420, 0xbfa57a, 0, 0.02, 0);
 
-// الشخصية (Avatar)
 function createAvatar(shirt = 0x231f1a) {
   const g = new THREE.Group();
   box(0.9, 1.4, 0.5, shirt, 0, 1.4, 0, g);
@@ -299,88 +304,143 @@ function createAvatar(shirt = 0x231f1a) {
 const P = createAvatar();
 S.add(P);
 
-// مجموعات البناء
-const villageGroup = new THREE.Group();
-S.add(villageGroup);
-const interiorGroup = new THREE.Group();
-interiorGroup.visible = false;
-S.add(interiorGroup);
-let interactiveSlots = []; // الصناديق الشفافة القابلة للنقر
-let COLS = [];
+// بناء شكل السيارة حسب النوع (سيدان، رياضية، SUV، ليموزين)
+function buildCarMesh(type = 'sedan') {
+  const sp = CAR_SPECS[type] || CAR_SPECS.sedan;
+  const g = new THREE.Group();
+  const baseY = sp.low ? 0.42 : 0.58;
+  box(sp.w, sp.h, sp.len, sp.color, 0, baseY, 0, g);
+  box(sp.w * 0.84, sp.h * 0.82, sp.len * 0.5, sp.color, 0, baseY + sp.h * 0.85, -0.15, g);
+  // زجاج مظلل
+  box(sp.w * 0.86, sp.h * 0.55, sp.len * 0.46, 0x1e293b, 0, baseY + sp.h * 0.85, -0.15, g);
 
-// بناء بيت بطابع القلعة الرملية المسننة (مثل صور qaryatna.fans)
+  const wPos = sp.len > 4.6 ? [-1.6, 0, 1.6] : [-sp.len * 0.32, sp.len * 0.32];
+  wPos.forEach(wz => {
+    [-1, 1].forEach(sx => {
+      const wh = cyl(0.38, 0.38, 0.28, 0x111111, sx * (sp.w * 0.52), 0.38, wz, g, 12);
+      wh.rotation.z = Math.PI / 2;
+    });
+  });
+  return g;
+}
+
+// بناء أشكال منازل مختلفة كلياً مع كل ترقية (1 إلى 5+)
+function buildHouseArchitecture(g, lv, customStyle) {
+  const style = Math.min(5, Math.max(1, Number(customStyle || lv || 1)));
+
+  if (style === 1) {
+    // شكل 1: فيلا مودرن بيضاء مع كراج مفتوح ودرج وسور حديقة
+    box(6.5, 3.0, 5.2, 0xf8fafc, -1.2, 1.5, -1.5, g);
+    box(3.8, 3.8, 4.5, 0xffffff, -2.2, 1.9, -2.0, g);
+    box(1.1, 2.8, 4.6, 0x4a2e1b, -3.9, 1.4, -2.0, g); // فتحة خشبية جانبية
+    // سقف الكراج والمظلة العلوية
+    box(4.6, 0.35, 5.2, 0xf1f5f9, 3.0, 2.6, 0.8, g);
+    box(4.2, 0.9, 0.2, 0xe2e8f0, 3.0, 3.1, 3.3, g); // درابزين السطح
+    box(0.3, 2.6, 4.8, 0xf1f5f9, 5.1, 1.3, 0.8, g);
+    // درج أمامي وممر
+    box(2.8, 0.3, 1.4, 0xcbd5e1, 0, 0.15, 2.2, g);
+    box(1.1, 2.0, 0.2, 0x1e293b, -1.0, 1.0, 1.15, g);
+    box(1.4, 1.1, 0.2, 0x1e293b, -2.8, 1.8, 1.15, g);
+  } else if (style === 2) {
+    // شكل 2: فيلا عصرية بواجهة علوية بارزة وإطارات رمادية داكنة وخشب
+    box(7.8, 3.2, 5.4, 0xf8fafc, 0, 1.6, -1.2, g);
+    box(8.6, 3.0, 6.0, 0x334155, 0, 4.6, -0.6, g); // طابق علوي داكن بارز
+    box(4.8, 2.0, 0.3, 0xb47b44, 1.2, 4.6, 2.45, g); // لوح خشبي علوي
+    box(2.2, 1.6, 0.3, 0x0f172a, -2.2, 4.6, 2.45, g); // نافذة زجاجية كبيرة
+    box(2.2, 1.5, 0.3, 0x0f172a, -2.2, 1.7, 1.55, g); // نافذة سفلية
+    box(1.2, 2.1, 0.3, 0x6b3f22, 0.2, 1.05, 1.55, g); // باب خشبي
+    box(3.4, 0.3, 1.5, 0xcbd5e1, 0.2, 0.15, 2.2, g);
+  } else if (style === 3) {
+    // شكل 3: فيلا زجاجية مفتوحة مع مسبح خارجي أزرق سماوي
+    box(9.2, 2.8, 5.0, 0xf1f5f9, 0, 1.4, -2.2, g);
+    box(9.6, 2.6, 5.4, 0xe2e8f0, 0, 4.1, -1.8, g);
+    // واجهات زجاجية واسعة
+    box(7.6, 1.8, 0.2, 0x38bdf8, 0, 4.1, 0.95, g);
+    box(5.0, 1.7, 0.2, 0x38bdf8, -1.2, 1.3, 0.35, g);
+    // مسبح أمامي في الحوش
+    box(5.6, 0.25, 3.4, 0xe2e8f0, -1.2, 0.12, 3.4, g);
+    box(5.0, 0.28, 2.8, 0x22d3ee, -1.2, 0.15, 3.4, g);
+  } else if (style === 4) {
+    // شكل 4: فيلا متعددة الكتل بأعمدة ودرابزين وشرفة علوية
+    box(7.4, 3.0, 5.4, 0xe8dec5, -0.5, 1.5, -1.5, g);
+    box(6.6, 2.8, 4.8, 0xf3ead8, -0.8, 4.4, -1.8, g);
+    box(2.8, 4.8, 3.6, 0xdfd3be, -3.2, 2.4, -1.2, g); // برج جانبي مرتفع
+    // أعمدة أمامية بيضاء
+    [-1.2, 1.8].forEach(cx => {
+      box(0.45, 5.8, 0.45, 0xffffff, cx, 2.9, 1.4, g);
+    });
+    // درابزين الشرفة
+    box(7.6, 0.75, 0.2, 0x27272a, -0.4, 3.35, 1.35, g);
+    box(8.0, 0.75, 0.2, 0x27272a, -0.4, 6.1, 1.35, g);
+    box(3.4, 0.3, 1.6, 0xd97706, 0.3, 0.15, 2.2, g); // ممر مبلط
+  } else {
+    // شكل 5+: قصر ملكي عصري متكامل بعدة طوابق وإضاءة ذهبية
+    box(9.6, 3.2, 6.2, 0xf8fafc, 0, 1.6, -1.5, g);
+    box(8.8, 3.0, 5.6, 0x1e293b, 0, 4.7, -1.8, g);
+    box(5.4, 2.6, 4.2, 0xfdfbf7, 1.4, 7.5, -2.0, g);
+    // أعمدة وتفاصيل ذهبية
+    [-3.6, -1.2, 1.2, 3.6].forEach(cx => {
+      box(0.4, 6.0, 0.4, 0xd4af37, cx, 3.0, 1.75, g);
+    });
+    box(8.6, 1.6, 0.25, 0x38bdf8, 0, 4.7, 1.05, g);
+    box(5.2, 0.3, 3.4, 0x38bdf8, 0, 0.15, 3.3, g); // مسبح أمامي
+  }
+}
+
 function buildDesertHouse(v) {
   const g = new THREE.Group();
   const lv = v.levels || 1;
-  const h = 3.5 + (lv - 1) * 2.5;
-  const wallColor = 0xc9af82;
+  const style = v.houseStyle || lv;
 
-  // السور الخارجي المسنن (الحوش)
-  box(14, 0.15, 14, 0xbfa477, 0, 0.08, 0, g);
-  box(14, 1.4, 0.5, wallColor, 0, 0.7, -6.75, g);
-  box(0.5, 1.4, 14, wallColor, -6.75, 0.7, 0, g);
-  box(0.5, 1.4, 14, wallColor, 6.75, 0.7, 0, g);
-  // بوابة أمامية مفتوحة
-  box(4.5, 1.4, 0.5, wallColor, -4.75, 0.7, 6.75, g);
-  box(4.5, 1.4, 0.5, wallColor, 4.75, 0.7, 6.75, g);
+  // أرضية الحوش والسور المحيط
+  box(14, 0.15, 14, 0xcab082, 0, 0.08, 0, g);
+  box(14, 1.2, 0.45, 0xc9af82, 0, 0.6, -6.75, g);
+  box(0.45, 1.2, 14, 0xc9af82, -6.75, 0.6, 0, g);
+  box(0.45, 1.2, 14, 0xc9af82, 6.75, 0.6, 0, g);
+  box(4.5, 1.2, 0.45, 0xc9af82, -4.75, 0.6, 6.75, g);
+  box(4.5, 1.2, 0.45, 0xc9af82, 4.75, 0.6, 6.75, g);
 
-  // جسم البيت الرئيسي مع شرفات مسننة في الأعلى
-  box(7.5, h, 6.5, wallColor, 0, h / 2 + 0.1, -1.8, g);
-  for (let bx = -3.2; bx <= 3.2; bx += 1.6) {
-    box(0.8, 0.6, 0.5, wallColor, bx, h + 0.4, 1.2, g);
-    box(0.8, 0.6, 0.5, wallColor, bx, h + 0.4, -4.8, g);
-  }
-  // باب ونوافذ بنية داكنة
-  box(1.3, 2.2, 0.2, 0x5c3a21, 0, 1.2, 1.5, g);
-  box(1.1, 1.1, 0.2, 0x4a321f, -2.1, 2.1, 1.5, g);
-  box(1.1, 1.1, 0.2, 0x4a321f, 2.1, 2.1, 1.5, g);
+  buildHouseArchitecture(g, lv, style);
 
-  // لافتة اليوزر البيضاء أعلى البيت وعلى السور (مثل الصور)
   const cleanUser = (v.username || 'user').replace(/^@/, '');
-  const topTag = makeLabel(cleanUser, '#ffffff', '#1a1a1a');
-  topTag.position.set(0, h + 1.8, -1.8);
-  topTag.scale.set(5.5, 1.4, 1);
+  const topTag = makeLabel(`@${cleanUser} · L${lv}`, '#ffffff', '#1a1a1a');
+  const tagY = style >= 5 ? 10.2 : style === 4 ? 8.2 : style >= 2 ? 7.4 : 5.4;
+  topTag.position.set(0, tagY, -1.5);
+  topTag.scale.set(5.6, 1.35, 1);
   g.add(topTag);
 
-  const wallTag = makeLabel(cleanUser, '#ffffff', '#1a1a1a');
-  wallTag.position.set(4.5, 1.1, 7.1);
-  wallTag.scale.set(3.4, 0.85, 1);
-  g.add(wallTag);
-
-  // العناصر المشتراة في الحوش
   const items = v.items || {};
-  if (items.plants) {
-    [-5.2, 5.2].forEach(px => {
-      cyl(0.25, 0.35, 2.5, 0x6e472b, px, 1.25, 4.5, g);
-      const lf = new THREE.Mesh(new THREE.ConeGeometry(1.5, 1.8, 7), M(0x3d7a37));
-      lf.position.set(px, 2.8, 4.5); g.add(lf);
+  if (items.plants || style === 1 || style === 3) {
+    [-5.3, 5.3].forEach(px => {
+      cyl(0.25, 0.35, 2.2, 0x6e472b, px, 1.1, 4.6, g);
+      const lf = new THREE.Mesh(new THREE.ConeGeometry(1.4, 1.7, 7), M(0x3d7a37));
+      lf.position.set(px, 2.5, 4.6); g.add(lf);
     });
   }
   if (items.lanterns) {
     [-2.5, 2.5].forEach(lx => {
-      cyl(0.12, 0.12, 2.2, 0x222222, lx, 1.1, 6.2, g);
-      const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.3, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffaa2b }));
-      bulb.position.set(lx, 2.3, 6.2); g.add(bulb);
+      cyl(0.12, 0.12, 2.2, 0x222222, lx, 1.1, 6.1, g);
+      const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.32, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffb703 }));
+      bulb.position.set(lx, 2.3, 6.1); g.add(bulb);
     });
   }
   if (items.seating) {
-    box(2.2, 0.5, 1.2, 0x8c5230, -4.2, 0.35, 2.5, g);
-    box(1.2, 0.4, 1.2, 0xd9a760, -4.2, 0.65, 2.5, g);
+    box(2.2, 0.5, 1.2, 0x8c5230, -4.5, 0.35, 2.6, g);
+    box(1.2, 0.4, 1.2, 0xd9a760, -4.5, 0.65, 2.6, g);
   }
-  if (v.hasCar || items.car_red) {
-    const cg = new THREE.Group();
-    box(1.8, 0.7, 3.6, 0xc0392b, 0, 0.6, 0, cg);
-    box(1.5, 0.55, 1.8, 0xc0392b, 0, 1.2, -0.2, cg);
-    cg.position.set(4.5, 0, 2.5);
-    g.add(cg);
+
+  const carType = v.carType || (items.car_limo ? 'limo' : items.car_sport ? 'sport' : items.car_suv ? 'suv' : items.car_sedan ? 'sedan' : null);
+  if (v.hasCar || carType) {
+    const carObj = buildCarMesh(carType || 'sedan');
+    carObj.position.set(3.4, 0, 1.5);
+    g.add(carObj);
   }
 
   g.position.set(v.x || 0, 0, v.z || 0);
   villageGroup.add(g);
-  COLS.push([v.x - 3.8, v.x + 3.8, v.z - 5, v.z + 1.6]);
+  COLS.push([v.x - 4.2, v.x + 4.2, v.z - 4.5, v.z + 2.2]);
 }
 
-// بناء الممتلكات العامة (جامع، مدرسة، إلخ) من لوحة الأدمن
 function buildPublicProp(p) {
   const g = new THREE.Group();
   const color = p.type === 'mosque' ? 0xf5efe6 : p.type === 'school' ? 0xe0b973 : 0xb8c9a3;
@@ -399,23 +459,25 @@ function buildPublicProp(p) {
   COLS.push([p.x - 6, p.x + 6, p.z - 5, p.z + 5]);
 }
 
-// بناء المشهد الداخلي للبيت مع الصناديق الشفافة (Wireframe Slots)
+const villageGroup = new THREE.Group();
+S.add(villageGroup);
+const interiorGroup = new THREE.Group();
+interiorGroup.visible = false;
+S.add(interiorGroup);
+let interactiveSlots = [];
+let COLS = [];
+
 function buildInteriorScene(owner) {
   while (interiorGroup.children.length) interiorGroup.remove(interiorGroup.children[0]);
   interactiveSlots = [];
   const IX = 1000;
-
-  // أرضية وجدران الغرفة الدافئة
   box(14, 0.3, 14, 0x7d7265, IX, -0.15, 0, interiorGroup);
   box(14, 5, 0.3, 0x8c7b65, IX, 2.5, -7, interiorGroup);
   box(0.3, 5, 14, 0x7d6d58, IX - 7, 2.5, 0, interiorGroup);
   box(0.3, 5, 14, 0x7d6d58, IX + 7, 2.5, 0, interiorGroup);
-  // باب الخروج
   box(2.2, 3.2, 0.3, 0x4a2e1b, IX, 1.6, 6.8, interiorGroup);
 
   const items = (owner && owner.items) || {};
-
-  // نقاط الأثاث الشفافة (Wireframe Placeholders)
   const slots = [
     { id: 'sofa_in', name: 'كنب مجلس', price: 250, x: IX - 3.5, y: 0.7, z: -2, w: 3.5, h: 1.4, d: 1.6, owned: items.sofa_in },
     { id: 'tv_in', name: 'شاشة بلازما', price: 300, x: IX + 4, y: 1.5, z: -2, w: 0.6, h: 2.2, d: 3.5, owned: items.tv_in },
@@ -424,13 +486,10 @@ function buildInteriorScene(owner) {
 
   slots.forEach(sl => {
     if (sl.owned) {
-      // رسم القطعة الحقيقية إذا كانت مملوكة
       box(sl.w, sl.h, sl.d, sl.id === 'sofa_in' ? 0xb85d3b : sl.id === 'tv_in' ? 0x111111 : 0xa33b3b, sl.x, sl.y, sl.z, interiorGroup);
     } else {
-      // رسم الصندوق الشفاف المضيء مع السعر (مثل صورة 305386.jpg)
       const geo = new THREE.BoxGeometry(sl.w, sl.h, sl.d);
-      const edges = new THREE.EdgesGeometry(geo);
-      const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0xf5c469 }));
+      const line = new THREE.LineSegments(new THREE.EdgesGeometry(geo), new THREE.LineBasicMaterial({ color: 0xf5c469 }));
       line.position.set(sl.x, sl.y, sl.z);
       interiorGroup.add(line);
 
@@ -448,7 +507,6 @@ function buildInteriorScene(owner) {
   });
 }
 
-// إعادة رسم القرية حسب المنطقة المختارة (Lazy Zone Filtering)
 function renderVillage() {
   while (villageGroup.children.length) villageGroup.remove(villageGroup.children[0]);
   COLS = [];
@@ -466,7 +524,14 @@ function renderVillage() {
   publicProps.forEach(buildPublicProp);
 }
 
-// الاستماع الفوري لقاعدة بيانات Firestore (متزامن مع لوحة الأدمن)
+function syncMyCoinsUI() {
+  if (me && typeof me.coins === 'number') {
+    coins = me.coins;
+  }
+  document.getElementById('myCoinsBadge').textContent = '🪙 ' + coins;
+  document.getElementById('hudCoins').textContent = coins;
+}
+
 onSnapshot(collection(db, "villagers"), snap => {
   villagers = [];
   snap.forEach(d => villagers.push({ docId: d.id, ...d.data() }));
@@ -478,8 +543,17 @@ onSnapshot(collection(db, "villagers"), snap => {
   const savedUser = localStorage.getItem(deviceKey);
   if (savedUser) {
     document.getElementById('usernameInput').value = savedUser;
-    me = villagers.find(v => v.username.replace(/^@/, '').toLowerCase() === savedUser.toLowerCase()) || me;
+    const updatedMe = villagers.find(v => (v.username || '').replace(/^@/, '').toLowerCase() === savedUser.toLowerCase());
+    if (updatedMe) {
+      me = updatedMe;
+      if (typeof me.coins === 'number') coins = me.coins;
+      document.getElementById('hudUser').textContent = `${me.username} (L${me.levels || 1})`;
+      const hasAnyCar = !!(me.hasCar || me.carType || (me.items && (me.items.car_sedan || me.items.car_sport || me.items.car_suv || me.items.car_limo)));
+      document.getElementById('btnDrive').style.display = hasAnyCar ? 'block' : 'none';
+      if (INSIDE) buildInteriorScene(me);
+    }
   }
+  syncMyCoinsUI();
   renderVillage();
 });
 
@@ -489,7 +563,6 @@ onSnapshot(collection(db, "public_properties"), snap => {
   renderVillage();
 });
 
-// دوال التنقل والدخول
 function toast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.style.display = 'block';
@@ -507,36 +580,34 @@ window.enterZone = async (zone, goInside = false, openShopAfter = false) => {
     }
     let found = villagers.find(v => (v.username || '').replace(/^@/, '').toLowerCase() === rawInput);
     if (!found) {
-      // إنشاء بيت تلقائي للمتابع الجديد في Firestore ليظهر عند الأدمن فوراً
       const x = Math.floor(Math.random() * 120) - 60;
       const z = Math.floor(Math.random() * 120) - 60;
       const newHouse = {
         username: '@' + rawInput,
         name: `@${rawInput} (دخول مباشر)`,
-        levels: 1, hasCar: false, x, z, items: {}, timestamp: new Date()
+        levels: 1, houseStyle: 1, coins: 1000,
+        hasCar: false, carType: null, items: {}, x, z, timestamp: new Date()
       };
       const ref = await addDoc(collection(db, "villagers"), newHouse);
       found = { docId: ref.id, ...newHouse };
     }
     me = found;
+    if (typeof me.coins === 'number') coins = me.coins;
     localStorage.setItem(deviceKey, rawInput);
   }
 
+  syncMyCoinsUI();
   currentZone = zone;
   renderVillage();
   document.getElementById('homeScreen').style.display = 'none';
   document.getElementById('gameHUD').style.display = 'flex';
   document.getElementById('joy').style.display = 'block';
   document.getElementById('sideActions').style.display = 'flex';
-  document.getElementById('hudUser').textContent = me ? me.username : '@زائر';
-  document.getElementById('btnDrive').style.display = (me && (me.hasCar || (me.items && me.items.car_red))) ? 'block' : 'none';
+  document.getElementById('hudUser').textContent = me ? `${me.username} (L${me.levels || 1})` : '@زائر';
+  const hasAnyCar = !!(me && (me.hasCar || me.carType || (me.items && (me.items.car_sedan || me.items.car_sport || me.items.car_suv || me.items.car_limo))));
+  document.getElementById('btnDrive').style.display = hasAnyCar ? 'block' : 'none';
 
-  if (me) {
-    P.position.set(me.x, 0, me.z + 9);
-  } else {
-    P.position.set(0, 0, 10);
-  }
-
+  P.position.set(me ? me.x : 0, 0, me ? me.z + 9 : 10);
   if (goInside && me) toggleInside(true);
   if (openShopAfter) openShop();
 };
@@ -556,7 +627,7 @@ window.toggleInside = (forceState) => {
   villageGroup.visible = !INSIDE;
   interiorGroup.visible = INSIDE;
   document.getElementById('btnToggleInside').textContent = INSIDE ? '🚪 اطلع برا' : '🚪 ادخل البيت';
-  document.getElementById('hudSub').textContent = INSIDE ? 'داخل البيت' : 'الحوش والجيران';
+  document.getElementById('hudSub').innerHTML = `${INSIDE ? 'داخل البيت' : 'الحوش والجيران'} · 🪙 <span id="hudCoins">${coins}</span>`;
   if (INSIDE) {
     buildInteriorScene(me);
     P.position.set(1000, 0, 4.5);
@@ -573,21 +644,19 @@ window.toggleDrive = () => {
     document.getElementById('btnDrive').textContent = '🚗 قيادة';
     return;
   }
-  const cg = new THREE.Group();
-  box(1.8, 0.7, 3.6, 0xc0392b, 0, 0.6, 0, cg);
-  box(1.5, 0.55, 1.8, 0xc0392b, 0, 1.2, -0.2, cg);
-  S.add(cg);
-  DR = { g: cg, x: P.position.x, z: P.position.z, a: 0, v: 0 };
+  const activeType = (me && (me.carType || (me.items && (me.items.car_limo ? 'limo' : me.items.car_sport ? 'sport' : me.items.car_suv ? 'suv' : 'sedan')))) || 'sedan';
+  const carObj = buildCarMesh(activeType);
+  S.add(carObj);
+  DR = { g: carObj, x: P.position.x, z: P.position.z, a: 0, v: 0, type: activeType };
   P.visible = false;
   document.getElementById('btnDrive').textContent = '🚶 نزول';
 };
 
-// نظام المتجر والسلة وإرسال الطلب للأدمن
 function updateCartUI() {
   const total = cart.reduce((s, i) => s + i.price, 0);
   document.getElementById('cartCount').textContent = cart.length;
   document.getElementById('cartTotal').textContent = total;
-  document.getElementById('myCoinsBadge').textContent = '🪙 ' + coins;
+  syncMyCoinsUI();
 }
 
 window.addToCart = (itemId) => {
@@ -601,11 +670,14 @@ window.addToCart = (itemId) => {
 window.openShop = () => {
   const sh = document.getElementById('bottomSheet');
   sh.style.display = 'block';
+  const curLv = (me && me.levels) || 1;
+  const nextStyle = HOUSE_NAMES[Math.min(5, curLv + 1)] || HOUSE_NAMES[5];
   sh.innerHTML = `
     <div class="sheet-header">
       <b>🛍️ تسوّق لبيتك (رصيدك: ${coins} 🪙)</b>
       <button class="close-circle" onclick="closeSheet()">✕</button>
     </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">شكل الترقية القادم: <b>${nextStyle}</b></div>
     <div class="shop-grid">
       ${SHOP_ITEMS.map(it => `
         <div class="shop-item" onclick="addToCart('${it.id}')">
@@ -653,20 +725,28 @@ window.checkoutCart = async () => {
   coins -= total;
   const newItems = { ...(me.items || {}) };
   let newLevel = me.levels || 1;
+  let newStyle = me.houseStyle || newLevel;
   let hasCar = me.hasCar || false;
+  let carType = me.carType || null;
 
   cart.forEach(c => {
-    if (c.id === 'level_up') newLevel++;
-    else if (c.id === 'car_red') { hasCar = true; newItems.car_red = true; }
-    else newItems[c.id] = true;
+    if (c.id === 'upgrade_house') {
+      newLevel = Math.min(5, newLevel + 1);
+      newStyle = Math.min(5, (newStyle || newLevel) + 1);
+    } else if (c.id.startsWith('car_')) {
+      const t = c.id.replace('car_', '');
+      hasCar = true;
+      carType = t;
+      newItems[c.id] = true;
+    } else {
+      newItems[c.id] = true;
+    }
   });
 
-  // 1. تحديث بيت المستخدم مباشرة في Firestore
   await updateDoc(doc(db, "villagers", me.docId), {
-    items: newItems, levels: newLevel, hasCar
+    items: newItems, levels: newLevel, houseStyle: newStyle, coins, hasCar, carType
   });
 
-  // 2. إرسال إشعار الطلب إلى لوحة الأدمن (store_orders) كما في كودك الأصلي
   await addDoc(collection(db, "store_orders"), {
     username: me.username,
     order: cart.map(c => c.name).join(' + '),
@@ -678,7 +758,7 @@ window.checkoutCart = async () => {
   updateCartUI();
   closeSheet();
   if (INSIDE) buildInteriorScene({ ...me, items: newItems });
-  toast('🎉 تم تركيب المشتريات وإرسال الإشعار للإدارة!');
+  toast('🎉 تم التطوير وتحديث البيت في القرية!');
 };
 
 window.openNeighbors = () => {
@@ -691,7 +771,7 @@ window.openNeighbors = () => {
     </div>
     ${villagers.map(v => `
       <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #eee;">
-        <span>🏠 <b>${v.username}</b> (مستوى ${v.levels || 1})</span>
+        <span>🏠 <b>${v.username}</b> · ${HOUSE_NAMES[v.houseStyle || v.levels || 1] || 'منزل'}</span>
         <button class="btn-dark" style="padding:6px 12px;font-size:12px;" onclick="visitHouse(${v.x}, ${v.z})">زيارة</button>
       </div>
     `).join('')}
@@ -706,7 +786,6 @@ window.visitHouse = (x, z) => {
 
 document.getElementById('btnGoMyHouse').onclick = () => enterZone('all');
 
-// النقر على الصناديق الشفافة داخل البيت (Raycasting)
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 R.domElement.addEventListener('click', e => {
@@ -722,7 +801,6 @@ R.domElement.addEventListener('click', e => {
   }
 });
 
-// التحكم بالكاميرا وعصا المشي
 let jx = 0, jy = 0, yaw = 0, pit = 0.55, dst = 18;
 const J = document.getElementById('joy'), K = document.getElementById('knob');
 J.addEventListener('touchmove', e => {
@@ -754,7 +832,8 @@ function animate() {
     const cs = Math.cos(yaw), sn = Math.sin(yaw);
     const mx = jx * cs + jy * sn, mz = -jx * sn + jy * cs;
     if (DR) {
-      DR.v += (-jy * 22 - DR.v) * dt * 2;
+      const speedMult = DR.type === 'sport' ? 30 : DR.type === 'limo' ? 24 : 20;
+      DR.v += (-jy * speedMult - DR.v) * dt * 2;
       DR.a -= jx * dt * 2;
       DR.x += Math.sin(DR.a) * DR.v * dt;
       DR.z += Math.cos(DR.a) * DR.v * dt;
