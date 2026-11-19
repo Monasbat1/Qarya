@@ -81,6 +81,20 @@ canvas { display: block; }
 .house-title b { display: block; font-size: 14px; }
 .house-title small { font-size: 11px; opacity: 0.95; }
 
+/* خريطة مصغرة تفاعلية للتضاريس والبيوت */
+#miniMapWrap {
+  position: fixed; top: 56px; left: 12px; width: 124px; height: 124px;
+  border-radius: 16px; overflow: hidden; border: 2px solid var(--gold);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.28); z-index: 11; display: none;
+  background: #cbb48c; cursor: pointer;
+}
+#miniMapCanvas { width: 100%; height: 100%; display: block; }
+.minimap-tag {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: rgba(35, 31, 26, 0.78); color: #dfa848;
+  font-size: 10px; font-weight: bold; text-align: center; padding: 2px 0;
+}
+
 #joy {
   position: fixed; left: 16px; bottom: 22px; width: 102px; height: 102px;
   border-radius: 50%; background: rgba(255,255,255,0.28); border: 2px solid rgba(255,255,255,0.65);
@@ -105,7 +119,7 @@ canvas { display: block; }
 .bottom-sheet {
   position: fixed; left: 0; right: 0; bottom: 0; background: var(--card);
   border-radius: 24px 24px 0 0; padding: 16px; z-index: 15;
-  box-shadow: 0 -6px 25px rgba(0,0,0,0.2); display: none; max-height: 68vh; overflow-y: auto;
+  box-shadow: 0 -6px 25px rgba(0,0,0,0.2); display: none; max-height: 72vh; overflow-y: auto;
 }
 .sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 .close-circle { width: 30px; height: 30px; border-radius: 50%; background: var(--pill); border: none; font-weight: bold; cursor: pointer; }
@@ -123,6 +137,12 @@ canvas { display: block; }
 .chat-msg { padding: 6px 8px; border-bottom: 1px solid #e8decb; font-size: 13px; }
 .chat-row { display: flex; gap: 6px; }
 .chat-row input, .chat-row select { flex: 1; padding: 8px; border-radius: 10px; border: 1px solid #cbbba0; font-size: 13px; background: #fff; }
+
+#fullMapCanvas {
+  width: 100%; height: 290px; border-radius: 16px; border: 2px solid #cbbba0;
+  background: #cbb48c; display: block; cursor: crosshair;
+}
+.map-legend { display: flex; gap: 10px; flex-wrap: wrap; font-size: 11px; margin-top: 8px; color: var(--muted); font-weight: bold; }
 
 #toast {
   position: fixed; top: 62px; left: 50%; transform: translateX(-50%);
@@ -143,7 +163,7 @@ canvas { display: block; }
     </div>
     <div class="top-fan">🏆 أكثر المتفاعلين: <span id="topFanName">@ahmad</span></div>
     <h2 style="margin:12px 0 3px; font-size:23px;">وين تبي تروح؟</h2>
-    <div style="font-size:12px; color:var(--muted);">توزيع تلقائي للمنازل · طرق أسفلتية · محادثات وزيارات</div>
+    <div style="font-size:12px; color:var(--muted);">توزيع تلقائي للمنازل · طرق أسفلتية · خريطة وتضاريس</div>
   </div>
 
   <div class="map-hub">
@@ -191,9 +211,16 @@ canvas { display: block; }
   <button class="pill-btn" onclick="backToMap()">‹ القرية</button>
 </div>
 
+<!-- خريطة مصغرة تفاعلية تظهر التضاريس والبيوت -->
+<div id="miniMapWrap" onclick="openFullMap()" title="اضغط لفتح الخريطة الكاملة">
+  <canvas id="miniMapCanvas" width="124" height="124"></canvas>
+  <div class="minimap-tag">🗺️ خريطة القرية</div>
+</div>
+
 <div id="joy"><div id="knob"></div></div>
 
 <div id="sideActions">
+  <button class="action-btn" onclick="openFullMap()">🗺️ الخريطة</button>
   <button class="action-btn" id="btnToggleInside" onclick="toggleInside()">🚪 ادخل البيت</button>
   <button class="action-btn" id="btnFloorUp" style="display:none;" onclick="changeFloor(1)">▲ طابق أعلى</button>
   <button class="action-btn" id="btnFloorDown" style="display:none;" onclick="changeFloor(-1)">▼ طابق أسفل</button>
@@ -313,18 +340,39 @@ function makeLabel(text, bg = '#ffffff', fg = '#111111') {
   return new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(k) }));
 }
 
-// أرضية القرية
+// أرضية القرية والتضاريس (تلال وأشجار طبيعية)
 box(560, 0.2, 560, 0xcab48c, 0, -0.1, 0);
 
-// طرق أسفلتية رئيسية وفرعية مع خطوط الطريق والأرصفة
+const terrainHills = [
+  { x: -135, z: -130, r: 22, h: 11 },
+  { x: 140,  z: -125, r: 26, h: 14 },
+  { x: -145, z: 135,  r: 24, h: 12 },
+  { x: 135,  z: 140,  r: 20, h: 10 },
+  { x: 0,    z: -155, r: 28, h: 15 }
+];
+terrainHills.forEach(th => {
+  const hill = new THREE.Mesh(new THREE.ConeGeometry(th.r, th.h, 14), M(0xb3986d));
+  hill.position.set(th.x, th.h / 2 - 0.1, th.z);
+  S.add(hill);
+});
+
+const terrainTrees = [
+  [-32, -24], [34, -22], [-35, 28], [32, 30],
+  [-110, 20], [112, -25], [22, -112], [-25, 115]
+];
+terrainTrees.forEach(([tx, tz]) => {
+  cyl(0.45, 0.7, 3.6, 0x6b4423, tx, 1.8, tz);
+  const foliage = new THREE.Mesh(new THREE.ConeGeometry(2.8, 5.2, 8), M(0x3f7d36));
+  foliage.position.set(tx, 5.5, tz);
+  S.add(foliage);
+});
+
+// طرق أسفلتية رئيسية وفرعية
 const roadGroup = new THREE.Group();
 S.add(roadGroup);
 function addAsphaltRoad(x, z, w, d, horizontal = true) {
-  // رصيف جانبي
   box(w + 1.4, 0.08, d + 1.4, 0x94a3b8, x, 0.01, z, roadGroup);
-  // طبقة الأسفلت الداكنة
   box(w, 0.12, d, 0x26292e, x, 0.03, z, roadGroup);
-  // خطوط التخطيط البيضاء المتقطعة
   if (horizontal) {
     for (let lx = x - w / 2 + 8; lx < x + w / 2 - 6; lx += 16) {
       box(7, 0.14, 0.35, 0xf8fafc, lx, 0.04, z, roadGroup);
@@ -342,7 +390,7 @@ addAsphaltRoad(0, -75, 400, 9, true);
 addAsphaltRoad(75, 0, 9, 400, false);
 addAsphaltRoad(-75, 0, 9, 400, false);
 
-// أعمدة إنارة الشوارع (تتحكم بها لوحة الإدارة)
+// أعمدة إنارة الشوارع
 const streetLampBulbs = [];
 const streetLampHalos = [];
 const lampPositions = [
@@ -369,12 +417,9 @@ lampPositions.forEach(([lx, lz]) => {
   COLS.push([lx - 0.6, lx + 0.6, lz - 0.6, lz + 0.6]);
 });
 
-// توزيع تلقائي ذكي للبيوت لمنع التراكم أو الوقوع على الطرق
 function computeNonOverlappingCoords(list, props) {
   const placed = [];
-  const blockedCircles = [
-    ...props.map(p => ({ x: p.x || 0, z: p.z || 0, r: 16 }))
-  ];
+  const blockedCircles = props.map(p => ({ x: p.x || 0, z: p.z || 0, r: 16 }));
   const isOnRoad = (x, z) => {
     return Math.abs(x) < 11 || Math.abs(z) < 11 ||
            Math.abs(x - 75) < 9 || Math.abs(x + 75) < 9 ||
@@ -382,7 +427,6 @@ function computeNonOverlappingCoords(list, props) {
   };
 
   return list.map((v, idx) => {
-    // إذا كان للمستخدم إحداثيات محفوظة ولا تتعارض مع الطرق أو بيوت سابقة، نحتفظ بها؛ وإلا نولد إحداثيات تلقائية آمنة
     let candidateX = typeof v.x === 'number' ? v.x : null;
     let candidateZ = typeof v.z === 'number' ? v.z : null;
 
@@ -400,7 +444,6 @@ function computeNonOverlappingCoords(list, props) {
     };
 
     if (conflicts(candidateX, candidateZ)) {
-      // بحث حلزوني/شبكي منظم لضمان عدم التراكم مهما زاد عدد البيوت
       let found = false;
       for (let step = 0; step < 400; step++) {
         const angle = step * 0.75;
@@ -439,20 +482,14 @@ function createAvatar(shirt = 0x231f1a) {
 const P = createAvatar();
 S.add(P);
 
-// بناء فارس أو جندي حراسة للمستوى 10
 function createKnightGuard(armorColor = 0x64748b, plumeColor = 0xdc2626) {
   const g = new THREE.Group();
-  // درع الجسم
   box(0.95, 1.45, 0.55, armorColor, 0, 1.45, 0, g);
-  // أرجل معدنية
   box(0.34, 0.75, 0.34, 0x334155, -0.24, 0.38, 0, g);
   box(0.34, 0.75, 0.34, 0x334155, 0.24, 0.38, 0, g);
-  // خوذة الفارس
   const helm = new THREE.Mesh(new THREE.SphereGeometry(0.48, 14, 12), M(0x94a3b8));
   helm.position.y = 2.55; g.add(helm);
-  // ريشة الخوذة
   box(0.14, 0.55, 0.35, plumeColor, 0, 3.1, -0.1, g);
-  // رمح/سيف
   cyl(0.05, 0.05, 3.2, 0x475569, 0.65, 1.6, 0.35, g);
   box(0.18, 0.45, 0.06, 0xe2e8f0, 0.65, 3.25, 0.35, g);
   return g;
@@ -500,32 +537,25 @@ function buildHouseArchitecture(g, lv, customStyle) {
   const style = (lv >= 10 || customStyle >= 10) ? 10 : Math.min(5, Math.max(1, Number(customStyle || lv || 1)));
 
   if (style === 10) {
-    // المستوى 10: قلعة فخمة + سور قلعة + أبراج + فرسان وجنود حراسة
     box(18, 0.25, 18, 0x78716c, 0, 0.12, 0, g);
-    // سور القلعة المحيط مع بوابة
     box(18, 3.6, 0.8, 0x57534e, 0, 1.8, -8.6, g);
     box(0.8, 3.6, 18, 0x57534e, -8.6, 1.8, 0, g);
     box(0.8, 3.6, 18, 0x57534e, 8.6, 1.8, 0, g);
     box(6.2, 3.6, 0.8, 0x57534e, -5.9, 1.8, 8.6, g);
     box(6.2, 3.6, 0.8, 0x57534e, 5.9, 1.8, 8.6, g);
-    // شرفات السور
     for (let sx = -7.5; sx <= 7.5; sx += 2.5) {
       box(1.1, 0.8, 0.9, 0x78716c, sx, 4.0, -8.6, g);
       if (Math.abs(sx) > 3.2) box(1.1, 0.8, 0.9, 0x78716c, sx, 4.0, 8.6, g);
     }
-    // 4 أبراج زاوية للقلعة
     [[-8.6, -8.6], [8.6, -8.6], [-8.6, 8.6], [8.6, 8.6]].forEach(([tx, tz]) => {
       cyl(1.8, 2.1, 7.2, 0x44403c, tx, 3.6, tz, g, 12);
       cyl(0.2, 2.3, 2.4, 0xb45309, tx, 8.4, tz, g, 12);
     });
-    // هيكل القلعة الرئيسي والبرج المركزي
     box(9.5, 6.0, 8.5, 0x64748b, 0, 3.0, -1.5, g);
     box(5.2, 9.5, 5.2, 0x475569, 0, 4.75, -1.5, g);
     cyl(0.2, 3.6, 3.2, 0xd4af37, 0, 11.1, -1.5, g, 12);
-    // بوابة القلعة الضخمة
     box(3.4, 3.2, 0.6, 0x451a03, 0, 1.6, 8.6, g);
 
-    // فرسان وجنود الحراسة عند البوابة وعلى السور
     const g1 = createKnightGuard(0x94a3b8, 0xdc2626); g1.position.set(-2.4, 0, 9.5); g.add(g1);
     const g2 = createKnightGuard(0x94a3b8, 0xdc2626); g2.position.set(2.4, 0, 9.5); g.add(g2);
     const g3 = createKnightGuard(0x64748b, 0xd4af37); g3.position.set(-5.5, 3.6, 8.6); g.add(g3);
@@ -625,7 +655,6 @@ function buildDesertHouse(v) {
   g.position.set(v.x || 0, 0, v.z || 0);
   villageGroup.add(g);
 
-  // صندوق تصادم قوي لمنع اختراق المنزل أو السور والاندماج فيه
   const half = isCastle ? 9.4 : 6.8;
   COLS.push([v.x - half, v.x + half, v.z - half, v.z + half]);
 }
@@ -656,7 +685,6 @@ S.add(interiorGroup);
 let interactiveSlots = [];
 let interiorWalls = [];
 
-// بناء المشهد الداخلي مع الطوابق والأثاث
 function buildInteriorScene(owner, floor = 0) {
   while (interiorGroup.children.length) interiorGroup.remove(interiorGroup.children[0]);
   interactiveSlots = [];
@@ -672,7 +700,6 @@ function buildInteriorScene(owner, floor = 0) {
   box(0.3, 5, 14, 0x7d6d58, IX + 7, 2.5, 0, interiorGroup);
   box(2.2, 3.2, 0.3, 0x4a2e1b, IX, 1.6, 6.8, interiorGroup);
 
-  // درج/منصة الصعود بين الطوابق
   box(2.4, 0.4, 2.2, 0xd97706, IX + 4.8, 0.2, 4.5, interiorGroup);
   const fTag = makeLabel(`طابق ${currentFloor + 1} / ${maxFloors}`, '#231f1a', '#dfa848');
   fTag.position.set(IX, 4.2, -5.5);
@@ -721,7 +748,6 @@ function applyEnvironmentSettings() {
   const housesOn = !!envSettings.houseLights;
 
   if (isNight) {
-    // في الليل: إذا طفت أنوار الشوارع والبيوت يصبح ظلاماً دامساً
     const litBoost = (streetsOn || housesOn) ? 0.24 : 0.04;
     S.background = new THREE.Color(litBoost > 0.1 ? 0x0f172a : 0x05070d);
     S.fog = new THREE.Fog(litBoost > 0.1 ? 0x0f172a : 0x05070d, 60, 260);
@@ -740,6 +766,152 @@ function applyEnvironmentSettings() {
   const winHex = housesOn ? 0xfef08a : 0x1e293b;
   houseWindowMaterials.forEach(m => { m.color.setHex(winHex); });
 }
+
+// رسم الخريطة (المصغرة أو الكاملة) مع التضاريس والبيوت والطرق والموقع الحالي
+function drawVillageMapCanvas(canvasEl, isFull = false) {
+  if (!canvasEl) return;
+  const ctx = canvasEl.getContext('2d');
+  const w = canvasEl.width;
+  const h = canvasEl.height;
+  const worldSpan = 380; // من -190 إلى +190
+  const toPx = wx => ((wx + worldSpan / 2) / worldSpan) * w;
+  const toPy = wz => ((wz + worldSpan / 2) / worldSpan) * h;
+  const scale = w / worldSpan;
+
+  ctx.clearRect(0, 0, w, h);
+
+  // أرضية القرية
+  ctx.fillStyle = envSettings.nightMode ? '#1e293b' : '#d5be94';
+  ctx.fillRect(0, 0, w, h);
+
+  // تضاريس التلال والأشجار
+  terrainHills.forEach(th => {
+    ctx.beginPath();
+    ctx.arc(toPx(th.x), toPy(th.z), Math.max(3, th.r * scale), 0, Math.PI * 2);
+    ctx.fillStyle = envSettings.nightMode ? '#334155' : '#b4986c';
+    ctx.fill();
+  });
+  terrainTrees.forEach(([tx, tz]) => {
+    ctx.beginPath();
+    ctx.arc(toPx(tx), toPy(tz), Math.max(2.2, 3.2 * scale), 0, Math.PI * 2);
+    ctx.fillStyle = '#3f7d36';
+    ctx.fill();
+  });
+
+  // الطرق الأسفلتية
+  ctx.strokeStyle = '#26292e';
+  ctx.lineWidth = Math.max(2, 10 * scale);
+  const roads = [
+    [-190, 0, 190, 0], [0, -190, 0, 190],
+    [-190, 75, 190, 75], [-190, -75, 190, -75],
+    [75, -190, 75, 190], [-75, -190, -75, 190]
+  ];
+  roads.forEach(([x1, z1, x2, z2]) => {
+    ctx.beginPath();
+    ctx.moveTo(toPx(x1), toPy(z1));
+    ctx.lineTo(toPx(x2), toPy(z2));
+    ctx.stroke();
+  });
+
+  // المنشآت العامة
+  publicProps.forEach(p => {
+    const px = toPx(p.x || 0), py = toPy(p.z || 0);
+    const sz = Math.max(5, 11 * scale);
+    ctx.fillStyle = '#d97706';
+    ctx.fillRect(px - sz / 2, py - sz / 2, sz, sz);
+    if (isFull) {
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 10px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(p.name || 'منشأة', px, py - sz / 2 - 3);
+    }
+  });
+
+  // بيوت وقلاع السكان
+  const myClean = (me && me.username ? me.username : '').toLowerCase();
+  villagers.forEach(v => {
+    const px = toPx(v.x || 0), py = toPy(v.z || 0);
+    const isCastle = (v.levels >= 10 || v.houseStyle >= 10);
+    const isMine = (v.username || '').toLowerCase() === myClean && myClean !== '';
+    const sz = Math.max(isCastle ? 7 : 5, (isCastle ? 15 : 11) * scale);
+
+    ctx.fillStyle = isMine ? '#16a34a' : isCastle ? '#b45309' : '#f8fafc';
+    ctx.strokeStyle = isMine ? '#052e16' : '#231f1a';
+    ctx.lineWidth = isFull ? 1.5 : 1;
+    ctx.fillRect(px - sz / 2, py - sz / 2, sz, sz);
+    ctx.strokeRect(px - sz / 2, py - sz / 2, sz, sz);
+
+    if (isFull) {
+      ctx.fillStyle = envSettings.nightMode ? '#f8fafc' : '#1e1b18';
+      ctx.font = 'bold 10px sans-serif';
+      ctx.textAlign = 'center';
+      const lbl = (v.username || '').replace(/^@/, '');
+      ctx.fillText((isCastle ? '🏰 ' : '') + lbl, px, py - sz / 2 - 3);
+    }
+  });
+
+  // موقع اللاعب أو السيارة الحالي
+  if (!INSIDE) {
+    const playerX = DR ? DR.x : P.position.x;
+    const playerZ = DR ? DR.z : P.position.z;
+    const ux = toPx(playerX), uy = toPy(playerZ);
+    ctx.beginPath();
+    ctx.arc(ux, uy, isFull ? 5.5 : 4, 0, Math.PI * 2);
+    ctx.fillStyle = '#ef4444';
+    ctx.fill();
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
+}
+
+window.openFullMap = () => {
+  const sh = document.getElementById('bottomSheet');
+  sh.style.display = 'block';
+  sh.dataset.mode = 'map';
+  sh.innerHTML = `
+    <div class="sheet-header">
+      <b>🗺️ خريطة القرية والتضاريس والبيوت (اضغط للانتقال)</b>
+      <button class="close-circle" onclick="closeSheet()">✕</button>
+    </div>
+    <canvas id="fullMapCanvas" width="360" height="290"></canvas>
+    <div class="map-legend">
+      <span>🟢 بيتك</span>
+      <span>⬜ بيوت الجيران</span>
+      <span>🟫 قلعة L10</span>
+      <span>🟧 منشأة عامة</span>
+      <span>🔴 موقعك الحالي</span>
+      <span>⛰️ تضاريس وتلال</span>
+    </div>
+  `;
+  const fCanvas = document.getElementById('fullMapCanvas');
+  drawVillageMapCanvas(fCanvas, true);
+
+  fCanvas.addEventListener('click', (e) => {
+    const rect = fCanvas.getBoundingClientRect();
+    const rx = (e.clientX - rect.left) / rect.width;
+    const ry = (e.clientY - rect.top) / rect.height;
+    const worldSpan = 380;
+    const wx = rx * worldSpan - worldSpan / 2;
+    const wz = ry * worldSpan - worldSpan / 2;
+
+    // إذا ضغط قريباً من بيت أحد الجيران، ننتقل إليه ونعرضه
+    const nearV = villagers.find(v => Math.hypot((v.x || 0) - wx, (v.z || 0) - wz) < 20);
+    if (INSIDE) toggleInside(false);
+    if (nearV) {
+      inspectedOwner = nearV;
+      P.position.set(nearV.x, 0, nearV.z + 11);
+      if (DR) { DR.x = nearV.x; DR.z = nearV.z + 11; }
+      document.getElementById('hudUser').textContent = `${nearV.username} (L${nearV.levels || 1})`;
+      toast(`📍 انتقلت إلى منزل ${nearV.username}`);
+    } else {
+      P.position.set(wx, 0, wz);
+      if (DR) { DR.x = wx; DR.z = wz; }
+      toast(`📍 انتقلت إلى الإحداثيات (${Math.round(wx)}, ${Math.round(wz)})`);
+    }
+    closeSheet();
+  });
+};
 
 function renderVillage() {
   while (villageGroup.children.length) villageGroup.remove(villageGroup.children[0]);
@@ -760,6 +932,7 @@ function renderVillage() {
   filtered.forEach(buildDesertHouse);
   publicProps.forEach(buildPublicProp);
   applyEnvironmentSettings();
+  drawVillageMapCanvas(document.getElementById('miniMapCanvas'), false);
 }
 
 function syncMyCoinsUI() {
@@ -774,6 +947,7 @@ onSnapshot(collection(db, "settings"), snap => {
     if (d.id === 'env') envSettings = { ...envSettings, ...d.data() };
   });
   applyEnvironmentSettings();
+  drawVillageMapCanvas(document.getElementById('miniMapCanvas'), false);
 });
 
 onSnapshot(collection(db, "villagers"), snap => {
@@ -858,6 +1032,7 @@ window.enterZone = async (zone, goInside = false, openShopAfter = false) => {
   renderVillage();
   document.getElementById('homeScreen').style.display = 'none';
   document.getElementById('gameHUD').style.display = 'flex';
+  document.getElementById('miniMapWrap').style.display = 'block';
   document.getElementById('joy').style.display = 'block';
   document.getElementById('sideActions').style.display = 'flex';
 
@@ -867,6 +1042,7 @@ window.enterZone = async (zone, goInside = false, openShopAfter = false) => {
   document.getElementById('btnDrive').style.display = ci.hasCar ? 'block' : 'none';
 
   P.position.set(targetOwner ? targetOwner.x : 0, 0, targetOwner ? targetOwner.z + 10 : 12);
+  drawVillageMapCanvas(document.getElementById('miniMapCanvas'), false);
   if (goInside && targetOwner) toggleInside(true, targetOwner);
   if (openShopAfter) openShop();
 };
@@ -876,6 +1052,7 @@ window.backToMap = () => {
   if (DR) toggleDrive();
   document.getElementById('homeScreen').style.display = 'flex';
   document.getElementById('gameHUD').style.display = 'none';
+  document.getElementById('miniMapWrap').style.display = 'none';
   document.getElementById('joy').style.display = 'none';
   document.getElementById('sideActions').style.display = 'none';
   document.getElementById('bottomSheet').style.display = 'none';
@@ -888,6 +1065,7 @@ window.toggleInside = (forceState, ownerObj = null) => {
 
   villageGroup.visible = !INSIDE;
   interiorGroup.visible = INSIDE;
+  document.getElementById('miniMapWrap').style.display = INSIDE ? 'none' : 'block';
   document.getElementById('btnToggleInside').textContent = INSIDE ? '🚪 اطلع برا' : '🚪 ادخل البيت';
   document.getElementById('btnFloorUp').style.display = INSIDE ? 'block' : 'none';
   document.getElementById('btnFloorDown').style.display = INSIDE ? 'block' : 'none';
@@ -904,6 +1082,7 @@ window.toggleInside = (forceState, ownerObj = null) => {
     document.getElementById('hudSub').innerHTML = `الحوش والجيران · 🪙 <span id="hudCoins">${coins}</span>`;
     P.position.set(inspectedOwner ? inspectedOwner.x : 0, 0, inspectedOwner ? inspectedOwner.z + 10 : 12);
     dst = 18; pit = 0.55;
+    drawVillageMapCanvas(document.getElementById('miniMapCanvas'), false);
   }
 };
 
@@ -936,7 +1115,6 @@ window.toggleDrive = () => {
   document.getElementById('btnDrive').textContent = '🚶 نزول';
 };
 
-// نظام المحادثات العامة والخاصة عبر Firestore
 window.openChat = () => {
   const sh = document.getElementById('bottomSheet');
   sh.style.display = 'block';
@@ -1124,7 +1302,6 @@ window.checkoutCart = async () => {
   toast('🎉 تم التطوير وتحديث المنزل والقلعة!');
 };
 
-// زيارات منازل الجيران (من الخارج أو مباشرة داخل منزل الجار)
 window.openNeighbors = () => {
   const sh = document.getElementById('bottomSheet');
   sh.style.display = 'block';
@@ -1182,7 +1359,6 @@ R.domElement.addEventListener('click', e => {
   }
 });
 
-// فحص التصادم مع البيوت والمنشآت والأثاث لمنع العبور والاندماج
 function isBlocked(nx, nz, radius = 0.85) {
   if (INSIDE) {
     if (Math.abs(nx - 1000) > 6.2 || Math.abs(nz) > 6.2) return true;
@@ -1215,6 +1391,7 @@ R.domElement.addEventListener('pointermove', e => {
 R.domElement.addEventListener('pointerup', () => { lastTouch = null; });
 
 const clock = new THREE.Clock();
+let mapTick = 0;
 function animate() {
   requestAnimationFrame(animate);
   const dt = Math.min(clock.getDelta(), 0.05), T = clock.elapsedTime;
@@ -1222,6 +1399,7 @@ function animate() {
   if (document.getElementById('homeScreen').style.display === 'none') {
     const cs = Math.cos(yaw), sn = Math.sin(yaw);
     const mx = jx * cs + jy * sn, mz = -jx * sn + jy * cs;
+    let moved = false;
     if (DR) {
       const baseSpd = DR.type === 'sport' ? 32 : DR.type === 'limo' ? 25 : 21;
       const speedMult = DR.hasSpoiler ? baseSpd + 6 : baseSpd;
@@ -1229,21 +1407,28 @@ function animate() {
       DR.a -= jx * dt * 2;
       const nx = DR.x + Math.sin(DR.a) * DR.v * dt;
       const nz = DR.z + Math.cos(DR.a) * DR.v * dt;
-      if (!isBlocked(nx, DR.z, 1.5)) DR.x = nx; else DR.v *= -0.2;
-      if (!isBlocked(DR.x, nz, 1.5)) DR.z = nz; else DR.v *= -0.2;
+      if (!isBlocked(nx, DR.z, 1.5)) { DR.x = nx; moved = true; } else DR.v *= -0.2;
+      if (!isBlocked(DR.x, nz, 1.5)) { DR.z = nz; moved = true; } else DR.v *= -0.2;
       DR.g.position.set(DR.x, 0, DR.z); DR.g.rotation.y = DR.a;
       P.position.set(DR.x, 0, DR.z);
     } else if (Math.hypot(mx, mz) > 0.05) {
       const nx = P.position.x + mx * 9 * dt;
       const nz = P.position.z + mz * 9 * dt;
-      if (!isBlocked(nx, P.position.z, 0.85)) P.position.x = nx;
-      if (!isBlocked(P.position.x, nz, 0.85)) P.position.z = nz;
+      if (!isBlocked(nx, P.position.z, 0.85)) { P.position.x = nx; moved = true; }
+      if (!isBlocked(P.position.x, nz, 0.85)) { P.position.z = nz; moved = true; }
       P.rotation.y = Math.atan2(mx, mz);
       P.userData.l1.rotation.x = Math.sin(T * 10) * 0.5;
       P.userData.l2.rotation.x = -Math.sin(T * 10) * 0.5;
     } else {
       P.userData.l1.rotation.x = P.userData.l2.rotation.x = 0;
     }
+
+    mapTick += dt;
+    if ((moved || mapTick > 0.35) && !INSIDE) {
+      mapTick = 0;
+      drawVillageMapCanvas(document.getElementById('miniMapCanvas'), false);
+    }
+
     const cp = Math.cos(pit);
     C.position.set(P.position.x + Math.sin(yaw) * cp * dst, P.position.y + 2.2 + Math.sin(pit) * dst, P.position.z + Math.cos(yaw) * cp * dst);
     C.lookAt(P.position.x, P.position.y + 2, P.position.z);
