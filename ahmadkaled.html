@@ -7,9 +7,9 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: Tahoma, Arial, sans-serif; }
         body { background: #e8dcc5; padding: 15px; direction: rtl; color: #2c241b; }
-        .top-header { max-width: 660px; margin: 0 auto 14px auto; background: #231f1a; color: #dfa848; padding: 12px 16px; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: bold; }
+        .top-header { max-width: 680px; margin: 0 auto 14px auto; background: #231f1a; color: #dfa848; padding: 12px 16px; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: bold; }
         .top-header a { color: #fff; text-decoration: none; background: rgba(255,255,255,0.12); padding: 5px 10px; border-radius: 8px; }
-        .container { max-width: 660px; margin: 0 auto 18px auto; background: #fdfbf7; padding: 18px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #dfd3be; }
+        .container { max-width: 680px; margin: 0 auto 18px auto; background: #fdfbf7; padding: 18px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #dfd3be; }
         h2 { text-align: center; color: #231f1a; margin-bottom: 14px; font-size: 18px; }
         .form-group { margin-bottom: 12px; }
         label { display: block; margin-bottom: 4px; font-weight: bold; font-size: 13px; }
@@ -29,6 +29,8 @@
         .btn-save { background: #1d4ed8; }
         .btn-del { background: #c0392b; }
         .btn-up { background: #27ae60; }
+        .btn-sp { background: #7c3aed; }
+        .saved-msg { font-size: 12px; color: #15803d; font-weight: bold; display: none; }
     </style>
 </head>
 <body>
@@ -38,7 +40,6 @@
         <a href="index.html">🏠 عرض القرية</a>
     </div>
 
-    <!-- 1. إضافة مواطن جديد -->
     <div class="container">
         <h2>🏙️ إضافة مواطن جديد (إحداثيات تلقائية)</h2>
         <form id="villagerForm">
@@ -71,7 +72,6 @@
         <div class="status" id="statusVillager"></div>
     </div>
 
-    <!-- 2. تصميم ممتلكات عامة -->
     <div class="container">
         <h2>🏛️ تصميم ممتلكات عامة (جامع، مدرسة، إلخ)</h2>
         <form id="publicForm">
@@ -97,15 +97,13 @@
         <div class="status" id="statusPublic"></div>
     </div>
 
-    <!-- 3. طلبات المشتريات الواردة -->
     <div class="container">
         <h2>🛍️ طلبات المشتريات الواردة (<span id="ordersCount">0</span>)</h2>
         <div class="list-box" id="ordersList"></div>
     </div>
 
-    <!-- 4. تحكم كامل بسكان القرية -->
     <div class="container">
-        <h2>👥 تحكم كامل بسكان القرية (<span id="usersCount">0</span>)</h2>
+        <h2>👥 تحكم كامل بسكان القرية والسيارات (<span id="usersCount">0</span>)</h2>
         <div class="list-box" id="usersList"></div>
     </div>
 
@@ -160,6 +158,8 @@
                 coins: initCoins,
                 hasCar: false,
                 carType: null,
+                carColor: null,
+                carSpoiler: false,
                 items: {},
                 x: coords.x,
                 z: coords.z,
@@ -207,6 +207,8 @@
                 const id = d.id;
                 const st = data.houseStyle || data.levels || 1;
                 const ct = data.carType || '';
+                const cc = data.carColor || '';
+                const sp = !!data.carSpoiler;
                 const cn = typeof data.coins === 'number' ? data.coins : 1000;
 
                 list.innerHTML += `
@@ -214,13 +216,15 @@
                     <div class="card-top">
                       <div class="card-info">
                         <h4>${data.name || data.username}</h4>
-                        <p>نقاط: <b>${cn} 🪙</b> | شكل البيت: <b>${st}</b> | سيارة: <b>${ct || 'بدون'}</b> | (${data.x}, ${data.z})</p>
+                        <p>نقاط: <b>${cn} 🪙</b> | بيت: <b>${st}</b> | سيارة: <b>${ct || 'بدون'}</b> ${cc ? '('+cc+')' : ''} ${sp ? '🏁' : ''}</p>
                       </div>
                       <div class="actions">
-                        <button class="btn-small btn-up" onclick="quickUpgrade('${id}', ${st}, ${cn})">ترقية شكل</button>
-                        <button class="btn-small btn-save" onclick="saveUserChanges('${id}')">حفظ التعديلات</button>
+                        <button class="btn-small btn-up" onclick="quickUpgrade('${id}', ${st}, ${cn})">+ترقية بيت</button>
+                        <button class="btn-small btn-sp" onclick="toggleSpoiler('${id}', ${sp})">${sp ? 'إزالة جناح' : '🏁 جناح'}</button>
+                        <button class="btn-small btn-save" onclick="saveUserChanges('${id}')">حفظ</button>
                         <button class="btn-small btn-del" onclick="delUser('${id}')">حذف</button>
                       </div>
+                      <span class="saved-msg" id="msg_${id}">✓ تم الحفظ</span>
                     </div>
 
                     <div class="controls-grid">
@@ -252,6 +256,17 @@
                           <option value="limo" ${ct === 'limo' ? 'selected' : ''}>ليموزين فاخرة</option>
                         </select>
                       </div>
+                      <div style="grid-column: span 2;">
+                        <label>لون السيارة:</label>
+                        <select id="color_${id}">
+                          <option value="" ${!cc ? 'selected' : ''}>اللون الافتراضي للموديل</option>
+                          <option value="red" ${cc === 'red' ? 'selected' : ''}>أحمر ناري</option>
+                          <option value="black" ${cc === 'black' ? 'selected' : ''}>أسود ملكي</option>
+                          <option value="white" ${cc === 'white' ? 'selected' : ''}>أبيض لؤلؤي</option>
+                          <option value="blue" ${cc === 'blue' ? 'selected' : ''}>أزرق معدني</option>
+                          <option value="gold" ${cc === 'gold' ? 'selected' : ''}>ذهبي فاخر</option>
+                        </select>
+                      </div>
                     </div>
                   </div>`;
             });
@@ -262,15 +277,22 @@
             const newLvl = Number(document.getElementById(`lvl_${id}`).value || 1);
             const newStyle = Number(document.getElementById(`style_${id}`).value || 1);
             const newCar = document.getElementById(`car_${id}`).value;
+            const newColor = document.getElementById(`color_${id}`).value;
 
             await updateDoc(doc(db, "villagers", id), {
                 coins: newCoins,
                 levels: newLvl,
                 houseStyle: newStyle,
                 carType: newCar || null,
+                carColor: newColor || null,
                 hasCar: !!newCar
             });
-            alert("✅ تم حفظ جميع تعديلات المستخدم وتحديث القرية فوراً!");
+            const m = document.getElementById(`msg_${id}`);
+            if (m) { m.style.display = 'inline'; setTimeout(() => m.style.display = 'none', 2000); }
+        };
+
+        window.toggleSpoiler = async (id, curSpoiler) => {
+            await updateDoc(doc(db, "villagers", id), { carSpoiler: !curSpoiler });
         };
 
         window.quickUpgrade = async (id, curStyle, curCoins) => {
