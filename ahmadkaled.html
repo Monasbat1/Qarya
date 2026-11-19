@@ -3,32 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة تحكم الأدمن - أحمد خالد</title>
+    <title>لوحة تحكم الأدمن - ahmadkaled | قريتنا التفاعلية</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: Tahoma, Arial, sans-serif; }
-        body { background: #f0f2f5; padding: 15px; direction: rtl; }
-        .container { max-width: 600px; margin: 0 auto 20px auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #2c3e50; margin-bottom: 15px; font-size: 19px; }
+        body { background: #e8dcc5; padding: 15px; direction: rtl; color: #2c241b; }
+        .top-header { max-width: 600px; margin: 0 auto 14px auto; background: #231f1a; color: #dfa848; padding: 12px 16px; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: bold; }
+        .top-header a { color: #fff; text-decoration: none; background: rgba(255,255,255,0.12); padding: 5px 10px; border-radius: 8px; }
+        .container { max-width: 600px; margin: 0 auto 18px auto; background: #fdfbf7; padding: 20px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #dfd3be; }
+        h2 { text-align: center; color: #231f1a; margin-bottom: 15px; font-size: 18px; }
         .form-group { margin-bottom: 12px; }
-        label { display: block; margin-bottom: 4px; color: #34495e; font-weight: bold; font-size: 13px; }
-        input, select { width: 100%; padding: 9px; border: 1px solid #bdc3c7; border-radius: 6px; font-size: 14px; }
-        button { background: #27ae60; color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; }
-        button:hover { background: #219653; }
-        .status { margin-top: 10px; text-align: center; font-size: 14px; font-weight: bold; }
-        
+        label { display: block; margin-bottom: 4px; font-weight: bold; font-size: 13px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #cbbba0; border-radius: 10px; font-size: 14px; background: #fff; }
+        button { background: #231f1a; color: #dfa848; border: none; padding: 12px; width: 100%; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; }
+        .status { margin-top: 10px; text-align: center; font-size: 13px; font-weight: bold; }
         .list-box { display: flex; flex-direction: column; gap: 10px; }
-        .card { border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; background: #f8fafc; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-        .card-info h4 { color: #1e293b; font-size: 15px; margin-bottom: 4px; }
-        .card-info p { color: #64748b; font-size: 12px; }
+        .card { border: 1px solid #e5d8c3; border-radius: 10px; padding: 12px; background: #fff; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .card-info h4 { font-size: 15px; margin-bottom: 4px; }
+        .card-info p { color: #7a6e5d; font-size: 12px; }
         .actions { display: flex; gap: 6px; }
-        .btn-small { padding: 6px 10px; font-size: 12px; border-radius: 5px; width: auto; }
+        .btn-small { padding: 6px 10px; font-size: 12px; border-radius: 8px; width: auto; color: #fff; }
         .btn-del { background: #c0392b; }
-        .btn-blue { background: #2980b9; }
+        .btn-up { background: #27ae60; }
+        .btn-car { background: #2980b9; }
     </style>
 </head>
 <body>
 
-    <!-- 1. إضافة مواطن جديد -->
+    <div class="top-header">
+        <span>🛡️ لوحة الإدارة: ahmadkaled</span>
+        <a href="index.html">🏠 عرض القرية</a>
+    </div>
+
     <div class="container">
         <h2>🏙️ إضافة مواطن جديد (إحداثيات تلقائية)</h2>
         <form id="villagerForm">
@@ -48,12 +53,11 @@
                     <option value="3">برج تجاري ذهبي (مستوى 3)</option>
                 </select>
             </div>
-            <button type="submit">بناء العقار في المدينة 🚀</button>
+            <button type="submit">بناء العقار في القرية 🚀</button>
         </form>
         <div class="status" id="statusVillager"></div>
     </div>
 
-    <!-- 2. تصميم وبناء الممتلكات العامة -->
     <div class="container">
         <h2>🏛️ تصميم ممتلكات عامة (جامع، مدرسة، إلخ)</h2>
         <form id="publicForm">
@@ -67,36 +71,26 @@
                     <option value="mosque">جامع 🕌</option>
                     <option value="school">مدرسة 🏫</option>
                     <option value="hospital">مستشفى 🏥</option>
-                    <option value="park">ممتلكات عامة أخرى 🏛️</option>
+                    <option value="park">معلم عام 🏛️</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label>الموقع الأفقي (X):</label>
-                <input type="number" id="pubX" value="30">
+            <div style="display:flex; gap:10px;">
+                <div class="form-group" style="flex:1;"><label>X:</label><input type="number" id="pubX" value="30"></div>
+                <div class="form-group" style="flex:1;"><label>Z:</label><input type="number" id="pubZ" value="-30"></div>
             </div>
-            <div class="form-group">
-                <label>الموقع العمقي (Z):</label>
-                <input type="number" id="pubZ" value="-30">
-            </div>
-            <button type="submit" style="background:#2980b9;">بناء المنشأة العامة في المدينة 🏗️</button>
+            <button type="submit">بناء المنشأة العامة 🏗️</button>
         </form>
         <div class="status" id="statusPublic"></div>
     </div>
 
-    <!-- 3. طلبات المشتريات القادمة من المتجر -->
     <div class="container">
-        <h2>🛍️ طلبات المشتريات الواردة من المتجر (<span id="ordersCount">0</span>)</h2>
-        <div class="list-box" id="ordersList">
-            <p style="text-align:center; color:#777;">جاري التحقق من الطلبات...</p>
-        </div>
+        <h2>🛍️ طلبات المشتريات الواردة (<span id="ordersCount">0</span>)</h2>
+        <div class="list-box" id="ordersList"></div>
     </div>
 
-    <!-- 4. إدارة جميع السكان -->
     <div class="container">
-        <h2>👥 جميع سكان المدينة (<span id="usersCount">0</span>)</h2>
-        <div class="list-box" id="usersList">
-            <p style="text-align:center; color:#777;">جاري التحقق من السكان...</p>
-        </div>
+        <h2>👥 إدارة سكان القرية (<span id="usersCount">0</span>)</h2>
+        <div class="list-box" id="usersList"></div>
     </div>
 
     <script type="module">
@@ -117,137 +111,91 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // إحداثيات تلقائية ذكية
         function generateSmartCoords(existing) {
             for (let i = 0; i < 150; i++) {
-                const x = Math.floor(Math.random() * 160) - 80;
-                const z = Math.floor(Math.random() * 160) - 80;
-                if (Math.abs(x) < 12 || Math.abs(z) < 12) continue;
+                const x = Math.floor(Math.random() * 180) - 90;
+                const z = Math.floor(Math.random() * 180) - 90;
+                if (Math.abs(x) < 16 || Math.abs(z) < 16) continue;
                 let close = false;
                 for (const e of existing) {
-                    if (Math.hypot(x - e.x, z - e.z) < 14) { close = true; break; }
+                    if (Math.hypot(x - e.x, z - e.z) < 18) { close = true; break; }
                 }
                 if (!close) return { x, z };
             }
-            return { x: 20, z: 20 };
+            return { x: 25, z: 25 };
         }
 
-        // إضافة مواطن
-        const villagerForm = document.getElementById('villagerForm');
-        const statusVillager = document.getElementById('statusVillager');
-        villagerForm.addEventListener('submit', async (e) => {
+        document.getElementById('villagerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const username = document.getElementById('username').value.trim();
             const friend = document.getElementById('taggedFriend').value.trim();
             const level = Number(document.getElementById('actionType').value);
+            const snap = await getDocs(collection(db, "villagers"));
+            const existing = [];
+            snap.forEach(d => existing.push(d.data()));
+            const coords = generateSmartCoords(existing);
 
-            try {
-                const snap = await getDocs(collection(db, "villagers"));
-                const existing = [];
-                snap.forEach(d => existing.push(d.data()));
-                const coords = generateSmartCoords(existing);
-                const colors = { 1: 0x3498db, 2: 0x9b59b6, 3: 0xf1c40f };
-
-                await addDoc(collection(db, "villagers"), {
-                    username,
-                    name: `${username} (تاغ: ${friend})`,
-                    levels: level,
-                    hasCar: false,
-                    x: coords.x,
-                    z: coords.z,
-                    color: colors[level],
-                    timestamp: new Date()
-                });
-                statusVillager.style.color = "#27ae60";
-                statusVillager.innerText = "✅ تم بناء العقار بنجاح!";
-                villagerForm.reset();
-            } catch (err) {
-                statusVillager.style.color = "#c0392b";
-                statusVillager.innerText = "❌ خطأ: " + err.message;
-            }
+            await addDoc(collection(db, "villagers"), {
+                username: username.startsWith('@') ? username : '@' + username,
+                name: `${username} (تاغ: ${friend})`,
+                levels: level, hasCar: false, items: {}, x: coords.x, z: coords.z, timestamp: new Date()
+            });
+            document.getElementById('statusVillager').innerText = "✅ تم بناء البيت في القرية!";
+            e.target.reset();
         });
 
-        // إضافة ممتلكات عامة
-        const publicForm = document.getElementById('publicForm');
-        const statusPublic = document.getElementById('statusPublic');
-        publicForm.addEventListener('submit', async (e) => {
+        document.getElementById('publicForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const name = document.getElementById('pubName').value.trim();
-            const type = document.getElementById('pubType').value;
-            const x = Number(document.getElementById('pubX').value);
-            const z = Number(document.getElementById('pubZ').value);
-
-            try {
-                await addDoc(collection(db, "public_properties"), {
-                    name, type, x, z, timestamp: new Date()
-                });
-                statusPublic.style.color = "#27ae60";
-                statusPublic.innerText = "✅ تم بناء المنشأة العامة في المدينة!";
-                publicForm.reset();
-            } catch (err) {
-                statusPublic.style.color = "#c0392b";
-                statusPublic.innerText = "❌ خطأ: " + err.message;
-            }
+            await addDoc(collection(db, "public_properties"), {
+                name: document.getElementById('pubName').value.trim(),
+                type: document.getElementById('pubType').value,
+                x: Number(document.getElementById('pubX').value),
+                z: Number(document.getElementById('pubZ').value),
+                timestamp: new Date()
+            });
+            document.getElementById('statusPublic').innerText = "✅ تم بناء المعلم العام!";
+            e.target.reset();
         });
 
-        // الاستماع للطلبات الواردة من المتجر
-        const ordersList = document.getElementById('ordersList');
-        const ordersCount = document.getElementById('ordersCount');
-        onSnapshot(collection(db, "store_orders"), (snapshot) => {
-            ordersList.innerHTML = '';
-            ordersCount.innerText = snapshot.size;
-            if (snapshot.empty) {
-                ordersList.innerHTML = '<p style="text-align:center; color:#777;">لا توجد طلبات جديدة.</p>';
-                return;
-            }
-            snapshot.forEach((docSnap) => {
-                const data = docSnap.data();
-                const id = docSnap.id;
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <div class="card-info">
-                        <h4>العميل: ${data.username}</h4>
-                        <p>الطلب: <b>${data.order}</b></p>
-                    </div>
-                    <div class="actions">
-                        <button class="btn-small btn-blue" onclick="deleteOrder('${id}')">حذف الطلب</button>
-                    </div>
-                `;
-                ordersList.appendChild(card);
+        onSnapshot(collection(db, "store_orders"), (snap) => {
+            const list = document.getElementById('ordersList');
+            list.innerHTML = '';
+            document.getElementById('ordersCount').innerText = snap.size;
+            snap.forEach(d => {
+                const data = d.data();
+                list.innerHTML += `
+                  <div class="card">
+                    <div class="card-info"><h4>${data.username}</h4><p>${data.order}</p></div>
+                    <button class="btn-small btn-del" onclick="delOrder('${d.id}')">تم التنفيذ ✓</button>
+                  </div>`;
             });
         });
 
-        // استعراض السكان
-        const usersList = document.getElementById('usersList');
-        const usersCount = document.getElementById('usersCount');
-        onSnapshot(collection(db, "villagers"), (snapshot) => {
-            usersList.innerHTML = '';
-            usersCount.innerText = snapshot.size;
-            if (snapshot.empty) {
-                usersList.innerHTML = '<p style="text-align:center; color:#777;">لا يوجد سكان بعد.</p>';
-                return;
-            }
-            snapshot.forEach((docSnap) => {
-                const data = docSnap.data();
-                const id = docSnap.id;
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
+        onSnapshot(collection(db, "villagers"), (snap) => {
+            const list = document.getElementById('usersList');
+            list.innerHTML = '';
+            document.getElementById('usersCount').innerText = snap.size;
+            snap.forEach(d => {
+                const data = d.data();
+                list.innerHTML += `
+                  <div class="card">
                     <div class="card-info">
-                        <h4>${data.name}</h4>
-                        <p>المستوى: ${data.levels} | الموقع: (${data.x}, ${data.z})</p>
+                      <h4>${data.name}</h4>
+                      <p>المستوى: ${data.levels || 1} | سيارة: ${data.hasCar ? 'نعم 🚗' : 'لا'} | (${data.x}, ${data.z})</p>
                     </div>
                     <div class="actions">
-                        <button class="btn-small btn-del" onclick="deleteUser('${id}')">حذف</button>
+                      <button class="btn-small btn-up" onclick="upgradeUser('${d.id}', ${(data.levels || 1) + 1})">+طابق</button>
+                      <button class="btn-small btn-car" onclick="giveCar('${d.id}')">🚗</button>
+                      <button class="btn-small btn-del" onclick="delUser('${d.id}')">حذف</button>
                     </div>
-                `;
-                usersList.appendChild(card);
+                  </div>`;
             });
         });
 
-        window.deleteOrder = async (id) => { await deleteDoc(doc(db, "store_orders", id)); };
-        window.deleteUser = async (id) => { if(confirm("حذف العقار؟")) await deleteDoc(doc(db, "villagers", id)); };
+        window.delOrder = id => deleteDoc(doc(db, "store_orders", id));
+        window.delUser = id => { if (confirm("حذف البيت؟")) deleteDoc(doc(db, "villagers", id)); };
+        window.upgradeUser = (id, lv) => updateDoc(doc(db, "villagers", id), { levels: lv });
+        window.giveCar = id => updateDoc(doc(db, "villagers", id), { hasCar: true });
     </script>
 </body>
 </html>
