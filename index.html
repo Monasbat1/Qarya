@@ -21,15 +21,15 @@ canvas { display: block; }
 #homeScreen {
   position: fixed; inset: 0; background: var(--bg); z-index: 20;
   display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-  padding: 20px 16px; overflow-y: auto;
+  padding: 18px 16px; overflow-y: auto;
 }
 .top-bar-home { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
 .badge-count { background: var(--dark); color: var(--gold); padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 13px; }
 .top-fan { background: var(--dark); color: #fff; padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: bold; margin-top: 8px; }
 
-.map-hub { position: relative; width: 310px; height: 270px; margin: 10px auto; }
+.map-hub { position: relative; width: 310px; height: 260px; margin: 8px auto; }
 .zone-node {
-  position: absolute; width: 92px; height: 92px; border-radius: 50%;
+  position: absolute; width: 90px; height: 90px; border-radius: 50%;
   background: #c5d1b8; border: 3px solid #6b7760; color: #1e2618;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: center; font-size: 12px; font-weight: 800; cursor: pointer;
@@ -37,14 +37,14 @@ canvas { display: block; }
 }
 .zone-node:active { transform: scale(0.94); }
 .zone-center {
-  width: 106px; height: 106px; left: 102px; top: 82px;
+  width: 104px; height: 104px; left: 103px; top: 78px;
   background: #d97736; border-color: #8c4416; color: #fff; font-size: 14px; z-index: 2;
 }
 .z-ne { top: 0; left: 135px; }
-.z-nw { top: 25px; left: 10px; }
-.z-e  { top: 90px; right: 0; }
-.z-w  { top: 145px; left: 15px; }
-.z-s  { bottom: 0; left: 115px; }
+.z-nw { top: 22px; left: 10px; }
+.z-e  { top: 86px; right: 0; }
+.z-w  { top: 140px; left: 15px; }
+.z-s  { bottom: 0; left: 112px; }
 
 .user-pill {
   display: flex; align-items: center; gap: 8px; background: #fff;
@@ -53,71 +53,79 @@ canvas { display: block; }
 }
 .user-pill input {
   border: none; outline: none; font-size: 15px; font-weight: bold;
-  text-align: left; direction: ltr; width: 150px; background: transparent;
+  text-align: left; direction: ltr; width: 155px; background: transparent;
 }
-.btn-dark { background: var(--dark); color: #fff; border: none; padding: 10px 18px; border-radius: 20px; font-weight: bold; cursor: pointer; }
-.btn-gold { background: var(--gold); color: var(--dark); border: none; padding: 11px 18px; border-radius: 16px; font-weight: 800; cursor: pointer; }
+.btn-dark { background: var(--dark); color: #fff; border: none; padding: 9px 16px; border-radius: 18px; font-weight: bold; cursor: pointer; font-size: 12px; }
+.btn-gold { background: var(--gold); color: var(--dark); border: none; padding: 10px 16px; border-radius: 14px; font-weight: 800; cursor: pointer; font-size: 13px; }
 
 .bottom-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: min(94vw, 400px); }
 .nav-card {
-  background: var(--card); border-radius: 18px; padding: 14px 8px; text-align: center;
+  background: var(--card); border-radius: 18px; padding: 12px 8px; text-align: center;
   box-shadow: 0 4px 12px rgba(0,0,0,0.05); cursor: pointer; border: 1px solid #e5dccb;
 }
 .nav-card.active { background: var(--gold); }
-.nav-card h4 { margin: 6px 0 2px; font-size: 14px; }
+.nav-card h4 { margin: 5px 0 2px; font-size: 13px; }
 .nav-card span { font-size: 11px; color: var(--muted); }
 
 #gameHUD {
-  position: fixed; top: 12px; left: 12px; right: 12px; z-index: 10;
-  display: none; justify-content: space-between; align-items: center; pointer-events: none;
+  position: fixed; top: 10px; left: 10px; right: 10px; z-index: 10;
+  display: none; justify-content: space-between; align-items: center; pointer-events: none; gap: 6px;
 }
 #gameHUD > * { pointer-events: auto; }
 .pill-btn {
-  background: var(--card); color: var(--dark); border: none; padding: 8px 14px;
+  background: var(--card); color: var(--dark); border: none; padding: 8px 12px;
   border-radius: 20px; font-weight: 800; font-size: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.12); cursor: pointer;
 }
-.cart-pill { background: var(--dark); color: var(--gold); display: flex; align-items: center; gap: 6px; }
-.house-title { text-align: center; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.65); }
-.house-title b { display: block; font-size: 15px; }
+.cart-pill { background: var(--dark); color: var(--gold); display: flex; align-items: center; gap: 5px; }
+.house-title { text-align: center; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
+.house-title b { display: block; font-size: 14px; }
 .house-title small { font-size: 11px; opacity: 0.95; }
 
 #joy {
-  position: fixed; left: 18px; bottom: 24px; width: 105px; height: 105px;
-  border-radius: 50%; background: rgba(255,255,255,0.28); border: 2px solid rgba(255,255,255,0.6);
+  position: fixed; left: 16px; bottom: 22px; width: 102px; height: 102px;
+  border-radius: 50%; background: rgba(255,255,255,0.28); border: 2px solid rgba(255,255,255,0.65);
   display: none; z-index: 10;
 }
 #knob {
-  position: absolute; left: 32px; top: 32px; width: 38px; height: 38px;
+  position: absolute; left: 31px; top: 31px; width: 38px; height: 38px;
   border-radius: 50%; background: var(--card); box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
+
 #sideActions {
-  position: fixed; right: 14px; bottom: 24px; display: none; flex-direction: column; gap: 8px; z-index: 10;
+  position: fixed; right: 12px; bottom: 22px; display: none; flex-direction: column; gap: 7px; z-index: 10;
+  max-height: 75vh; overflow-y: auto;
 }
 .action-btn {
-  background: var(--card); color: var(--dark); border: none; padding: 10px 16px;
-  border-radius: 16px; font-weight: 800; font-size: 13px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); cursor: pointer;
+  background: var(--card); color: var(--dark); border: none; padding: 9px 14px;
+  border-radius: 15px; font-weight: 800; font-size: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.14); cursor: pointer;
+  white-space: nowrap;
 }
 .action-btn.gold { background: var(--gold); }
 
 .bottom-sheet {
   position: fixed; left: 0; right: 0; bottom: 0; background: var(--card);
-  border-radius: 24px 24px 0 0; padding: 18px; z-index: 15;
-  box-shadow: 0 -6px 25px rgba(0,0,0,0.18); display: none; max-height: 66vh; overflow-y: auto;
+  border-radius: 24px 24px 0 0; padding: 16px; z-index: 15;
+  box-shadow: 0 -6px 25px rgba(0,0,0,0.2); display: none; max-height: 68vh; overflow-y: auto;
 }
-.sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-.close-circle { width: 32px; height: 32px; border-radius: 50%; background: var(--pill); border: none; font-weight: bold; cursor: pointer; }
-.shop-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+.sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.close-circle { width: 30px; height: 30px; border-radius: 50%; background: var(--pill); border: none; font-weight: bold; cursor: pointer; }
+.shop-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
 .shop-item {
-  background: #fff; border: 1px solid #ebe2d3; border-radius: 14px; padding: 10px 6px;
+  background: #fff; border: 1px solid #ebe2d3; border-radius: 14px; padding: 9px 5px;
   text-align: center; cursor: pointer; transition: 0.15s;
 }
 .shop-item:active { transform: scale(0.95); border-color: var(--gold); }
-.shop-item .ico { font-size: 24px; display: block; margin-bottom: 4px; }
-.shop-item .nm { font-size: 12px; font-weight: bold; display: block; }
+.shop-item .ico { font-size: 22px; display: block; margin-bottom: 3px; }
+.shop-item .nm { font-size: 11px; font-weight: bold; display: block; }
 .shop-item .pr { font-size: 11px; color: var(--muted); font-weight: bold; }
 
+.chat-box { height: 28vh; overflow-y: auto; background: #f7f2e7; border-radius: 12px; padding: 8px; margin-bottom: 8px; border: 1px solid #e5d8c3; }
+.chat-msg { padding: 6px 8px; border-bottom: 1px solid #e8decb; font-size: 13px; }
+.chat-row { display: flex; gap: 6px; }
+.chat-row input, .chat-row select { flex: 1; padding: 8px; border-radius: 10px; border: 1px solid #cbbba0; font-size: 13px; background: #fff; }
+
 #toast {
-  position: fixed; top: 65px; left: 50%; transform: translateX(-50%);
+  position: fixed; top: 62px; left: 50%; transform: translateX(-50%);
   background: var(--dark); color: #fff; padding: 8px 16px; border-radius: 20px;
   font-size: 13px; z-index: 30; display: none; white-space: nowrap;
 }
@@ -134,8 +142,8 @@ canvas { display: block; }
       <div class="badge-count" id="myCoinsBadge">🪙 1000</div>
     </div>
     <div class="top-fan">🏆 أكثر المتفاعلين: <span id="topFanName">@ahmad</span></div>
-    <h2 style="margin:14px 0 4px; font-size:24px;">وين تبي تروح؟</h2>
-    <div style="font-size:13px; color:var(--muted);">اضغط على المكان، يتحمل بس اللي تختاره</div>
+    <h2 style="margin:12px 0 3px; font-size:23px;">وين تبي تروح؟</h2>
+    <div style="font-size:12px; color:var(--muted);">توزيع تلقائي للمنازل · طرق أسفلتية · محادثات وزيارات</div>
   </div>
 
   <div class="map-hub">
@@ -147,7 +155,7 @@ canvas { display: block; }
     <div class="zone-node z-s" onclick="enterZone('s')">القرية<br>الجنوبية</div>
   </div>
 
-  <div style="display:flex; flex-direction:column; gap:12px; align-items:center; width:100%;">
+  <div style="display:flex; flex-direction:column; gap:10px; align-items:center; width:100%;">
     <div class="user-pill">
       <button class="btn-dark" id="btnGoMyHouse">🏠 روح لبيتي</button>
       <input id="usernameInput" placeholder="@username" autocomplete="off">
@@ -156,19 +164,19 @@ canvas { display: block; }
 
     <div class="bottom-cards">
       <div class="nav-card" onclick="enterZone('all', true)">
-        <div style="font-size:22px;">🛋️</div>
+        <div style="font-size:20px;">🛋️</div>
         <h4>داخل بيتي</h4>
-        <span>العب في بيتك</span>
+        <span>أثاث وطوابق</span>
       </div>
       <div class="nav-card active" onclick="enterZone('all', false, true)">
-        <div style="font-size:22px;">🛒</div>
+        <div style="font-size:20px;">🛒</div>
         <h4>المتجر</h4>
-        <span>اشترِ لبيتك</span>
+        <span>ترقية وقلعة L10</span>
       </div>
       <div class="nav-card" onclick="enterZone('all')">
-        <div style="font-size:22px;">🌍</div>
+        <div style="font-size:20px;">🌍</div>
         <h4>كل شي</h4>
-        <span>نظرة من فوق</span>
+        <span>القرية كاملة</span>
       </div>
     </div>
   </div>
@@ -187,7 +195,10 @@ canvas { display: block; }
 
 <div id="sideActions">
   <button class="action-btn" id="btnToggleInside" onclick="toggleInside()">🚪 ادخل البيت</button>
+  <button class="action-btn" id="btnFloorUp" style="display:none;" onclick="changeFloor(1)">▲ طابق أعلى</button>
+  <button class="action-btn" id="btnFloorDown" style="display:none;" onclick="changeFloor(-1)">▼ طابق أسفل</button>
   <button class="action-btn" id="btnDrive" style="display:none;" onclick="toggleDrive()">🚗 قيادة</button>
+  <button class="action-btn" onclick="openChat()">💬 محادثات</button>
   <button class="action-btn" onclick="openNeighbors()">👥 الجيران</button>
   <button class="action-btn gold" onclick="openShop()">🛍️ تسوّق</button>
 </div>
@@ -197,7 +208,7 @@ canvas { display: block; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCVJclfpEp9Jo9879C3RfZKiEdBUibwrxI",
@@ -215,12 +226,18 @@ const db = getFirestore(app);
 
 let villagers = [];
 let publicProps = [];
+let allMessages = [];
+let envSettings = { streetLights: true, houseLights: true, nightMode: false };
 let me = null;
+let inspectedOwner = null;
+let currentFloor = 0;
 let coins = 1000;
 let cart = [];
 let INSIDE = false;
 let DR = null;
 let currentZone = 'all';
+let chatTab = 'pub';
+let chatTarget = '';
 const deviceKey = "qaryatna_locked_user";
 
 const HOUSE_NAMES = {
@@ -228,7 +245,8 @@ const HOUSE_NAMES = {
   2: 'فيلا عصرية خشبية وداكنة',
   3: 'فيلا زجاجية بمسبح',
   4: 'قصر بأعمدة وشرفات',
-  5: 'قصر ملكي عصري متكامل'
+  5: 'قصر عصري بطابقين',
+  10: '🏰 قلعة ملكية حصينة (فرسان وحراسة)'
 };
 
 const CAR_SPECS = {
@@ -248,6 +266,7 @@ const CAR_COLORS = {
 
 const SHOP_ITEMS = [
   { id: 'upgrade_house', name: 'ترقية شكل البيت', icon: '🏡', price: 500 },
+  { id: 'castle_10', name: 'قلعة المستوى 10', icon: '🏰', price: 2500 },
   { id: 'car_sedan', name: 'سيارة سيدان', icon: '🚗', price: 250 },
   { id: 'car_sport', name: 'سيارة رياضية', icon: '🏎️', price: 550 },
   { id: 'car_suv', name: 'دفع رباعي SUV', icon: '🚙', price: 450 },
@@ -255,12 +274,9 @@ const SHOP_ITEMS = [
   { id: 'car_spoiler', name: 'جناح وتطوير سيارة', icon: '🏁', price: 220 },
   { id: 'color_gold', name: 'لون ذهبي للسيارة', icon: '✨', price: 180 },
   { id: 'color_blue', name: 'لون أزرق للسيارة', icon: '🔵', price: 120 },
-  { id: 'lanterns', name: 'إضاءة الحوش', icon: '🏮', price: 120 },
-  { id: 'plants', name: 'حديقة وأشجار', icon: '🌴', price: 150 },
-  { id: 'seating', name: 'جلسة خارجية', icon: '🪑', price: 200 },
-  { id: 'sofa_in', name: 'كنب مجلس', icon: '🛋️', price: 250 },
-  { id: 'tv_in', name: 'شاشة بلازما', icon: '📺', price: 300 },
-  { id: 'rug_in', name: 'سجادة فاخرة', icon: '🟫', price: 150 }
+  { id: 'sofa_in', name: 'أثاث كنب مجلس', icon: '🛋️', price: 250 },
+  { id: 'tv_in', name: 'أثاث شاشة وطاولة', icon: '📺', price: 300 },
+  { id: 'rug_in', name: 'سجادة وإضاءة داخلية', icon: '🟫', price: 150 }
 ];
 
 const R = new THREE.WebGLRenderer({ antialias: true });
@@ -270,13 +286,14 @@ document.body.appendChild(R.domElement);
 
 const S = new THREE.Scene();
 S.background = new THREE.Color(0xdccaa8);
-S.fog = new THREE.Fog(0xdccaa8, 120, 400);
+S.fog = new THREE.Fog(0xdccaa8, 130, 420);
 
-const C = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.1, 650);
-S.add(new THREE.HemisphereLight(0xfff8eb, 0x9e845c, 1.0));
-const sun = new THREE.DirectionalLight(0xffffff, 0.65);
-sun.position.set(60, 110, 50);
-S.add(sun);
+const C = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.1, 680);
+const hemiLight = new THREE.HemisphereLight(0xfff8eb, 0x9e845c, 1.0);
+S.add(hemiLight);
+const sunLight = new THREE.DirectionalLight(0xffffff, 0.65);
+sunLight.position.set(60, 110, 50);
+S.add(sunLight);
 
 const M = c => new THREE.MeshLambertMaterial({ color: c });
 function box(w, h, d, c, x, y, z, p) {
@@ -288,17 +305,124 @@ function cyl(r1, r2, h, c, x, y, z, p, s) {
   m.position.set(x, y, z); (p || S).add(m); return m;
 }
 function makeLabel(text, bg = '#ffffff', fg = '#111111') {
-  const k = document.createElement('canvas'); k.width = 280; k.height = 64;
+  const k = document.createElement('canvas'); k.width = 300; k.height = 64;
   const g = k.getContext('2d');
-  g.fillStyle = bg; g.beginPath(); g.roundRect(10, 8, 260, 48, 20); g.fill();
-  g.fillStyle = fg; g.font = 'bold 25px sans-serif'; g.textAlign = 'center';
-  g.fillText(text, 140, 41);
+  g.fillStyle = bg; g.beginPath(); g.roundRect(10, 8, 280, 48, 20); g.fill();
+  g.fillStyle = fg; g.font = 'bold 24px sans-serif'; g.textAlign = 'center';
+  g.fillText(text, 150, 41);
   return new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(k) }));
 }
 
-box(520, 0.2, 520, 0xd4be96, 0, -0.1, 0);
-box(420, 0.05, 14, 0xbfa57a, 0, 0.02, 0);
-box(14, 0.05, 420, 0xbfa57a, 0, 0.02, 0);
+// أرضية القرية
+box(560, 0.2, 560, 0xcab48c, 0, -0.1, 0);
+
+// طرق أسفلتية رئيسية وفرعية مع خطوط الطريق والأرصفة
+const roadGroup = new THREE.Group();
+S.add(roadGroup);
+function addAsphaltRoad(x, z, w, d, horizontal = true) {
+  // رصيف جانبي
+  box(w + 1.4, 0.08, d + 1.4, 0x94a3b8, x, 0.01, z, roadGroup);
+  // طبقة الأسفلت الداكنة
+  box(w, 0.12, d, 0x26292e, x, 0.03, z, roadGroup);
+  // خطوط التخطيط البيضاء المتقطعة
+  if (horizontal) {
+    for (let lx = x - w / 2 + 8; lx < x + w / 2 - 6; lx += 16) {
+      box(7, 0.14, 0.35, 0xf8fafc, lx, 0.04, z, roadGroup);
+    }
+  } else {
+    for (let lz = z - d / 2 + 8; lz < z + d / 2 - 6; lz += 16) {
+      box(0.35, 0.14, 7, 0xf8fafc, x, 0.04, lz, roadGroup);
+    }
+  }
+}
+addAsphaltRoad(0, 0, 420, 12, true);
+addAsphaltRoad(0, 0, 12, 420, false);
+addAsphaltRoad(0, 75, 400, 9, true);
+addAsphaltRoad(0, -75, 400, 9, true);
+addAsphaltRoad(75, 0, 9, 400, false);
+addAsphaltRoad(-75, 0, 9, 400, false);
+
+// أعمدة إنارة الشوارع (تتحكم بها لوحة الإدارة)
+const streetLampBulbs = [];
+const streetLampHalos = [];
+const lampPositions = [
+  [-120, 7.5], [-80, 7.5], [-40, 7.5], [0, 7.5], [40, 7.5], [80, 7.5], [120, 7.5],
+  [-120, -7.5], [-80, -7.5], [-40, -7.5], [0, -7.5], [40, -7.5], [80, -7.5], [120, -7.5],
+  [7.5, -120], [7.5, -80], [7.5, -40], [7.5, 40], [7.5, 80], [7.5, 120],
+  [-7.5, -120], [-7.5, -80], [-7.5, -40], [-7.5, 40], [-7.5, 80], [-7.5, 120]
+];
+let COLS = [];
+lampPositions.forEach(([lx, lz]) => {
+  cyl(0.12, 0.18, 6.2, 0x1e293b, lx, 3.1, lz, roadGroup);
+  box(1.4, 0.15, 0.25, 0x1e293b, lx + (lz > 0 ? -0.5 : 0.5), 6.2, lz, roadGroup);
+  const bulbMat = new THREE.MeshBasicMaterial({ color: 0xffd166 });
+  const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.32, 8, 8), bulbMat);
+  bulb.position.set(lx + (lz > 0 ? -1.1 : 1.1), 6.05, lz);
+  roadGroup.add(bulb);
+  streetLampBulbs.push(bulb);
+
+  const haloMat = new THREE.MeshBasicMaterial({ color: 0xffd166, transparent: true, opacity: 0.22 });
+  const halo = new THREE.Mesh(new THREE.SphereGeometry(2.4, 10, 10), haloMat);
+  halo.position.copy(bulb.position);
+  roadGroup.add(halo);
+  streetLampHalos.push(halo);
+  COLS.push([lx - 0.6, lx + 0.6, lz - 0.6, lz + 0.6]);
+});
+
+// توزيع تلقائي ذكي للبيوت لمنع التراكم أو الوقوع على الطرق
+function computeNonOverlappingCoords(list, props) {
+  const placed = [];
+  const blockedCircles = [
+    ...props.map(p => ({ x: p.x || 0, z: p.z || 0, r: 16 }))
+  ];
+  const isOnRoad = (x, z) => {
+    return Math.abs(x) < 11 || Math.abs(z) < 11 ||
+           Math.abs(x - 75) < 9 || Math.abs(x + 75) < 9 ||
+           Math.abs(z - 75) < 9 || Math.abs(z + 75) < 9;
+  };
+
+  return list.map((v, idx) => {
+    // إذا كان للمستخدم إحداثيات محفوظة ولا تتعارض مع الطرق أو بيوت سابقة، نحتفظ بها؛ وإلا نولد إحداثيات تلقائية آمنة
+    let candidateX = typeof v.x === 'number' ? v.x : null;
+    let candidateZ = typeof v.z === 'number' ? v.z : null;
+
+    const conflicts = (tx, tz) => {
+      if (tx === null || tz === null) return true;
+      if (Math.abs(tx) > 165 || Math.abs(tz) > 165) return true;
+      if (isOnRoad(tx, tz)) return true;
+      for (const b of blockedCircles) {
+        if (Math.hypot(tx - b.x, tz - b.z) < b.r + 12) return true;
+      }
+      for (const p of placed) {
+        if (Math.hypot(tx - p.x, tz - p.z) < 22) return true;
+      }
+      return false;
+    };
+
+    if (conflicts(candidateX, candidateZ)) {
+      // بحث حلزوني/شبكي منظم لضمان عدم التراكم مهما زاد عدد البيوت
+      let found = false;
+      for (let step = 0; step < 400; step++) {
+        const angle = step * 0.75;
+        const radius = 22 + Math.floor(step / 8) * 18;
+        const tx = Math.round(Math.cos(angle) * radius);
+        const tz = Math.round(Math.sin(angle) * radius);
+        if (!conflicts(tx, tz)) {
+          candidateX = tx;
+          candidateZ = tz;
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        candidateX = 24 + (idx % 10) * 24;
+        candidateZ = 24 + Math.floor(idx / 10) * 24;
+      }
+    }
+    placed.push({ x: candidateX, z: candidateZ });
+    return { ...v, x: candidateX, z: candidateZ };
+  });
+}
 
 function createAvatar(shirt = 0x231f1a) {
   const g = new THREE.Group();
@@ -315,7 +439,25 @@ function createAvatar(shirt = 0x231f1a) {
 const P = createAvatar();
 S.add(P);
 
-// بناء السيارة مع اللون المخصص وإضافة الجناح/التطوير الرياضي
+// بناء فارس أو جندي حراسة للمستوى 10
+function createKnightGuard(armorColor = 0x64748b, plumeColor = 0xdc2626) {
+  const g = new THREE.Group();
+  // درع الجسم
+  box(0.95, 1.45, 0.55, armorColor, 0, 1.45, 0, g);
+  // أرجل معدنية
+  box(0.34, 0.75, 0.34, 0x334155, -0.24, 0.38, 0, g);
+  box(0.34, 0.75, 0.34, 0x334155, 0.24, 0.38, 0, g);
+  // خوذة الفارس
+  const helm = new THREE.Mesh(new THREE.SphereGeometry(0.48, 14, 12), M(0x94a3b8));
+  helm.position.y = 2.55; g.add(helm);
+  // ريشة الخوذة
+  box(0.14, 0.55, 0.35, plumeColor, 0, 3.1, -0.1, g);
+  // رمح/سيف
+  cyl(0.05, 0.05, 3.2, 0x475569, 0.65, 1.6, 0.35, g);
+  box(0.18, 0.45, 0.06, 0xe2e8f0, 0.65, 3.25, 0.35, g);
+  return g;
+}
+
 function buildCarMesh(type = 'sedan', colorKey = null, hasSpoiler = false) {
   const sp = CAR_SPECS[type] || CAR_SPECS.sedan;
   const customHex = (colorKey && CAR_COLORS[colorKey]) ? CAR_COLORS[colorKey].hex : sp.color;
@@ -326,7 +468,6 @@ function buildCarMesh(type = 'sedan', colorKey = null, hasSpoiler = false) {
   box(sp.w * 0.84, sp.h * 0.82, sp.len * 0.5, customHex, 0, baseY + sp.h * 0.85, -0.15, g);
   box(sp.w * 0.86, sp.h * 0.55, sp.len * 0.46, 0x1e293b, 0, baseY + sp.h * 0.85, -0.15, g);
 
-  // مصابيح أمامية مضيئة
   [-sp.w * 0.32, sp.w * 0.32].forEach(lx => {
     box(0.32, 0.16, 0.1, 0xfef08a, lx, baseY, sp.len * 0.5 + 0.04, g);
   });
@@ -352,8 +493,46 @@ function buildCarMesh(type = 'sedan', colorKey = null, hasSpoiler = false) {
   return g;
 }
 
+const houseWindowMaterials = [];
+
 function buildHouseArchitecture(g, lv, customStyle) {
-  const style = Math.min(5, Math.max(1, Number(customStyle || lv || 1)));
+  const winColor = envSettings.houseLights ? 0xfef08a : 0x1e293b;
+  const style = (lv >= 10 || customStyle >= 10) ? 10 : Math.min(5, Math.max(1, Number(customStyle || lv || 1)));
+
+  if (style === 10) {
+    // المستوى 10: قلعة فخمة + سور قلعة + أبراج + فرسان وجنود حراسة
+    box(18, 0.25, 18, 0x78716c, 0, 0.12, 0, g);
+    // سور القلعة المحيط مع بوابة
+    box(18, 3.6, 0.8, 0x57534e, 0, 1.8, -8.6, g);
+    box(0.8, 3.6, 18, 0x57534e, -8.6, 1.8, 0, g);
+    box(0.8, 3.6, 18, 0x57534e, 8.6, 1.8, 0, g);
+    box(6.2, 3.6, 0.8, 0x57534e, -5.9, 1.8, 8.6, g);
+    box(6.2, 3.6, 0.8, 0x57534e, 5.9, 1.8, 8.6, g);
+    // شرفات السور
+    for (let sx = -7.5; sx <= 7.5; sx += 2.5) {
+      box(1.1, 0.8, 0.9, 0x78716c, sx, 4.0, -8.6, g);
+      if (Math.abs(sx) > 3.2) box(1.1, 0.8, 0.9, 0x78716c, sx, 4.0, 8.6, g);
+    }
+    // 4 أبراج زاوية للقلعة
+    [[-8.6, -8.6], [8.6, -8.6], [-8.6, 8.6], [8.6, 8.6]].forEach(([tx, tz]) => {
+      cyl(1.8, 2.1, 7.2, 0x44403c, tx, 3.6, tz, g, 12);
+      cyl(0.2, 2.3, 2.4, 0xb45309, tx, 8.4, tz, g, 12);
+    });
+    // هيكل القلعة الرئيسي والبرج المركزي
+    box(9.5, 6.0, 8.5, 0x64748b, 0, 3.0, -1.5, g);
+    box(5.2, 9.5, 5.2, 0x475569, 0, 4.75, -1.5, g);
+    cyl(0.2, 3.6, 3.2, 0xd4af37, 0, 11.1, -1.5, g, 12);
+    // بوابة القلعة الضخمة
+    box(3.4, 3.2, 0.6, 0x451a03, 0, 1.6, 8.6, g);
+
+    // فرسان وجنود الحراسة عند البوابة وعلى السور
+    const g1 = createKnightGuard(0x94a3b8, 0xdc2626); g1.position.set(-2.4, 0, 9.5); g.add(g1);
+    const g2 = createKnightGuard(0x94a3b8, 0xdc2626); g2.position.set(2.4, 0, 9.5); g.add(g2);
+    const g3 = createKnightGuard(0x64748b, 0xd4af37); g3.position.set(-5.5, 3.6, 8.6); g.add(g3);
+    const g4 = createKnightGuard(0x64748b, 0xd4af37); g4.position.set(5.5, 3.6, 8.6); g.add(g4);
+    const g5 = createKnightGuard(0x475569, 0xf59e0b); g5.position.set(0, 3.6, -8.6); g.add(g5);
+    return;
+  }
 
   if (style === 1) {
     box(6.5, 3.0, 5.2, 0xf8fafc, -1.2, 1.5, -1.5, g);
@@ -364,29 +543,30 @@ function buildHouseArchitecture(g, lv, customStyle) {
     box(0.3, 2.6, 4.8, 0xf1f5f9, 5.1, 1.3, 0.8, g);
     box(2.8, 0.3, 1.4, 0xcbd5e1, 0, 0.15, 2.2, g);
     box(1.1, 2.0, 0.2, 0x1e293b, -1.0, 1.0, 1.15, g);
-    box(1.4, 1.1, 0.2, 0x1e293b, -2.8, 1.8, 1.15, g);
+    const w = box(1.4, 1.1, 0.2, winColor, -2.8, 1.8, 1.15, g);
+    houseWindowMaterials.push(w.material);
   } else if (style === 2) {
     box(7.8, 3.2, 5.4, 0xf8fafc, 0, 1.6, -1.2, g);
     box(8.6, 3.0, 6.0, 0x334155, 0, 4.6, -0.6, g);
     box(4.8, 2.0, 0.3, 0xb47b44, 1.2, 4.6, 2.45, g);
-    box(2.2, 1.6, 0.3, 0x0f172a, -2.2, 4.6, 2.45, g);
-    box(2.2, 1.5, 0.3, 0x0f172a, -2.2, 1.7, 1.55, g);
+    const w1 = box(2.2, 1.6, 0.3, winColor, -2.2, 4.6, 2.45, g);
+    const w2 = box(2.2, 1.5, 0.3, winColor, -2.2, 1.7, 1.55, g);
+    houseWindowMaterials.push(w1.material, w2.material);
     box(1.2, 2.1, 0.3, 0x6b3f22, 0.2, 1.05, 1.55, g);
     box(3.4, 0.3, 1.5, 0xcbd5e1, 0.2, 0.15, 2.2, g);
   } else if (style === 3) {
     box(9.2, 2.8, 5.0, 0xf1f5f9, 0, 1.4, -2.2, g);
     box(9.6, 2.6, 5.4, 0xe2e8f0, 0, 4.1, -1.8, g);
-    box(7.6, 1.8, 0.2, 0x38bdf8, 0, 4.1, 0.95, g);
-    box(5.0, 1.7, 0.2, 0x38bdf8, -1.2, 1.3, 0.35, g);
+    const w1 = box(7.6, 1.8, 0.2, envSettings.houseLights ? 0xfef08a : 0x38bdf8, 0, 4.1, 0.95, g);
+    const w2 = box(5.0, 1.7, 0.2, envSettings.houseLights ? 0xfef08a : 0x38bdf8, -1.2, 1.3, 0.35, g);
+    houseWindowMaterials.push(w1.material, w2.material);
     box(5.6, 0.25, 3.4, 0xe2e8f0, -1.2, 0.12, 3.4, g);
     box(5.0, 0.28, 2.8, 0x22d3ee, -1.2, 0.15, 3.4, g);
   } else if (style === 4) {
     box(7.4, 3.0, 5.4, 0xe8dec5, -0.5, 1.5, -1.5, g);
     box(6.6, 2.8, 4.8, 0xf3ead8, -0.8, 4.4, -1.8, g);
     box(2.8, 4.8, 3.6, 0xdfd3be, -3.2, 2.4, -1.2, g);
-    [-1.2, 1.8].forEach(cx => {
-      box(0.45, 5.8, 0.45, 0xffffff, cx, 2.9, 1.4, g);
-    });
+    [-1.2, 1.8].forEach(cx => box(0.45, 5.8, 0.45, 0xffffff, cx, 2.9, 1.4, g));
     box(7.6, 0.75, 0.2, 0x27272a, -0.4, 3.35, 1.35, g);
     box(8.0, 0.75, 0.2, 0x27272a, -0.4, 6.1, 1.35, g);
     box(3.4, 0.3, 1.6, 0xd97706, 0.3, 0.15, 2.2, g);
@@ -394,10 +574,9 @@ function buildHouseArchitecture(g, lv, customStyle) {
     box(9.6, 3.2, 6.2, 0xf8fafc, 0, 1.6, -1.5, g);
     box(8.8, 3.0, 5.6, 0x1e293b, 0, 4.7, -1.8, g);
     box(5.4, 2.6, 4.2, 0xfdfbf7, 1.4, 7.5, -2.0, g);
-    [-3.6, -1.2, 1.2, 3.6].forEach(cx => {
-      box(0.4, 6.0, 0.4, 0xd4af37, cx, 3.0, 1.75, g);
-    });
-    box(8.6, 1.6, 0.25, 0x38bdf8, 0, 4.7, 1.05, g);
+    [-3.6, -1.2, 1.2, 3.6].forEach(cx => box(0.4, 6.0, 0.4, 0xd4af37, cx, 3.0, 1.75, g));
+    const w = box(8.6, 1.6, 0.25, winColor, 0, 4.7, 1.05, g);
+    houseWindowMaterials.push(w.material);
     box(5.2, 0.3, 3.4, 0x38bdf8, 0, 0.15, 3.3, g);
   }
 }
@@ -414,54 +593,41 @@ function getCarInfo(v) {
 function buildDesertHouse(v) {
   const g = new THREE.Group();
   const lv = v.levels || 1;
-  const style = v.houseStyle || lv;
+  const style = (lv >= 10 || v.houseStyle >= 10) ? 10 : (v.houseStyle || lv);
+  const isCastle = style === 10;
+  const yardSize = isCastle ? 18 : 14;
 
-  box(14, 0.15, 14, 0xcab082, 0, 0.08, 0, g);
-  box(14, 1.2, 0.45, 0xc9af82, 0, 0.6, -6.75, g);
-  box(0.45, 1.2, 14, 0xc9af82, -6.75, 0.6, 0, g);
-  box(0.45, 1.2, 14, 0xc9af82, 6.75, 0.6, 0, g);
-  box(4.5, 1.2, 0.45, 0xc9af82, -4.75, 0.6, 6.75, g);
-  box(4.5, 1.2, 0.45, 0xc9af82, 4.75, 0.6, 6.75, g);
+  box(yardSize, 0.15, yardSize, 0xcab082, 0, 0.08, 0, g);
+  if (!isCastle) {
+    box(14, 1.2, 0.45, 0xc9af82, 0, 0.6, -6.75, g);
+    box(0.45, 1.2, 14, 0xc9af82, -6.75, 0.6, 0, g);
+    box(0.45, 1.2, 14, 0xc9af82, 6.75, 0.6, 0, g);
+    box(4.5, 1.2, 0.45, 0xc9af82, -4.75, 0.6, 6.75, g);
+    box(4.5, 1.2, 0.45, 0xc9af82, 4.75, 0.6, 6.75, g);
+  }
 
   buildHouseArchitecture(g, lv, style);
 
   const cleanUser = (v.username || 'user').replace(/^@/, '');
-  const topTag = makeLabel(`@${cleanUser} · L${lv}`, '#ffffff', '#1a1a1a');
-  const tagY = style >= 5 ? 10.2 : style === 4 ? 8.2 : style >= 2 ? 7.4 : 5.4;
+  const topTag = makeLabel(isCastle ? `🏰 @${cleanUser} (قلعة L10)` : `@${cleanUser} · L${lv}`, isCastle ? '#231f1a' : '#ffffff', isCastle ? '#dfa848' : '#1a1a1a');
+  const tagY = isCastle ? 13.8 : style >= 5 ? 10.2 : style === 4 ? 8.2 : style >= 2 ? 7.4 : 5.4;
   topTag.position.set(0, tagY, -1.5);
-  topTag.scale.set(5.6, 1.35, 1);
+  topTag.scale.set(6.2, 1.4, 1);
   g.add(topTag);
-
-  const items = v.items || {};
-  if (items.plants || style === 1 || style === 3) {
-    [-5.3, 5.3].forEach(px => {
-      cyl(0.25, 0.35, 2.2, 0x6e472b, px, 1.1, 4.6, g);
-      const lf = new THREE.Mesh(new THREE.ConeGeometry(1.4, 1.7, 7), M(0x3d7a37));
-      lf.position.set(px, 2.5, 4.6); g.add(lf);
-    });
-  }
-  if (items.lanterns) {
-    [-2.5, 2.5].forEach(lx => {
-      cyl(0.12, 0.12, 2.2, 0x222222, lx, 1.1, 6.1, g);
-      const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.32, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffb703 }));
-      bulb.position.set(lx, 2.3, 6.1); g.add(bulb);
-    });
-  }
-  if (items.seating) {
-    box(2.2, 0.5, 1.2, 0x8c5230, -4.5, 0.35, 2.6, g);
-    box(1.2, 0.4, 1.2, 0xd9a760, -4.5, 0.65, 2.6, g);
-  }
 
   const ci = getCarInfo(v);
   if (ci.hasCar) {
     const carObj = buildCarMesh(ci.carType, ci.colorKey, ci.hasSpoiler);
-    carObj.position.set(3.4, 0, 1.5);
+    carObj.position.set(isCastle ? 5.2 : 3.4, 0, isCastle ? 11.2 : 1.5);
     g.add(carObj);
   }
 
   g.position.set(v.x || 0, 0, v.z || 0);
   villageGroup.add(g);
-  COLS.push([v.x - 4.2, v.x + 4.2, v.z - 4.5, v.z + 2.2]);
+
+  // صندوق تصادم قوي لمنع اختراق المنزل أو السور والاندماج فيه
+  const half = isCastle ? 9.4 : 6.8;
+  COLS.push([v.x - half, v.x + half, v.z - half, v.z + half]);
 }
 
 function buildPublicProp(p) {
@@ -479,7 +645,7 @@ function buildPublicProp(p) {
   g.add(tag);
   g.position.set(p.x || 30, 0, p.z || -30);
   villageGroup.add(g);
-  COLS.push([p.x - 6, p.x + 6, p.z - 5, p.z + 5]);
+  COLS.push([(p.x || 30) - 6.5, (p.x || 30) + 6.5, (p.z || -30) - 5.5, (p.z || -30) + 5.5]);
 }
 
 const villageGroup = new THREE.Group();
@@ -488,28 +654,47 @@ const interiorGroup = new THREE.Group();
 interiorGroup.visible = false;
 S.add(interiorGroup);
 let interactiveSlots = [];
-let COLS = [];
+let interiorWalls = [];
 
-function buildInteriorScene(owner) {
+// بناء المشهد الداخلي مع الطوابق والأثاث
+function buildInteriorScene(owner, floor = 0) {
   while (interiorGroup.children.length) interiorGroup.remove(interiorGroup.children[0]);
   interactiveSlots = [];
+  interiorWalls = [];
   const IX = 1000;
-  box(14, 0.3, 14, 0x7d7265, IX, -0.15, 0, interiorGroup);
+  const maxFloors = ((owner && (owner.levels >= 10 || owner.houseStyle >= 10)) ? 3 : Math.min(3, Math.max(1, Number((owner && owner.levels) || 1))));
+  currentFloor = Math.max(0, Math.min(maxFloors - 1, floor));
+
+  const floorTint = currentFloor === 0 ? 0x7d7265 : currentFloor === 1 ? 0x8a6d4b : 0x5b5247;
+  box(14, 0.3, 14, floorTint, IX, -0.15, 0, interiorGroup);
   box(14, 5, 0.3, 0x8c7b65, IX, 2.5, -7, interiorGroup);
   box(0.3, 5, 14, 0x7d6d58, IX - 7, 2.5, 0, interiorGroup);
   box(0.3, 5, 14, 0x7d6d58, IX + 7, 2.5, 0, interiorGroup);
   box(2.2, 3.2, 0.3, 0x4a2e1b, IX, 1.6, 6.8, interiorGroup);
 
+  // درج/منصة الصعود بين الطوابق
+  box(2.4, 0.4, 2.2, 0xd97706, IX + 4.8, 0.2, 4.5, interiorGroup);
+  const fTag = makeLabel(`طابق ${currentFloor + 1} / ${maxFloors}`, '#231f1a', '#dfa848');
+  fTag.position.set(IX, 4.2, -5.5);
+  fTag.scale.set(4.5, 1.1, 1);
+  interiorGroup.add(fTag);
+
   const items = (owner && owner.items) || {};
+  const floorPrefix = currentFloor > 0 ? `_f${currentFloor}` : '';
   const slots = [
-    { id: 'sofa_in', name: 'كنب مجلس', price: 250, x: IX - 3.5, y: 0.7, z: -2, w: 3.5, h: 1.4, d: 1.6, owned: items.sofa_in },
-    { id: 'tv_in', name: 'شاشة بلازما', price: 300, x: IX + 4, y: 1.5, z: -2, w: 0.6, h: 2.2, d: 3.5, owned: items.tv_in },
-    { id: 'rug_in', name: 'سجادة فاخرة', price: 150, x: IX, y: 0.1, z: 0, w: 5, h: 0.2, d: 4, owned: items.rug_in }
+    { id: 'sofa_in', name: 'أثاث كنب مجلس', price: 250, x: IX - 3.5, y: 0.7, z: -2, w: 3.5, h: 1.4, d: 1.6, owned: !!(items.sofa_in || items['sofa_in' + floorPrefix]), color: 0xb85d3b },
+    { id: 'tv_in', name: 'أثاث شاشة وطاولة', price: 300, x: IX + 4, y: 1.5, z: -2, w: 0.6, h: 2.2, d: 3.5, owned: !!(items.tv_in || items['tv_in' + floorPrefix]), color: 0x111111 },
+    { id: 'rug_in', name: 'سجادة وإضاءة داخلية', price: 150, x: IX, y: 0.1, z: 0, w: 5, h: 0.2, d: 4, owned: !!(items.rug_in || items['rug_in' + floorPrefix]), color: 0x991b1b }
   ];
 
   slots.forEach(sl => {
     if (sl.owned) {
-      box(sl.w, sl.h, sl.d, sl.id === 'sofa_in' ? 0xb85d3b : sl.id === 'tv_in' ? 0x111111 : 0xa33b3b, sl.x, sl.y, sl.z, interiorGroup);
+      box(sl.w, sl.h, sl.d, sl.color, sl.x, sl.y, sl.z, interiorGroup);
+      if (sl.id === 'rug_in' && envSettings.houseLights) {
+        const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.45, 10, 10), new THREE.MeshBasicMaterial({ color: 0xfef08a }));
+        lamp.position.set(IX, 4.4, 0); interiorGroup.add(lamp);
+      }
+      interiorWalls.push([sl.x - sl.w / 2, sl.x + sl.w / 2, sl.z - sl.d / 2, sl.z + sl.d / 2]);
     } else {
       const geo = new THREE.BoxGeometry(sl.w, sl.h, sl.d);
       const line = new THREE.LineSegments(new THREE.EdgesGeometry(geo), new THREE.LineBasicMaterial({ color: 0xf5c469 }));
@@ -530,10 +715,39 @@ function buildInteriorScene(owner) {
   });
 }
 
+function applyEnvironmentSettings() {
+  const isNight = !!envSettings.nightMode;
+  const streetsOn = !!envSettings.streetLights;
+  const housesOn = !!envSettings.houseLights;
+
+  if (isNight) {
+    // في الليل: إذا طفت أنوار الشوارع والبيوت يصبح ظلاماً دامساً
+    const litBoost = (streetsOn || housesOn) ? 0.24 : 0.04;
+    S.background = new THREE.Color(litBoost > 0.1 ? 0x0f172a : 0x05070d);
+    S.fog = new THREE.Fog(litBoost > 0.1 ? 0x0f172a : 0x05070d, 60, 260);
+    hemiLight.intensity = litBoost;
+    sunLight.intensity = 0.03;
+  } else {
+    S.background = new THREE.Color(0xdccaa8);
+    S.fog = new THREE.Fog(0xdccaa8, 130, 420);
+    hemiLight.intensity = 1.0;
+    sunLight.intensity = 0.65;
+  }
+
+  streetLampBulbs.forEach(b => { b.material.color.setHex(streetsOn ? 0xffd166 : 0x334155); });
+  streetLampHalos.forEach(h => { h.visible = streetsOn; });
+
+  const winHex = housesOn ? 0xfef08a : 0x1e293b;
+  houseWindowMaterials.forEach(m => { m.color.setHex(winHex); });
+}
+
 function renderVillage() {
   while (villageGroup.children.length) villageGroup.remove(villageGroup.children[0]);
   COLS = [];
-  const filtered = villagers.filter(v => {
+  lampPositions.forEach(([lx, lz]) => COLS.push([lx - 0.6, lx + 0.6, lz - 0.6, lz + 0.6]));
+
+  const arranged = computeNonOverlappingCoords(villagers, publicProps);
+  const filtered = arranged.filter(v => {
     if (currentZone === 'all') return true;
     const x = v.x || 0, z = v.z || 0;
     if (currentZone === 'ne') return x >= 0 && z <= 0;
@@ -545,20 +759,28 @@ function renderVillage() {
   });
   filtered.forEach(buildDesertHouse);
   publicProps.forEach(buildPublicProp);
+  applyEnvironmentSettings();
 }
 
 function syncMyCoinsUI() {
-  if (me && typeof me.coins === 'number') {
-    coins = me.coins;
-  }
+  if (me && typeof me.coins === 'number') coins = me.coins;
   document.getElementById('myCoinsBadge').textContent = '🪙 ' + coins;
   const hc = document.getElementById('hudCoins');
   if (hc) hc.textContent = coins;
 }
 
+onSnapshot(collection(db, "settings"), snap => {
+  snap.forEach(d => {
+    if (d.id === 'env') envSettings = { ...envSettings, ...d.data() };
+  });
+  applyEnvironmentSettings();
+});
+
 onSnapshot(collection(db, "villagers"), snap => {
-  villagers = [];
-  snap.forEach(d => villagers.push({ docId: d.id, ...d.data() }));
+  const rawList = [];
+  snap.forEach(d => rawList.push({ docId: d.id, ...d.data() }));
+  villagers = computeNonOverlappingCoords(rawList, publicProps);
+
   document.getElementById('totalHouses').textContent = villagers.length;
   if (villagers.length > 0) {
     const top = [...villagers].sort((a, b) => (b.levels || 1) - (a.levels || 1))[0];
@@ -570,11 +792,12 @@ onSnapshot(collection(db, "villagers"), snap => {
     const updatedMe = villagers.find(v => (v.username || '').replace(/^@/, '').toLowerCase() === savedUser.toLowerCase());
     if (updatedMe) {
       me = updatedMe;
+      if (!inspectedOwner) inspectedOwner = me;
       if (typeof me.coins === 'number') coins = me.coins;
-      document.getElementById('hudUser').textContent = `${me.username} (L${me.levels || 1})`;
+      document.getElementById('hudUser').textContent = `${inspectedOwner.username} (L${inspectedOwner.levels || 1})`;
       const ci = getCarInfo(me);
       document.getElementById('btnDrive').style.display = ci.hasCar ? 'block' : 'none';
-      if (INSIDE) buildInteriorScene(me);
+      if (INSIDE) buildInteriorScene(inspectedOwner, currentFloor);
     }
   }
   syncMyCoinsUI();
@@ -585,6 +808,14 @@ onSnapshot(collection(db, "public_properties"), snap => {
   publicProps = [];
   snap.forEach(d => publicProps.push({ docId: d.id, ...d.data() }));
   renderVillage();
+});
+
+onSnapshot(query(collection(db, "village_messages"), orderBy("timestamp", "asc"), limit(80)), snap => {
+  allMessages = [];
+  snap.forEach(d => allMessages.push({ id: d.id, ...d.data() }));
+  if (document.getElementById('bottomSheet').style.display === 'block' && document.getElementById('bottomSheet').dataset.mode === 'chat') {
+    renderChatSheet();
+  }
 });
 
 function toast(msg) {
@@ -604,19 +835,20 @@ window.enterZone = async (zone, goInside = false, openShopAfter = false) => {
     }
     let found = villagers.find(v => (v.username || '').replace(/^@/, '').toLowerCase() === rawInput);
     if (!found) {
-      const x = Math.floor(Math.random() * 120) - 60;
-      const z = Math.floor(Math.random() * 120) - 60;
       const newHouse = {
         username: '@' + rawInput,
         name: `@${rawInput} (دخول مباشر)`,
         levels: 1, houseStyle: 1, coins: 1000,
         hasCar: false, carType: null, carColor: null, carSpoiler: false,
-        items: {}, x, z, timestamp: new Date()
+        items: {}, timestamp: new Date()
       };
       const ref = await addDoc(collection(db, "villagers"), newHouse);
       found = { docId: ref.id, ...newHouse };
+      villagers = computeNonOverlappingCoords([...villagers, found], publicProps);
+      found = villagers.find(v => v.docId === ref.id) || found;
     }
     me = found;
+    inspectedOwner = me;
     if (typeof me.coins === 'number') coins = me.coins;
     localStorage.setItem(deviceKey, rawInput);
   }
@@ -628,12 +860,14 @@ window.enterZone = async (zone, goInside = false, openShopAfter = false) => {
   document.getElementById('gameHUD').style.display = 'flex';
   document.getElementById('joy').style.display = 'block';
   document.getElementById('sideActions').style.display = 'flex';
-  document.getElementById('hudUser').textContent = me ? `${me.username} (L${me.levels || 1})` : '@زائر';
+
+  const targetOwner = inspectedOwner || me;
+  document.getElementById('hudUser').textContent = targetOwner ? `${targetOwner.username} (L${targetOwner.levels || 1})` : '@زائر';
   const ci = me ? getCarInfo(me) : { hasCar: false };
   document.getElementById('btnDrive').style.display = ci.hasCar ? 'block' : 'none';
 
-  P.position.set(me ? me.x : 0, 0, me ? me.z + 9 : 10);
-  if (goInside && me) toggleInside(true);
+  P.position.set(targetOwner ? targetOwner.x : 0, 0, targetOwner ? targetOwner.z + 10 : 12);
+  if (goInside && targetOwner) toggleInside(true, targetOwner);
   if (openShopAfter) openShop();
 };
 
@@ -647,23 +881,48 @@ window.backToMap = () => {
   document.getElementById('bottomSheet').style.display = 'none';
 };
 
-window.toggleInside = (forceState) => {
+window.toggleInside = (forceState, ownerObj = null) => {
   INSIDE = typeof forceState === 'boolean' ? forceState : !INSIDE;
+  if (ownerObj) inspectedOwner = ownerObj;
+  if (!inspectedOwner) inspectedOwner = me;
+
   villageGroup.visible = !INSIDE;
   interiorGroup.visible = INSIDE;
   document.getElementById('btnToggleInside').textContent = INSIDE ? '🚪 اطلع برا' : '🚪 ادخل البيت';
-  document.getElementById('hudSub').innerHTML = `${INSIDE ? 'داخل البيت' : 'الحوش والجيران'} · 🪙 <span id="hudCoins">${coins}</span>`;
+  document.getElementById('btnFloorUp').style.display = INSIDE ? 'block' : 'none';
+  document.getElementById('btnFloorDown').style.display = INSIDE ? 'block' : 'none';
+
   if (INSIDE) {
-    buildInteriorScene(me);
+    currentFloor = 0;
+    buildInteriorScene(inspectedOwner, currentFloor);
+    document.getElementById('hudUser').textContent = `بيت ${inspectedOwner ? inspectedOwner.username : '@زائر'}`;
+    document.getElementById('hudSub').innerHTML = `داخل البيت (طابق 1) · 🪙 <span id="hudCoins">${coins}</span>`;
     P.position.set(1000, 0, 4.5);
     dst = 14; pit = 0.75;
   } else {
-    P.position.set(me ? me.x : 0, 0, me ? me.z + 9 : 10);
+    document.getElementById('hudUser').textContent = `${inspectedOwner ? inspectedOwner.username : '@زائر'} (L${(inspectedOwner && inspectedOwner.levels) || 1})`;
+    document.getElementById('hudSub').innerHTML = `الحوش والجيران · 🪙 <span id="hudCoins">${coins}</span>`;
+    P.position.set(inspectedOwner ? inspectedOwner.x : 0, 0, inspectedOwner ? inspectedOwner.z + 10 : 12);
     dst = 18; pit = 0.55;
   }
 };
 
+window.changeFloor = (delta) => {
+  if (!INSIDE) return;
+  const maxFloors = ((inspectedOwner && (inspectedOwner.levels >= 10 || inspectedOwner.houseStyle >= 10)) ? 3 : Math.min(3, Math.max(1, Number((inspectedOwner && inspectedOwner.levels) || 1))));
+  const nextF = currentFloor + delta;
+  if (nextF < 0 || nextF >= maxFloors) {
+    toast(nextF < 0 ? 'أنت في الطابق الأرضي' : `الحد الأقصى للطوابق هنا (${maxFloors})`);
+    return;
+  }
+  currentFloor = nextF;
+  buildInteriorScene(inspectedOwner, currentFloor);
+  document.getElementById('hudSub').innerHTML = `داخل البيت (طابق ${currentFloor + 1}) · 🪙 <span id="hudCoins">${coins}</span>`;
+  toast(`🪜 انتقلت إلى الطابق ${currentFloor + 1}`);
+};
+
 window.toggleDrive = () => {
+  if (INSIDE) { toast('اخرج من المنزل أولاً لقيادة السيارة'); return; }
   if (DR) {
     S.remove(DR.g); P.visible = true; DR = null;
     document.getElementById('btnDrive').textContent = '🚗 قيادة';
@@ -675,6 +934,71 @@ window.toggleDrive = () => {
   DR = { g: carObj, x: P.position.x, z: P.position.z, a: 0, v: 0, type: ci.carType, hasSpoiler: ci.hasSpoiler };
   P.visible = false;
   document.getElementById('btnDrive').textContent = '🚶 نزول';
+};
+
+// نظام المحادثات العامة والخاصة عبر Firestore
+window.openChat = () => {
+  const sh = document.getElementById('bottomSheet');
+  sh.style.display = 'block';
+  sh.dataset.mode = 'chat';
+  renderChatSheet();
+};
+
+function renderChatSheet() {
+  const sh = document.getElementById('bottomSheet');
+  const myClean = (me && me.username ? me.username : '@guest').toLowerCase();
+  const others = villagers.filter(v => (v.username || '').toLowerCase() !== myClean);
+  if (!chatTarget && others.length > 0) chatTarget = others[0].username;
+
+  const filteredMsgs = allMessages.filter(m => {
+    if (chatTab === 'pub') return m.type === 'pub';
+    const pair = [(m.from || '').toLowerCase(), (m.to || '').toLowerCase()].sort().join('|');
+    const myPair = [myClean, (chatTarget || '').toLowerCase()].sort().join('|');
+    return m.type === 'pri' && pair === myPair;
+  });
+
+  sh.innerHTML = `
+    <div class="sheet-header">
+      <b>💬 محادثات القرية</b>
+      <button class="close-circle" onclick="closeSheet()">✕</button>
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:8px;align-items:center;flex-wrap:wrap;">
+      <button class="${chatTab === 'pub' ? 'btn-gold' : 'btn-dark'}" onclick="switchChatTab('pub')">🌍 عام</button>
+      <button class="${chatTab === 'pri' ? 'btn-gold' : 'btn-dark'}" onclick="switchChatTab('pri')">🔒 خاص</button>
+      ${chatTab === 'pri' ? `
+        <select id="chatTargetSel" onchange="changeChatTarget(this.value)" style="padding:7px;border-radius:10px;border:1px solid #cbbba0;">
+          ${others.map(o => `<option value="${o.username}" ${o.username === chatTarget ? 'selected' : ''}>${o.username}</option>`).join('')}
+        </select>
+      ` : ''}
+    </div>
+    <div class="chat-box" id="chatBoxList">
+      ${filteredMsgs.length === 0 ? '<div style="text-align:center;color:var(--muted);padding:12px;">لا توجد رسائل بعد</div>' :
+        filteredMsgs.map(m => `<div class="chat-msg"><b>${m.from}:</b> ${m.text}</div>`).join('')}
+    </div>
+    <div class="chat-row">
+      <input id="chatInputText" placeholder="اكتب رسالتك هنا...">
+      <button class="btn-gold" onclick="sendChatMsg()">إرسال</button>
+    </div>
+  `;
+  const boxEl = document.getElementById('chatBoxList');
+  if (boxEl) boxEl.scrollTop = boxEl.scrollHeight;
+}
+
+window.switchChatTab = (t) => { chatTab = t; renderChatSheet(); };
+window.changeChatTarget = (v) => { chatTarget = v; renderChatSheet(); };
+window.sendChatMsg = async () => {
+  const inp = document.getElementById('chatInputText');
+  const txt = (inp && inp.value || '').trim();
+  if (!txt) return;
+  const sender = (me && me.username) ? me.username : '@زائر';
+  await addDoc(collection(db, "village_messages"), {
+    type: chatTab,
+    from: sender,
+    to: chatTab === 'pri' ? chatTarget : 'all',
+    text: txt,
+    timestamp: new Date()
+  });
+  inp.value = '';
 };
 
 function updateCartUI() {
@@ -695,14 +1019,15 @@ window.addToCart = (itemId) => {
 window.openShop = () => {
   const sh = document.getElementById('bottomSheet');
   sh.style.display = 'block';
+  sh.dataset.mode = 'shop';
   const curLv = (me && me.levels) || 1;
-  const nextStyle = HOUSE_NAMES[Math.min(5, curLv + 1)] || HOUSE_NAMES[5];
+  const nextStyle = HOUSE_NAMES[curLv >= 10 ? 10 : Math.min(5, curLv + 1)] || HOUSE_NAMES[5];
   sh.innerHTML = `
     <div class="sheet-header">
-      <b>🛍️ تسوّق لبيتك وسيارتك (رصيدك: ${coins} 🪙)</b>
+      <b>🛍️ متجر البيت والقلعة والأثاث (رصيدك: ${coins} 🪙)</b>
       <button class="close-circle" onclick="closeSheet()">✕</button>
     </div>
-    <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">شكل الترقية القادم: <b>${nextStyle}</b></div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">الترقية القادم: <b>${nextStyle}</b></div>
     <div class="shop-grid">
       ${SHOP_ITEMS.map(it => `
         <div class="shop-item" onclick="addToCart('${it.id}')">
@@ -719,12 +1044,13 @@ window.openCart = () => {
   const sh = document.getElementById('bottomSheet');
   const total = cart.reduce((s, i) => s + i.price, 0);
   sh.style.display = 'block';
+  sh.dataset.mode = 'cart';
   sh.innerHTML = `
     <div class="sheet-header">
       <b>🛍️ سلتك (${cart.length} قطع)</b>
       <button class="close-circle" onclick="closeSheet()">✕</button>
     </div>
-    ${cart.length === 0 ? '<p style="text-align:center;color:var(--muted);">السلة فارغة، اختر قطعاً لبيتك</p>' :
+    ${cart.length === 0 ? '<p style="text-align:center;color:var(--muted);">السلة فارغة</p>' :
       cart.map((c, idx) => `
         <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;">
           <span>${c.icon} ${c.name}</span>
@@ -755,11 +1081,15 @@ window.checkoutCart = async () => {
   let carType = me.carType || null;
   let carColor = me.carColor || null;
   let carSpoiler = me.carSpoiler || false;
+  const floorSuffix = INSIDE && currentFloor > 0 ? `_f${currentFloor}` : '';
 
   cart.forEach(c => {
-    if (c.id === 'upgrade_house') {
-      newLevel = Math.min(5, newLevel + 1);
-      newStyle = Math.min(5, (newStyle || newLevel) + 1);
+    if (c.id === 'castle_10') {
+      newLevel = 10;
+      newStyle = 10;
+    } else if (c.id === 'upgrade_house') {
+      newLevel = newLevel >= 10 ? 10 : Math.min(5, newLevel + 1);
+      newStyle = newStyle >= 10 ? 10 : Math.min(5, (newStyle || newLevel) + 1);
     } else if (c.id.startsWith('car_') && c.id !== 'car_spoiler') {
       hasCar = true;
       carType = c.id.replace('car_', '');
@@ -771,6 +1101,7 @@ window.checkoutCart = async () => {
       carColor = c.id.replace('color_', '');
       newItems[c.id] = true;
     } else {
+      newItems[c.id + floorSuffix] = true;
       newItems[c.id] = true;
     }
   });
@@ -789,34 +1120,52 @@ window.checkoutCart = async () => {
   cart = [];
   updateCartUI();
   closeSheet();
-  if (INSIDE) buildInteriorScene({ ...me, items: newItems });
-  toast('🎉 تم التطوير وتحديث البيت والسيارة!');
+  if (INSIDE) buildInteriorScene({ ...me, items: newItems, levels: newLevel, houseStyle: newStyle }, currentFloor);
+  toast('🎉 تم التطوير وتحديث المنزل والقلعة!');
 };
 
+// زيارات منازل الجيران (من الخارج أو مباشرة داخل منزل الجار)
 window.openNeighbors = () => {
   const sh = document.getElementById('bottomSheet');
   sh.style.display = 'block';
+  sh.dataset.mode = 'neighbors';
   sh.innerHTML = `
     <div class="sheet-header">
-      <b>👥 الجيران في القرية (${villagers.length})</b>
+      <b>👥 الجيران وزيارة المنازل (${villagers.length})</b>
       <button class="close-circle" onclick="closeSheet()">✕</button>
     </div>
-    ${villagers.map(v => `
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #eee;">
-        <span>🏠 <b>${v.username}</b> · ${HOUSE_NAMES[v.houseStyle || v.levels || 1] || 'منزل'}</span>
-        <button class="btn-dark" style="padding:6px 12px;font-size:12px;" onclick="visitHouse(${v.x}, ${v.z})">زيارة</button>
+    ${villagers.map((v, idx) => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #eee;gap:6px;">
+        <span>🏠 <b>${v.username}</b> · ${HOUSE_NAMES[(v.levels >= 10 || v.houseStyle >= 10) ? 10 : (v.houseStyle || v.levels || 1)] || 'منزل'}</span>
+        <div style="display:flex;gap:5px;">
+          <button class="btn-dark" style="padding:6px 10px;font-size:11px;" onclick="visitNeighbor(${idx}, false)">الحوش</button>
+          <button class="btn-gold" style="padding:6px 10px;font-size:11px;" onclick="visitNeighbor(${idx}, true)">🚪 داخل البيت</button>
+        </div>
       </div>
     `).join('')}
   `;
 };
 
-window.visitHouse = (x, z) => {
-  if (INSIDE) toggleInside(false);
-  P.position.set(x, 0, z + 9);
+window.visitNeighbor = (idx, goInsideHouse) => {
+  const target = villagers[idx];
+  if (!target) return;
+  inspectedOwner = target;
   closeSheet();
+  if (goInsideHouse) {
+    toggleInside(true, target);
+    toast(`🚪 دخلت منزل ${target.username}`);
+  } else {
+    if (INSIDE) toggleInside(false);
+    P.position.set(target.x, 0, target.z + 11);
+    document.getElementById('hudUser').textContent = `${target.username} (L${target.levels || 1})`;
+    toast(`📍 وصلت إلى منزل ${target.username}`);
+  }
 };
 
-document.getElementById('btnGoMyHouse').onclick = () => enterZone('all');
+document.getElementById('btnGoMyHouse').onclick = () => {
+  inspectedOwner = me;
+  enterZone('all');
+};
 
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
@@ -833,17 +1182,27 @@ R.domElement.addEventListener('click', e => {
   }
 });
 
+// فحص التصادم مع البيوت والمنشآت والأثاث لمنع العبور والاندماج
+function isBlocked(nx, nz, radius = 0.85) {
+  if (INSIDE) {
+    if (Math.abs(nx - 1000) > 6.2 || Math.abs(nz) > 6.2) return true;
+    return interiorWalls.some(w => nx > w[0] - radius && nx < w[1] + radius && nz > w[2] - radius && nz < w[3] + radius);
+  }
+  if (Math.abs(nx) > 195 || Math.abs(nz) > 195) return true;
+  return COLS.some(c => nx > c[0] - radius && nx < c[1] + radius && nz > c[2] - radius && nz < c[3] + radius);
+}
+
 let jx = 0, jy = 0, yaw = 0, pit = 0.55, dst = 18;
 const J = document.getElementById('joy'), K = document.getElementById('knob');
 J.addEventListener('touchmove', e => {
   const t = e.touches[0], r = J.getBoundingClientRect();
-  let dx = t.clientX - (r.left + 52), dy = t.clientY - (r.top + 52);
-  const d = Math.hypot(dx, dy), m = 42;
+  let dx = t.clientX - (r.left + 51), dy = t.clientY - (r.top + 51);
+  const d = Math.hypot(dx, dy), m = 40;
   if (d > m) { dx *= m / d; dy *= m / d; }
-  K.style.left = 32 + dx + 'px'; K.style.top = 32 + dy + 'px';
+  K.style.left = 31 + dx + 'px'; K.style.top = 31 + dy + 'px';
   jx = dx / m; jy = dy / m; e.preventDefault();
 }, { passive: false });
-J.addEventListener('touchend', () => { jx = jy = 0; K.style.left = K.style.top = '32px'; });
+J.addEventListener('touchend', () => { jx = jy = 0; K.style.left = K.style.top = '31px'; });
 
 let lastTouch = null;
 R.domElement.addEventListener('pointerdown', e => { lastTouch = [e.clientX, e.clientY]; });
@@ -868,13 +1227,17 @@ function animate() {
       const speedMult = DR.hasSpoiler ? baseSpd + 6 : baseSpd;
       DR.v += (-jy * speedMult - DR.v) * dt * 2;
       DR.a -= jx * dt * 2;
-      DR.x += Math.sin(DR.a) * DR.v * dt;
-      DR.z += Math.cos(DR.a) * DR.v * dt;
+      const nx = DR.x + Math.sin(DR.a) * DR.v * dt;
+      const nz = DR.z + Math.cos(DR.a) * DR.v * dt;
+      if (!isBlocked(nx, DR.z, 1.5)) DR.x = nx; else DR.v *= -0.2;
+      if (!isBlocked(DR.x, nz, 1.5)) DR.z = nz; else DR.v *= -0.2;
       DR.g.position.set(DR.x, 0, DR.z); DR.g.rotation.y = DR.a;
       P.position.set(DR.x, 0, DR.z);
     } else if (Math.hypot(mx, mz) > 0.05) {
-      P.position.x += mx * 9 * dt;
-      P.position.z += mz * 9 * dt;
+      const nx = P.position.x + mx * 9 * dt;
+      const nz = P.position.z + mz * 9 * dt;
+      if (!isBlocked(nx, P.position.z, 0.85)) P.position.x = nx;
+      if (!isBlocked(P.position.x, nz, 0.85)) P.position.z = nz;
       P.rotation.y = Math.atan2(mx, mz);
       P.userData.l1.rotation.x = Math.sin(T * 10) * 0.5;
       P.userData.l2.rotation.x = -Math.sin(T * 10) * 0.5;
