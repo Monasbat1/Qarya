@@ -16,6 +16,10 @@
         input, select { width: 100%; padding: 9px; border: 1px solid #cbbba0; border-radius: 10px; font-size: 14px; background: #fff; }
         button { background: #231f1a; color: #dfa848; border: none; padding: 11px; width: 100%; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; }
         .status { margin-top: 10px; text-align: center; font-size: 13px; font-weight: bold; }
+        .env-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .env-btn { padding: 10px 8px; font-size: 12px; border-radius: 10px; background: #231f1a; color: #fff; }
+        .env-btn.on { background: #15803d; color: #fff; }
+        .env-btn.off { background: #475569; color: #e2e8f0; }
         .list-box { display: flex; flex-direction: column; gap: 12px; }
         .card { border: 1px solid #e5d8c3; border-radius: 12px; padding: 12px; background: #fff; display: flex; flex-direction: column; gap: 10px; }
         .card-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -29,6 +33,7 @@
         .btn-save { background: #1d4ed8; }
         .btn-del { background: #c0392b; }
         .btn-up { background: #27ae60; }
+        .btn-castle { background: #b45309; }
         .btn-sp { background: #7c3aed; }
         .saved-msg { font-size: 12px; color: #15803d; font-weight: bold; display: none; }
     </style>
@@ -40,8 +45,19 @@
         <a href="index.html">🏠 عرض القرية</a>
     </div>
 
+    <!-- التحكم بالإنارة والليل والنهار -->
     <div class="container">
-        <h2>🏙️ إضافة مواطن جديد (إحداثيات تلقائية)</h2>
+        <h2>💡 التحكم بالإنارة والليل والنهار</h2>
+        <div class="env-grid">
+            <button id="btnStreetLights" class="env-btn on" onclick="toggleEnv('streetLights')">💡 إنارة الشوارع: شغالة</button>
+            <button id="btnHouseLights" class="env-btn on" onclick="toggleEnv('houseLights')">🏠 إنارة البيوت: شغالة</button>
+            <button id="btnNightMode" class="env-btn off" onclick="toggleEnv('nightMode')">🌙 الوقت: نهار</button>
+        </div>
+    </div>
+
+    <!-- إضافة مواطن جديد -->
+    <div class="container">
+        <h2>🏙️ إضافة مواطن جديد (إحداثيات تلقائية بدون تراكم)</h2>
         <form id="villagerForm">
             <div class="form-group">
                 <label>اسم المتابع (إنستغرام):</label>
@@ -59,7 +75,8 @@
                         <option value="2">2 - فيلا عصرية خشبية وداكنة</option>
                         <option value="3">3 - فيلا زجاجية بمسبح</option>
                         <option value="4">4 - قصر بأعمدة وشرفات</option>
-                        <option value="5">5 - قصر ملكي عصري متكامل</option>
+                        <option value="5">5 - قصر عصري بطابقين</option>
+                        <option value="10">10 - 🏰 قلعة ملكية (فرسان وحراسة)</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -67,11 +84,12 @@
                     <input type="number" id="initCoins" value="1000">
                 </div>
             </div>
-            <button type="submit">بناء العقار في القرية 🚀</button>
+            <button type="submit">بناء العقار تلقائياً 🚀</button>
         </form>
         <div class="status" id="statusVillager"></div>
     </div>
 
+    <!-- تصميم ممتلكات عامة -->
     <div class="container">
         <h2>🏛️ تصميم ممتلكات عامة (جامع، مدرسة، إلخ)</h2>
         <form id="publicForm">
@@ -97,11 +115,13 @@
         <div class="status" id="statusPublic"></div>
     </div>
 
+    <!-- طلبات المشتريات الواردة -->
     <div class="container">
         <h2>🛍️ طلبات المشتريات الواردة (<span id="ordersCount">0</span>)</h2>
         <div class="list-box" id="ordersList"></div>
     </div>
 
+    <!-- تحكم كامل بسكان القرية والسيارات -->
     <div class="container">
         <h2>👥 تحكم كامل بسكان القرية والسيارات (<span id="usersCount">0</span>)</h2>
         <div class="list-box" id="usersList"></div>
@@ -109,7 +129,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, setDoc, updateDoc, deleteDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyCVJclfpEp9Jo9879C3RfZKiEdBUibwrxI",
@@ -125,18 +145,53 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        let envState = { streetLights: true, houseLights: true, nightMode: false };
+
+        function syncEnvButtons() {
+            const b1 = document.getElementById('btnStreetLights');
+            const b2 = document.getElementById('btnHouseLights');
+            const b3 = document.getElementById('btnNightMode');
+
+            b1.className = 'env-btn ' + (envState.streetLights ? 'on' : 'off');
+            b1.textContent = (envState.streetLights ? '💡 إنارة الشوارع: شغالة' : '⚫ إنارة الشوارع: مطفأة');
+
+            b2.className = 'env-btn ' + (envState.houseLights ? 'on' : 'off');
+            b2.textContent = (envState.houseLights ? '🏠 إنارة البيوت: شغالة' : '⚫ إنارة البيوت: مطفأة');
+
+            b3.className = 'env-btn ' + (envState.nightMode ? 'on' : 'off');
+            b3.textContent = (envState.nightMode ? '🌙 الوقت: ليل' : '☀️ الوقت: نهار');
+        }
+
+        onSnapshot(collection(db, "settings"), snap => {
+            snap.forEach(d => {
+                if (d.id === 'env') envState = { ...envState, ...d.data() };
+            });
+            syncEnvButtons();
+        });
+
+        window.toggleEnv = async (key) => {
+            envState[key] = !envState[key];
+            syncEnvButtons();
+            await setDoc(doc(db, "settings", "env"), envState, { merge: true });
+        };
+
         function generateSmartCoords(existing) {
-            for (let i = 0; i < 150; i++) {
-                const x = Math.floor(Math.random() * 180) - 90;
-                const z = Math.floor(Math.random() * 180) - 90;
-                if (Math.abs(x) < 16 || Math.abs(z) < 16) continue;
+            const isRoad = (x, z) => Math.abs(x) < 12 || Math.abs(z) < 12 || Math.abs(x - 75) < 10 || Math.abs(x + 75) < 10 || Math.abs(z - 75) < 10 || Math.abs(z + 75) < 10;
+            for (let step = 0; step < 500; step++) {
+                const angle = step * 0.75;
+                const radius = 22 + Math.floor(step / 8) * 18;
+                const x = Math.round(Math.cos(angle) * radius);
+                const z = Math.round(Math.sin(angle) * radius);
+                if (Math.abs(x) > 165 || Math.abs(z) > 165 || isRoad(x, z)) continue;
                 let close = false;
                 for (const e of existing) {
-                    if (Math.hypot(x - e.x, z - e.z) < 18) { close = true; break; }
+                    if (typeof e.x === 'number' && typeof e.z === 'number' && Math.hypot(x - e.x, z - e.z) < 22) {
+                        close = true; break;
+                    }
                 }
                 if (!close) return { x, z };
             }
-            return { x: 25, z: 25 };
+            return { x: 26, z: 26 };
         }
 
         document.getElementById('villagerForm').addEventListener('submit', async (e) => {
@@ -160,12 +215,12 @@
                 carType: null,
                 carColor: null,
                 carSpoiler: false,
-                items: {},
+                items: { sofa_in: true },
                 x: coords.x,
                 z: coords.z,
                 timestamp: new Date()
             });
-            document.getElementById('statusVillager').innerText = "✅ تم بناء العقار وتحديد شكله ونقاطه!";
+            document.getElementById('statusVillager').innerText = `✅ تم بناء العقار تلقائياً عند (${coords.x}, ${coords.z})!`;
             e.target.reset();
         });
 
@@ -205,7 +260,7 @@
             snap.forEach(d => {
                 const data = d.data();
                 const id = d.id;
-                const st = data.houseStyle || data.levels || 1;
+                const st = (data.levels >= 10 || data.houseStyle >= 10) ? 10 : (data.houseStyle || data.levels || 1);
                 const ct = data.carType || '';
                 const cc = data.carColor || '';
                 const sp = !!data.carSpoiler;
@@ -216,10 +271,11 @@
                     <div class="card-top">
                       <div class="card-info">
                         <h4>${data.name || data.username}</h4>
-                        <p>نقاط: <b>${cn} 🪙</b> | بيت: <b>${st}</b> | سيارة: <b>${ct || 'بدون'}</b> ${cc ? '('+cc+')' : ''} ${sp ? '🏁' : ''}</p>
+                        <p>نقاط: <b>${cn} 🪙</b> | مستوى: <b>${data.levels || st}</b> | شكل: <b>${st === 10 ? '🏰 قلعة L10' : st}</b> | سيارة: <b>${ct || 'بدون'}</b></p>
                       </div>
                       <div class="actions">
-                        <button class="btn-small btn-up" onclick="quickUpgrade('${id}', ${st}, ${cn})">+ترقية بيت</button>
+                        <button class="btn-small btn-up" onclick="quickUpgrade('${id}', ${st}, ${cn})">+ترقية</button>
+                        <button class="btn-small btn-castle" onclick="makeCastle10('${id}')">🏰 قلعة 10</button>
                         <button class="btn-small btn-sp" onclick="toggleSpoiler('${id}', ${sp})">${sp ? 'إزالة جناح' : '🏁 جناح'}</button>
                         <button class="btn-small btn-save" onclick="saveUserChanges('${id}')">حفظ</button>
                         <button class="btn-small btn-del" onclick="delUser('${id}')">حذف</button>
@@ -243,7 +299,8 @@
                           <option value="2" ${st == 2 ? 'selected' : ''}>2 - عصرية خشبية وداكنة</option>
                           <option value="3" ${st == 3 ? 'selected' : ''}>3 - زجاجية بمسبح</option>
                           <option value="4" ${st == 4 ? 'selected' : ''}>4 - قصر بأعمدة وشرفات</option>
-                          <option value="5" ${st == 5 ? 'selected' : ''}>5 - قصر ملكي متكامل</option>
+                          <option value="5" ${st == 5 ? 'selected' : ''}>5 - قصر عصري بطابقين</option>
+                          <option value="10" ${st == 10 ? 'selected' : ''}>10 - 🏰 قلعة ملكية (فرسان وحراسة)</option>
                         </select>
                       </div>
                       <div>
@@ -291,15 +348,19 @@
             if (m) { m.style.display = 'inline'; setTimeout(() => m.style.display = 'none', 2000); }
         };
 
+        window.makeCastle10 = async (id) => {
+            await updateDoc(doc(db, "villagers", id), { levels: 10, houseStyle: 10 });
+        };
+
         window.toggleSpoiler = async (id, curSpoiler) => {
             await updateDoc(doc(db, "villagers", id), { carSpoiler: !curSpoiler });
         };
 
         window.quickUpgrade = async (id, curStyle, curCoins) => {
-            const nextStyle = Math.min(5, Number(curStyle || 1) + 1);
+            const nextStyle = curStyle >= 10 ? 10 : Math.min(5, Number(curStyle || 1) + 1);
             await updateDoc(doc(db, "villagers", id), {
                 houseStyle: nextStyle,
-                levels: Math.max(nextStyle, Number(curStyle || 1) + 1),
+                levels: nextStyle,
                 coins: Number(curCoins || 0) + 200
             });
         };
