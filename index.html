@@ -1,78 +1,229 @@
-<script>
-(() => {
-  const MOCK_CONFIG = {
-    ok: true,
-    towns: {},
-    settings: {}
-  };
-
-  const MOCK_STATE = {
-    ok: true,
-    link: "",
-    rewards: []
-  };
-
-  const MOCK_HOUSES = [
-    {
-      id: "house-1",
-      username: "abu_yaqoub",
-      name: "بيت أبو يعقوب",
-      country: "sy",
-      town: "maarat_al_numan",
-      level: 3
-    },
-    {
-      id: "house-2",
-      username: "daraya_house",
-      name: "بيت داريا",
-      country: "sy",
-      town: "daraya",
-      level: 2
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>حارتنا — القرية</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+      overflow-x: hidden;
     }
-  ];
+    #loading {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.92);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      z-index: 9999;
+      font-size: 18px;
+      transition: opacity 0.25s ease;
+    }
+    #loading.hidden {
+      opacity: 0;
+      pointer-events: none;
+      display: none;
+    }
+    #debug-error-box {
+      position: fixed;
+      bottom: 12px;
+      left: 12px;
+      right: 12px;
+      max-height: 45vh;
+      overflow: auto;
+      background: #fff;
+      color: #991b1b;
+      border: 2px solid #dc2626;
+      border-radius: 10px;
+      padding: 12px;
+      font-family: monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+      z-index: 10000;
+      display: none;
+    }
+    .demo-hud {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      background: rgba(15, 23, 42, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 13px;
+      z-index: 500;
+      backdrop-filter: blur(6px);
+    }
+    .demo-hud strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #38bdf8;
+    }
+  </style>
 
-  const origFetch = window.fetch.bind(window);
-  window.fetch = async (input, init) => {
-    const url = typeof input === "string" ? input : (input && input.url) || "";
-    const clean = url.split("?")[0];
+  <script>
+    (() => {
+      function showErrorOnScreen(title, detail) {
+        const box = document.getElementById("debug-error-box");
+        if (!box) return;
+        box.style.display = "block";
+        box.textContent += (box.textContent ? "\n\n---\n\n" : "") + title + "\n" + detail;
+      }
 
-    if (clean.endsWith("/api/config") || clean === "api/config") {
-      return new Response(JSON.stringify(MOCK_CONFIG), {
-        status: 200,
-        headers: { "Content-Type": "application/json" }
+      window.addEventListener("error", (e) => {
+        showErrorOnScreen(
+          "Runtime Error: " + (e.message || "Unknown error"),
+          (e.filename || "") + (e.lineno ? ":" + e.lineno : "")
+        );
       });
-    }
 
-    if (clean.endsWith("/api/app/state") || clean === "api/app/state") {
-      return new Response(JSON.stringify(MOCK_STATE), {
-        status: 200,
-        headers: { "Content-Type": "application/json" }
+      window.addEventListener("unhandledrejection", (e) => {
+        const reason = e.reason;
+        const msg = reason && reason.message ? reason.message : String(reason || "Promise rejected");
+        showErrorOnScreen("Unhandled Promise Rejection:", msg);
       });
-    }
 
-    if (clean.endsWith("/api/houses") || clean === "api/houses") {
-      return new Response(JSON.stringify({
+      const MOCK_CONFIG = {
         ok: true,
-        coins: 150,
-        flags: { sy: 2 },
-        fv: 1,
-        rev: 1,
-        hasMore: false,
-        houses: MOCK_HOUSES
-      }), {
-        status: 200,
-        headers: { "Content-Type": "application/json" }
-      });
-    }
+        towns: {
+          maarat_al_numan: { name: "معرة النعمان", country: "sy" },
+          daraya: { name: "داريا", country: "sy" },
+          hantouteen: { name: "حنتوتين", country: "sy" }
+        },
+        settings: {
+          mode: "static-demo"
+        }
+      };
 
-    if (clean.includes("/api/")) {
-      return new Response(JSON.stringify({ ok: true }), {
-        status: 200,
-        headers: { "Content-Type": "application/json" }
-      });
-    }
+      const MOCK_STATE = {
+        ok: true,
+        link: "",
+        rewards: []
+      };
 
-    return origFetch(input, init);
-  };
-})();
-</script>
+      const MOCK_HOUSES = [
+        {
+          id: "house-1",
+          username: "abu_yaqoub",
+          name: "بيت أبو يعقوب",
+          title: "بيت أبو يعقوب",
+          country: "sy",
+          town: "maarat_al_numan",
+          level: 3,
+          floors: 3,
+          x: 0,
+          z: 0
+        },
+        {
+          id: "house-2",
+          username: "daraya_house",
+          name: "بيت داريا",
+          title: "بيت داريا",
+          country: "sy",
+          town: "daraya",
+          level: 2,
+          floors: 2,
+          x: 6,
+          z: 2
+        },
+        {
+          id: "house-3",
+          username: "hantouteen_house",
+          name: "بيت حنتوتين",
+          title: "بيت حنتوتين",
+          country: "sy",
+          town: "hantouteen",
+          level: 1,
+          floors: 1,
+          x: -6,
+          z: -2
+        }
+      ];
+
+      const origFetch = window.fetch ? window.fetch.bind(window) : null;
+
+      window.fetch = async (input, init) => {
+        const url = typeof input === "string" ? input : (input && input.url) || "";
+        const clean = url.split("?")[0];
+
+        if (clean.endsWith("/api/config") || clean === "api/config") {
+          return new Response(JSON.stringify(MOCK_CONFIG), {
+            status: 200,
+            headers: { "Content-Type": "application/json" }
+          });
+        }
+
+        if (clean.endsWith("/api/app/state") || clean === "api/app/state") {
+          return new Response(JSON.stringify(MOCK_STATE), {
+            status: 200,
+            headers: { "Content-Type": "application/json" }
+          });
+        }
+
+        if (clean.endsWith("/api/houses") || clean === "api/houses") {
+          return new Response(JSON.stringify({
+            ok: true,
+            coins: 250,
+            flags: { sy: 3 },
+            fv: 1,
+            rev: 1,
+            hasMore: false,
+            houses: MOCK_HOUSES
+          }), {
+            status: 200,
+            headers: { "Content-Type": "application/json" }
+          });
+        }
+
+        if (clean.includes("/api/")) {
+          return new Response(JSON.stringify({ ok: true, houses: MOCK_HOUSES }), {
+            status: 200,
+            headers: { "Content-Type": "application/json" }
+          });
+        }
+
+        if (origFetch) {
+          return origFetch(input, init);
+        }
+        throw new Error("Fetch is not available in this environment");
+      };
+
+      // إخفاء شاشة التحميل تلقائياً إذا تأخر السكربت عن إخفائها
+      window.addEventListener("DOMContentLoaded", () => {
+        setTimeout(() => {
+          const loader = document.getElementById("loading");
+          if (loader) {
+            loader.classList.add("hidden");
+          }
+        }, 2500);
+      });
+    })();
+  </script>
+</head>
+<body>
+  <div id="loading">🏗️ عم نجهّز المدينة…</div>
+  <div id="debug-error-box"></div>
+
+  <div class="demo-hud" id="demo-hud">
+    <strong>القرية — وضع تجريبي محلي</strong>
+    <span>البيوت المحمّلة: 3 بيوت</span>
+  </div>
+
+  <div id="app"></div>
+  <canvas id="scene"></canvas>
+
+  <!-- تحميل ملفات المشروع إن وجدت في المستودع -->
+  <script type="module" src="./app.js"></script>
+  <script type="module" src="./city.js"></script>
+</body>
+</html>
