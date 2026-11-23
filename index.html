@@ -46,15 +46,30 @@
 
   const sampleNeighborhoods = [
     { id: "n1", name: "حي المعرة", title: "حي المعرة", x: 0, z: 0 },
-    { id: "n2", name: "حي داريا", title: "حي داريا", x: 35, z: 10 },
-    { id: "n3", name: "حي حنتوتين", title: "حي حنتوتين", x: -35, z: -10 }
+    { id: "n2", name: "حي داريا", title: "حي داريا", x: 45, z: 12 },
+    { id: "n3", name: "حي حنتوتين", title: "حي حنتوتين", x: -45, z: -12 }
   ];
 
   const sampleHouses = [
-    { id: 1, username: "abu_yaqoub", name: "بيت أبو يعقوب", nb: "n1", neighborhood: "n1", level: 5, number: 1, comments: 18, mentions: 4, coins: 7500, x: 0, z: 0 },
-    { id: 2, username: "qarya_guest", name: "بيت الضيف", nb: "n2", neighborhood: "n2", level: 3, number: 2, comments: 9, mentions: 2, coins: 4500, x: 14, z: 4 },
-    { id: 3, username: "al_sham_house", name: "بيت الشام", nb: "n3", neighborhood: "n3", level: 2, number: 3, comments: 5, mentions: 1, coins: 3000, x: -14, z: -4 }
+    { id: 1, username: "abu_yaqoub", name: "بيت أبو يعقوب", nb: "n1", neighborhood: "n1", level: 10, number: 1, comments: 45, mentions: 9, coins: 15000, x: 0, z: 0 }
   ];
+  const nbsIds = ["n1", "n2", "n3"];
+  for (let i = 2; i <= 120; i++) {
+    const nb = nbsIds[(i - 2) % nbsIds.length];
+    const lvl = ((i - 1) % 10) + 1;
+    sampleHouses.push({
+      id: i,
+      username: "user_" + i,
+      name: "بيت #" + i,
+      nb: nb,
+      neighborhood: nb,
+      level: lvl,
+      number: i,
+      comments: lvl * 3,
+      mentions: Math.min(9, lvl),
+      coins: lvl * 1500
+    });
+  }
 
   const mockPayload = {
     ok: true,
