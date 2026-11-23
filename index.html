@@ -71,6 +71,30 @@
     });
   }
 
+  const samplePlots = sampleHouses.map((h, idx) => {
+    const cols = 12;
+    const spacing = 14;
+    const col = idx % cols;
+    const row = Math.floor(idx / cols);
+    const px = (col - cols / 2) * spacing;
+    const pz = (row - 5) * spacing;
+    h.x = px;
+    h.z = pz;
+    return {
+      id: h.id,
+      number: h.number,
+      nb: h.nb,
+      neighborhood: h.nb,
+      x: px,
+      z: pz,
+      w: 8,
+      d: 8,
+      owner: h.username,
+      username: h.username,
+      level: h.level
+    };
+  });
+
   const mockPayload = {
     ok: true,
     brandName: "قارتنا",
@@ -78,6 +102,7 @@
     totalHouses: sampleHouses.length,
     neighborhoods: sampleNeighborhoods,
     nbs: sampleNeighborhoods,
+    plots: samplePlots,
     houses: sampleHouses,
     leaderboard: sampleHouses,
     top: sampleHouses,
