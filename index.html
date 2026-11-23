@@ -102,13 +102,16 @@
     totalHouses: sampleHouses.length,
     neighborhoods: sampleNeighborhoods,
     nbs: sampleNeighborhoods,
+    towns: sampleNeighborhoods,
     plots: samplePlots,
     houses: sampleHouses,
     leaderboard: sampleHouses,
     top: sampleHouses,
     estates: [],
     notices: [],
-    army: { ok: true, units: [] },
+    floors: [],
+    orders: [],
+    army: { ok: true, units: [], forces: [] },
     catalog: { ok: true, items: [] },
     events: []
   };
@@ -169,43 +172,4 @@
   <a class="fab fab-link fab-estate" href="./estate.html">🏢 <span>عقار</span></a>
   <a class="fab fab-link fab-gov more-item" href="./gov.html">🏛️ <span>الحكومة</span></a>
   <a class="fab fab-link fab-suggest more-item" href="./suggest.html">💡 <span>اقتراحات</span></a>
-  <button id="moreBtn" class="fab fab-more" type="button" aria-expanded="false">☰ <span>المزيد</span></button>
-</div>
-
-<section id="how" class="panel how" hidden>
-  <div class="panel-head"><h2>كيف يطلع بيتي؟</h2><button type="button" class="x" id="howClose" aria-label="إغلاق">✕</button></div>
-  <ol class="how-steps">
-    <li><b>تابع الحساب</b> وعلّق على أحد الريلات المشاركة، وينبني لك بيت <span class="num">Level 1</span> برقم وموقع ثابت.</li>
-    <li><b>كل شخص جديد تمنشنه</b> في تعليقاتك يرقّي بيتك لفل واحد.</li>
-    <li><b>٩ أشخاص مختلفين</b> يوصلونك القصر <span class="num">Level 10</span>، حتى لو كلهم في تعليق واحد.</li>
-    <li>تكرار نفس الشخص ما يرقّي البيت، لكن <b>كل تعليق ينحسب</b> لك في قائمة أفضل 30.</li>
-    <li>🪙 أول ما ينبني بيتك تاخذ <b><span class="num">1,500</span> عملة</b>، وكل لفل جديد يعطيك <b><span class="num">1,500</span> × رقم اللفل</b> (لفل 10 = <span class="num">15,000</span>). اصرفها في المتجر أو العقارات.</li>
-    <li>🎡 <b>لف عجلة الحظ كل يوم</b> واربح لين <span class="num">25,000</span> عملة.</li>
-    <li>بيتك يظهر هنا بعد اعتماد تعليقك. اكتب يوزرك في البحث وشوفه.</li>
-  </ol>
-  <div class="ladder" id="ladder"></div>
-</section>
-<div class="zoom">
-  <button id="sndBtn" type="button"></button>
-  <button id="zoomIn" type="button" aria-label="تقريب">+</button>
-  <button id="zoomOut" type="button" aria-label="تبعيد">−</button>
-  <button id="zoomAll" type="button" aria-label="كل الخريطة">⤢</button>
-</div>
-
-<aside id="leaderboard" class="panel lb" hidden>
-  <div class="panel-head">
-    <h2>🏆 أفضل 30 ساكنًا</h2>
-    <button type="button" class="x" id="lbClose" aria-label="إغلاق">✕</button>
-  </div>
-  <p class="panel-sub">الترتيب حسب عدد التعليقات المعتمدة</p>
-  <ol id="lbList"></ol>
-</aside>
-
-<section id="card" class="panel card" hidden aria-live="polite"></section>
-
-<p id="hint" class="hint">اسحب للتحريك · قرّب بإصبعين · اضغط على أي بيت</p>
-<div id="loading" class="loading">نبني القارة…</div>
-
-<script type="module" src="./app.js"></script>
-</body>
-</html>
+  <button id="moreBtn" class="fab fab-more" type="button" aria-expanded="false">☰ <span>الم
