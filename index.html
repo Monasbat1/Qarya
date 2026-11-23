@@ -45,9 +45,9 @@
   });
 
   const sampleNeighborhoods = [
-    { id: "n1", name: "حي المعرة", title: "حي المعرة", kind: "town", x: 0, z: 0, lotW: 10, lotD: 10 },
-    { id: "n2", name: "حي داريا", title: "حي داريا", kind: "town", x: 90, z: 20, lotW: 10, lotD: 10 },
-    { id: "n3", name: "حي حنتوتين", title: "حي حنتوتين", kind: "town", x: -90, z: -20, lotW: 10, lotD: 10 }
+    { id: "n1", name: "حي المعرة", title: "حي المعرة", kind: "town", x: 0, z: 0 },
+    { id: "n2", name: "حي داريا", title: "حي داريا", kind: "town", x: 90, z: 20 },
+    { id: "n3", name: "حي حنتوتين", title: "حي حنتوتين", kind: "town", x: -90, z: -20 }
   ];
 
   // كل عنصر في plots بالشكل: [id, number, nb, x, z, rot]
@@ -116,10 +116,7 @@
   const mockPayload = {
     ok: true,
     brandName: "قارتنا",
-    lotW: 10,
-    lotD: 10,
-    plotW: 10,
-    plotD: 10,
+    c: { lotW: 10, lotD: 10 },
     count: sampleResidents.length,
     totalHouses: sampleResidents.length,
     neighborhoods: sampleNeighborhoods,
