@@ -37,11 +37,15 @@
   }
 
   window.addEventListener("error", (e) => {
-    showErr("Error: " + (e.message || ""), (e.filename || "") + (e.lineno ? ":" + e.lineno : ""));
+    const loc = (e.filename || "") + (e.lineno ? ":" + e.lineno : "");
+    const st = (e.error && e.error.stack) ? "\n" + e.error.stack : "";
+    showErr("Error: " + (e.message || ""), loc + st);
   });
   window.addEventListener("unhandledrejection", (e) => {
     const r = e.reason;
-    showErr("Promise Error:", r && r.message ? r.message : String(r || ""));
+    const msg = r && r.message ? r.message : String(r || "");
+    const st = r && r.stack ? "\n" + r.stack : "";
+    showErr("Promise Error:", msg + st);
   });
 
   const sampleNeighborhoods = [
@@ -50,7 +54,6 @@
     { id: "n3", name: "حي حنتوتين", title: "حي حنتوتين", kind: "town", x: -90, z: -20 }
   ];
 
-  // كل عنصر في plots بالشكل: [id, number, nb, x, z, rot]
   const samplePlots = [];
   const sampleResidents = [];
   const nbsIds = ["n1", "n2", "n3"];
@@ -127,7 +130,17 @@
     residents: sampleResidents,
     villas: [],
     ruler: sampleRuler,
-    civic: null,
+    civic: {
+      board: { x: -40, z: -110, rot: 0 },
+      hall: { x: 40, z: -110, rot: 0 },
+      wall: { x0: -60, x1: 60, z0: -125, z1: -125 },
+      mosque: { x: 0, z: -145, rot: 0, site: { x0: -25, x1: 25, z0: -25, z1: 25 } },
+      army: { x0: -160, x1: -110, z0: -140, z1: -90 }
+    },
+    mouj: { x: 0, z: -260, w: 300, d: 60 },
+    airport: { x: -220, z: -260, w: 120, d: 80 },
+    port: { x: 220, z: -260, w: 120, d: 80 },
+    park: { x: 0, z: 140, w: 140, d: 90 },
     houses: sampleResidents,
     leaderboard: leaderboardList,
     top: leaderboardList,
