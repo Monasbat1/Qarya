@@ -45,9 +45,9 @@
   });
 
   const sampleNeighborhoods = [
-    { id: "n1", name: "حي المعرة", title: "حي المعرة", kind: "town", x: 0, z: 0 },
-    { id: "n2", name: "حي داريا", title: "حي داريا", kind: "town", x: 90, z: 20 },
-    { id: "n3", name: "حي حنتوتين", title: "حي حنتوتين", kind: "town", x: -90, z: -20 }
+    { id: "n1", name: "حي المعرة", title: "حي المعرة", kind: "town", x: 0, z: 0, lotW: 10, lotD: 10 },
+    { id: "n2", name: "حي داريا", title: "حي داريا", kind: "town", x: 90, z: 20, lotW: 10, lotD: 10 },
+    { id: "n3", name: "حي حنتوتين", title: "حي حنتوتين", kind: "town", x: -90, z: -20, lotW: 10, lotD: 10 }
   ];
 
   // كل عنصر في plots بالشكل: [id, number, nb, x, z, rot]
@@ -90,37 +90,10 @@
   }
 
   const sampleRoads = [
-    {
-      pts: [
-        [-140, -60],
-        [0, -60],
-        [140, -60]
-      ],
-      mouj: false, airport: false, port: false, park: false
-    },
-    {
-      pts: [
-        [-140, 0],
-        [0, 0],
-        [140, 0]
-      ],
-      mouj: false, airport: false, port: false, park: false
-    },
-    {
-      pts: [
-        [-140, 60],
-        [0, 60],
-        [140, 60]
-      ],
-      mouj: false, airport: false, port: false, park: false
-    },
-    {
-      pts: [
-        [0, -90],
-        [0, 90]
-      ],
-      mouj: false, airport: false, port: false, park: false
-    }
+    { pts: [[-140, -60], [0, -60], [140, -60]], mouj: false, airport: false, port: false, park: false },
+    { pts: [[-140, 0], [0, 0], [140, 0]], mouj: false, airport: false, port: false, park: false },
+    { pts: [[-140, 60], [0, 60], [140, 60]], mouj: false, airport: false, port: false, park: false },
+    { pts: [[0, -90], [0, 90]], mouj: false, airport: false, port: false, park: false }
   ];
 
   const sampleRuler = {
@@ -143,6 +116,10 @@
   const mockPayload = {
     ok: true,
     brandName: "قارتنا",
+    lotW: 10,
+    lotD: 10,
+    plotW: 10,
+    plotD: 10,
     count: sampleResidents.length,
     totalHouses: sampleResidents.length,
     neighborhoods: sampleNeighborhoods,
