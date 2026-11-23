@@ -1,0 +1,84 @@
+/* الحركة والانسيابية: دخول القوائم واللوحات، تتابع العناصر، وضغطة الأزرار.
+   نستخدم خصائص translate/scale المستقلة حتى ما تتعارض مع transform الموجود في العناصر. */
+:root { --spring: cubic-bezier(.2, .9, .3, 1.25); --ease: cubic-bezier(.2, .8, .2, 1); }
+
+@keyframes m-up { from { translate: 0 30px; scale: .97; opacity: 0; } }
+@keyframes m-down { from { translate: 0 -18px; opacity: 0; } }
+@keyframes m-side { from { translate: -30px 0; opacity: 0; } }
+@keyframes m-fade { from { opacity: 0; } }
+@keyframes m-pop { 0% { scale: .8; opacity: 0; } 60% { scale: 1.05; opacity: 1; } 100% { scale: 1; } }
+@keyframes m-item { from { translate: 0 14px; opacity: 0; } }
+@keyframes m-swap { from { translate: 0 10px; opacity: .35; } }
+@keyframes m-bounce { 0% { scale: .3; opacity: 0; } 55% { scale: 1.2; opacity: 1; } 75% { scale: .92; } 100% { scale: 1; } }
+
+/* تتابع: كل عنصر يتأخر حسب ترتيبه (--i) */
+.stagger > *, .stagger-kids > * { animation: m-item .42s var(--ease) both; animation-delay: calc(var(--i, 0) * 38ms); }
+
+/* ضغطة الأزرار */
+.fab, .zoom button, .card-acts a, .share, .search button, .bar button, .bar a, .pill, .go, .paybtn, .item button, .tabs button,
+.card button, .inv button, .sel button, .done a, .avs button, .chip, .lb-row, .sugg button, .nb li button, .act, .btn, .back, .snd {
+  transition: scale .14s var(--ease), filter .14s;
+}
+.fab:active, .zoom button:active, .card-acts a:active, .share:active, .search button:active, .bar button:active, .bar a:active, .pill:active,
+.go:active, .paybtn:active, .item button:active, .tabs button:active, .card button:active, .inv button:active, .sel button:active,
+.done a:active, .avs button:active, .chip:active, .lb-row:active, .sugg button:active, .nb li button:active, .act:active, .btn:active, .back:active, .snd:active {
+  scale: .94;
+}
+
+/* ---------- الخريطة ---------- */
+.top .brand { animation: m-down .5s var(--ease) both .05s; }
+.top .search { animation: m-down .55s var(--spring) both .12s; }
+.fabs .fab { animation: m-up .5s var(--spring) both; }
+.fabs .fab:nth-child(1) { animation-delay: .2s; } .fabs .fab:nth-child(2) { animation-delay: .26s; } .fabs .fab:nth-child(3) { animation-delay: .32s; }
+.fabs .fab:nth-child(4) { animation-delay: .38s; } .fabs .fab:nth-child(5) { animation-delay: .44s; }
+.zoom button { animation: m-pop .45s var(--spring) both; }
+.zoom button:nth-child(2) { animation-delay: .06s; } .zoom button:nth-child(3) { animation-delay: .12s; } .zoom button:nth-child(4) { animation-delay: .18s; }
+.card { animation: m-up .42s var(--spring) both; }
+.card.re { animation: m-swap .32s var(--ease) both; }
+.card .lvl { animation: m-bounce .55s var(--spring) both .08s; }
+.card .bar i.on { animation: m-pop .3s var(--spring) both; }
+.card .bar i:nth-child(2) { animation-delay: .03s; } .card .bar i:nth-child(3) { animation-delay: .06s; } .card .bar i:nth-child(4) { animation-delay: .09s; }
+.card .bar i:nth-child(5) { animation-delay: .12s; } .card .bar i:nth-child(6) { animation-delay: .15s; } .card .bar i:nth-child(7) { animation-delay: .18s; }
+.card .bar i:nth-child(8) { animation-delay: .21s; } .card .bar i:nth-child(9) { animation-delay: .24s; } .card .bar i:nth-child(10) { animation-delay: .27s; }
+.card .stats, .card .neigh, .card .card-acts, .card .share, .card .card-empty-t { animation: m-item .4s var(--ease) both .12s; }
+.how { animation: m-up .45s var(--spring) both; }
+.how-steps li, .ladder div { animation: m-item .4s var(--ease) both; }
+.how-steps li:nth-child(2) { animation-delay: .05s; } .how-steps li:nth-child(3) { animation-delay: .1s; } .how-steps li:nth-child(4) { animation-delay: .15s; } .how-steps li:nth-child(5) { animation-delay: .2s; }
+.ladder div:nth-child(n) { animation-delay: calc(.2s + var(--i, 0) * 30ms); }
+.lb { animation: m-up .45s var(--spring) both; }
+@media (min-width: 900px) { .lb { animation-name: m-side; } }
+.search-msg { animation: m-down .28s var(--ease) both; }
+
+/* ---------- صفحة اللعب ---------- */
+.enter .card { animation: m-up .55s var(--spring) both; }
+.enter .avs button, .enter .feats div { animation: m-item .4s var(--ease) both; }
+.enter .avs button:nth-child(2), .enter .feats div:nth-child(2) { animation-delay: .06s; }
+.enter .avs button:nth-child(3), .enter .feats div:nth-child(3) { animation-delay: .12s; }
+.enter .avs button:nth-child(4), .enter .feats div:nth-child(4) { animation-delay: .18s; }
+.avs button[aria-pressed=true] { animation: m-pop .35s var(--spring); }
+#game:not([hidden]) { animation: m-fade .45s var(--ease) both; }
+.hud > * { animation: m-down .45s var(--spring) both; }
+.hud > *:nth-child(2) { animation-delay: .06s; } .hud > *:nth-child(3) { animation-delay: .12s; }
+.bar > * { animation: m-up .45s var(--spring) both; }
+.bar > *:nth-child(2) { animation-delay: .05s; } .bar > *:nth-child(3) { animation-delay: .1s; } .bar > *:nth-child(4) { animation-delay: .15s; } .bar > *:nth-child(5) { animation-delay: .2s; }
+.edit, .nb { animation: m-up .42s var(--spring) both; }
+.inv button { animation: m-item .38s var(--ease) both; animation-delay: calc(var(--i, 0) * 40ms); }
+.sel:not([hidden]) { animation: m-item .3s var(--ease) both; }
+.act { animation: m-pop .38s var(--spring) both; }
+.visit, .toast { animation: m-down .35s var(--spring) both; }
+
+/* ---------- المتجر والعقار ---------- */
+.wrap > header { animation: m-down .45s var(--ease) both; }
+.wrap .box, .wrap .hero { animation: m-up .5s var(--spring) both .08s; }
+.grid > .card { animation: none; } /* بطاقات العقار: الحركة بس مع التتابع */
+.grid.stagger > * { animation: m-item .45s var(--ease) both; animation-delay: calc(var(--i, 0) * 40ms); }
+.tabs.stagger button { animation: m-item .4s var(--ease) both; animation-delay: calc(var(--i, 0) * 35ms); }
+.tabs button[aria-selected=true] { animation: m-pop .32s var(--spring) both; }
+.lb ol.stagger li { animation: m-item .38s var(--ease) both; animation-delay: calc(var(--i, 0) * 30ms); }
+.item .own { animation: m-pop .4s var(--spring) both; }
+.done .big { display: inline-block; animation: m-bounce .7s var(--spring) both; }
+.done h3, .done p, .done a { animation: m-item .45s var(--ease) both .2s; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0ms !important; transition-duration: .01ms !important; }
+}

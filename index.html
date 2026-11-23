@@ -1,227 +1,163 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>حارتنا — القرية</title>
-  <style>
-    * { box-sizing: border-box; }
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      font-family: system-ui, -apple-system, sans-serif;
-      background: #0f172a;
-      color: #f8fafc;
-      overflow-x: hidden;
-    }
-    #loading {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.92);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      z-index: 9999;
-      font-size: 18px;
-      transition: opacity 0.25s ease;
-    }
-    #loading.hidden {
-      opacity: 0;
-      pointer-events: none;
-      display: none;
-    }
-    #debug-error-box {
-      position: fixed;
-      bottom: 12px;
-      left: 12px;
-      right: 12px;
-      max-height: 45vh;
-      overflow: auto;
-      background: #fff;
-      color: #991b1b;
-      border: 2px solid #dc2626;
-      border-radius: 10px;
-      padding: 12px;
-      font-family: monospace;
-      font-size: 12px;
-      white-space: pre-wrap;
-      z-index: 10000;
-      display: none;
-    }
-    .demo-hud {
-      position: fixed;
-      top: 12px;
-      right: 12px;
-      background: rgba(15, 23, 42, 0.82);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      border-radius: 12px;
-      padding: 10px 14px;
-      font-size: 13px;
-      z-index: 500;
-      backdrop-filter: blur(6px);
-    }
-    .demo-hud strong {
-      display: block;
-      margin-bottom: 4px;
-      color: #38bdf8;
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#bfe6f5">
+<title>قارتنا</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./style.css">
+<link rel="stylesheet" href="./motion.css">
+<style>
+  html, body { margin: 0; padding: 0; width: 100%; height: 100%; font-family: 'Tajawal', system-ui, sans-serif; background: #bfe6f5; overflow: hidden; }
+  #scene { display: block; width: 100%; height: 100%; }
+  .loading { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); color: #fff; display: flex; align-items: center; justify-content: center; z-index: 9999; font-size: 18px; }
+  .loading.hidden { display: none; }
+  #debug-error-box { position: fixed; bottom: 12px; left: 12px; right: 12px; max-height: 40vh; overflow: auto; background: #fff; color: #991b1b; border: 2px solid #dc2626; border-radius: 10px; padding: 10px; font-family: monospace; font-size: 12px; white-space: pre-wrap; z-index: 10000; display: none; }
+</style>
 
-  <script>
-    (() => {
-      function showErrorOnScreen(title, detail) {
-        const box = document.getElementById("debug-error-box");
-        if (!box) return;
-        box.style.display = "block";
-        box.textContent += (box.textContent ? "\n\n---\n\n" : "") + title + "\n" + detail;
-      }
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://esm.sh/three@0.169.0",
+    "three/addons/": "https://esm.sh/three@0.169.0/examples/jsm/"
+  }
+}
+</script>
 
-      window.addEventListener("error", (e) => {
-        showErrorOnScreen(
-          "Runtime Error: " + (e.message || "Unknown error"),
-          (e.filename || "") + (e.lineno ? ":" + e.lineno : "")
-        );
+<script>
+(() => {
+  function showErr(title, detail) {
+    const box = document.getElementById("debug-error-box");
+    if (!box) return;
+    box.style.display = "block";
+    box.textContent += (box.textContent ? "\n\n---\n\n" : "") + title + "\n" + detail;
+  }
+
+  window.addEventListener("error", (e) => {
+    showErr("Error: " + (e.message || ""), (e.filename || "") + (e.lineno ? ":" + e.lineno : ""));
+  });
+  window.addEventListener("unhandledrejection", (e) => {
+    const r = e.reason;
+    showErr("Promise Error:", r && r.message ? r.message : String(r || ""));
+  });
+
+  const sampleHouses = [
+    { id: 1, username: "abu_yaqoub", name: "بيت أبو يعقوب", level: 5, comments: 18, mentions: 4, coins: 7500 },
+    { id: 2, username: "qarya_guest", name: "بيت الضيف", level: 3, comments: 9, mentions: 2, coins: 4500 },
+    { id: 3, username: "al_sham_house", name: "بيت الشام", level: 2, comments: 5, mentions: 1, coins: 3000 }
+  ];
+
+  const mockPayload = {
+    ok: true,
+    brandName: "قارتنا",
+    count: sampleHouses.length,
+    totalHouses: sampleHouses.length,
+    houses: sampleHouses,
+    leaderboard: sampleHouses,
+    top: sampleHouses,
+    estates: [],
+    notices: [],
+    army: { ok: true, units: [] },
+    catalog: { ok: true, items: [] },
+    events: []
+  };
+
+  const origFetch = window.fetch.bind(window);
+  window.fetch = async (input, init) => {
+    const rawUrl = typeof input === "string" ? input : (input && input.url) || "";
+    const path = rawUrl.split("?")[0];
+
+    if (path.includes("/api/events")) {
+      return new Response("retry: 60000\n\n", {
+        status: 200,
+        headers: { "Content-Type": "text/event-stream" }
       });
+    }
 
-      window.addEventListener("unhandledrejection", (e) => {
-        const reason = e.reason;
-        const msg = reason && reason.message ? reason.message : String(reason || "Promise rejected");
-        showErrorOnScreen("Unhandled Promise Rejection:", msg);
+    if (path.includes("/api/")) {
+      return new Response(JSON.stringify(mockPayload), {
+        status: 200,
+        headers: { "Content-Type": "application/json" }
       });
+    }
 
-      const MOCK_CONFIG = {
-        ok: true,
-        towns: {
-          maarat_al_numan: { name: "معرة النعمان", country: "sy" },
-          daraya: { name: "داريا", country: "sy" },
-          hantouteen: { name: "حنتوتين", country: "sy" }
-        },
-        settings: {
-          mode: "static-demo"
-        }
-      };
+    return origFetch(input, init);
+  };
 
-      const MOCK_STATE = {
-        ok: true,
-        link: "",
-        rewards: []
-      };
-
-      const MOCK_HOUSES = [
-        {
-          id: "house-1",
-          username: "abu_yaqoub",
-          name: "بيت أبو يعقوب",
-          title: "بيت أبو يعقوب",
-          country: "sy",
-          town: "maarat_al_numan",
-          level: 3,
-          floors: 3,
-          x: 0,
-          z: 0
-        },
-        {
-          id: "house-2",
-          username: "daraya_house",
-          name: "بيت داريا",
-          title: "بيت داريا",
-          country: "sy",
-          town: "daraya",
-          level: 2,
-          floors: 2,
-          x: 6,
-          z: 2
-        },
-        {
-          id: "house-3",
-          username: "hantouteen_house",
-          name: "بيت حنتوتين",
-          title: "بيت حنتوتين",
-          country: "sy",
-          town: "hantouteen",
-          level: 1,
-          floors: 1,
-          x: -6,
-          z: -2
-        }
-      ];
-
-      const origFetch = window.fetch ? window.fetch.bind(window) : null;
-
-      window.fetch = async (input, init) => {
-        const url = typeof input === "string" ? input : (input && input.url) || "";
-        const clean = url.split("?")[0];
-
-        if (clean.endsWith("/api/config") || clean === "api/config") {
-          return new Response(JSON.stringify(MOCK_CONFIG), {
-            status: 200,
-            headers: { "Content-Type": "application/json" }
-          });
-        }
-
-        if (clean.endsWith("/api/app/state") || clean === "api/app/state") {
-          return new Response(JSON.stringify(MOCK_STATE), {
-            status: 200,
-            headers: { "Content-Type": "application/json" }
-          });
-        }
-
-        if (clean.endsWith("/api/houses") || clean === "api/houses") {
-          return new Response(JSON.stringify({
-            ok: true,
-            coins: 250,
-            flags: { sy: 3 },
-            fv: 1,
-            rev: 1,
-            hasMore: false,
-            houses: MOCK_HOUSES
-          }), {
-            status: 200,
-            headers: { "Content-Type": "application/json" }
-          });
-        }
-
-        if (clean.includes("/api/")) {
-          return new Response(JSON.stringify({ ok: true, houses: MOCK_HOUSES }), {
-            status: 200,
-            headers: { "Content-Type": "application/json" }
-          });
-        }
-
-        if (origFetch) {
-          return origFetch(input, init);
-        }
-        throw new Error("Fetch is not available in this environment");
-      };
-
-      window.addEventListener("DOMContentLoaded", () => {
-        setTimeout(() => {
-          const loader = document.getElementById("loading");
-          if (loader) {
-            loader.classList.add("hidden");
-          }
-        }, 2500);
-      });
-    })();
-  </script>
+  window.addEventListener("DOMContentLoaded", () => {
+    setTimeout(() => {
+      const l = document.getElementById("loading");
+      if (l) l.classList.add("hidden");
+    }, 3000);
+  });
+})();
+</script>
 </head>
 <body>
-  <div id="loading">🏗️ عم نجهّز المدينة…</div>
-  <div id="debug-error-box"></div>
+<canvas id="scene" aria-label="خريطة القارة"></canvas>
+<div id="labels"></div>
+<div id="debug-error-box"></div>
 
-  <div class="demo-hud" id="demo-hud">
-    <strong>القرية — وضع تجريبي محلي</strong>
-    <span>البيوت المحمّلة: 3 بيوت</span>
+<header class="top">
+  <div class="brand"><span class="brand-mark">🏡</span><span id="brandName">قارتنا</span><span class="brand-count" id="brandCount"></span></div>
+  <form id="searchForm" class="search" autocomplete="off">
+    <label for="searchInput" class="search-label">ابحث عن بيتك</label>
+    <div class="search-row">
+      <input id="searchInput" type="text" inputmode="email" dir="ltr" placeholder="@username" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="search" maxlength="31">
+      <button type="submit">ابحث</button>
+    </div>
+    <p id="searchMsg" class="search-msg" role="status" hidden></p>
+  </form>
+</header>
+
+<div class="fabs">
+  <button id="lbToggle" class="fab" type="button" aria-controls="leaderboard" aria-expanded="false">🏆 <span>أفضل 30</span></button>
+  <a class="fab fab-link fab-jobs more-item" href="./jobs.html">💼 <span>الوظائف</span></a>
+  <a class="fab fab-link" href="./play.html">🎮 <span>العب</span></a>
+  <a class="fab fab-link" href="./shop.html">🛒 <span>المتجر</span></a>
+  <a class="fab fab-link fab-estate" href="./estate.html">🏢 <span>عقار</span></a>
+  <a class="fab fab-link fab-gov more-item" href="./gov.html">🏛️ <span>الحكومة</span></a>
+  <a class="fab fab-link fab-suggest more-item" href="./suggest.html">💡 <span>اقتراحات</span></a>
+  <button id="moreBtn" class="fab fab-more" type="button" aria-expanded="false">☰ <span>المزيد</span></button>
+</div>
+
+<section id="how" class="panel how" hidden>
+  <div class="panel-head"><h2>كيف يطلع بيتي؟</h2><button type="button" class="x" id="howClose" aria-label="إغلاق">✕</button></div>
+  <ol class="how-steps">
+    <li><b>تابع الحساب</b> وعلّق على أحد الريلات المشاركة، وينبني لك بيت <span class="num">Level 1</span> برقم وموقع ثابت.</li>
+    <li><b>كل شخص جديد تمنشنه</b> في تعليقاتك يرقّي بيتك لفل واحد.</li>
+    <li><b>٩ أشخاص مختلفين</b> يوصلونك القصر <span class="num">Level 10</span>، حتى لو كلهم في تعليق واحد.</li>
+    <li>تكرار نفس الشخص ما يرقّي البيت، لكن <b>كل تعليق ينحسب</b> لك في قائمة أفضل 30.</li>
+    <li>🪙 أول ما ينبني بيتك تاخذ <b><span class="num">1,500</span> عملة</b>، وكل لفل جديد يعطيك <b><span class="num">1,500</span> × رقم اللفل</b> (لفل 10 = <span class="num">15,000</span>). اصرفها في المتجر أو العقارات.</li>
+    <li>🎡 <b>لف عجلة الحظ كل يوم</b> واربح لين <span class="num">25,000</span> عملة.</li>
+    <li>بيتك يظهر هنا بعد اعتماد تعليقك. اكتب يوزرك في البحث وشوفه.</li>
+  </ol>
+  <div class="ladder" id="ladder"></div>
+</section>
+<div class="zoom">
+  <button id="sndBtn" type="button"></button>
+  <button id="zoomIn" type="button" aria-label="تقريب">+</button>
+  <button id="zoomOut" type="button" aria-label="تبعيد">−</button>
+  <button id="zoomAll" type="button" aria-label="كل الخريطة">⤢</button>
+</div>
+
+<aside id="leaderboard" class="panel lb" hidden>
+  <div class="panel-head">
+    <h2>🏆 أفضل 30 ساكنًا</h2>
+    <button type="button" class="x" id="lbClose" aria-label="إغلاق">✕</button>
   </div>
+  <p class="panel-sub">الترتيب حسب عدد التعليقات المعتمدة</p>
+  <ol id="lbList"></ol>
+</aside>
 
-  <div id="app"></div>
-  <canvas id="scene"></canvas>
+<section id="card" class="panel card" hidden aria-live="polite"></section>
 
-  <script type="module" src="./app.js"></script>
-  <script type="module" src="./city.js"></script>
+<p id="hint" class="hint">اسحب للتحريك · قرّب بإصبعين · اضغط على أي بيت</p>
+<div id="loading" class="loading">نبني القارة…</div>
+
+<script type="module" src="./app.js"></script>
 </body>
 </html>
