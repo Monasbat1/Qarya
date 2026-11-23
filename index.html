@@ -1,348 +1,78 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>قريتنا التفاعلية 2.5D</title>
-<style>
-:root{--bg:#e8dcc5;--card:#fdfbf7;--pill:#f3ead8;--dark:#231f1a;--gold:#dfa848;--text:#2c241b;--muted:#7a6e5d}
-*{box-sizing:border-box;font-family:system-ui,-apple-system,Tahoma,sans-serif;user-select:none}
-html,body{margin:0;height:100%;background:var(--bg);color:var(--text);overflow:hidden;touch-action:none}
-canvas{display:block}
-#homeScreen{position:fixed;inset:0;background:var(--bg);z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:18px 16px;overflow-y:auto}
-.top-bar-home{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
-.badge-count{background:var(--dark);color:var(--gold);padding:6px 14px;border-radius:20px;font-weight:800;font-size:13px}
-.top-fan{background:var(--dark);color:#fff;padding:8px 18px;border-radius:20px;font-size:13px;font-weight:bold;margin-top:8px}
-.map-hub{position:relative;width:310px;height:260px;margin:8px auto}
-.zone-node{position:absolute;width:90px;height:90px;border-radius:50%;background:#c5d1b8;border:3px solid #6b7760;color:#1e2618;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.08);transition:transform .2s}
-.zone-node:active{transform:scale(.94)}
-.zone-center{width:104px;height:104px;left:103px;top:78px;background:#d97736;border-color:#8c4416;color:#fff;font-size:14px;z-index:2}
-.z-ne{top:0;left:135px}.z-nw{top:22px;left:10px}.z-e{top:86px;right:0}.z-w{top:140px;left:15px}.z-s{bottom:0;left:112px}
-.user-pill{display:flex;align-items:center;gap:8px;background:#fff;padding:6px 12px;border-radius:25px;box-shadow:0 2px 8px rgba(0,0,0,.06);width:min(92vw,380px);justify-content:space-between}
-.user-pill input{border:none;outline:none;font-size:15px;font-weight:bold;text-align:left;direction:ltr;width:155px;background:transparent}
-.btn-dark{background:var(--dark);color:#fff;border:none;padding:9px 16px;border-radius:18px;font-weight:bold;cursor:pointer;font-size:12px}
-.btn-gold{background:var(--gold);color:var(--dark);border:none;padding:10px 16px;border-radius:14px;font-weight:800;cursor:pointer;font-size:13px}
-.bottom-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:min(94vw,400px)}
-.nav-card{background:var(--card);border-radius:18px;padding:12px 8px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.05);cursor:pointer;border:1px solid #e5dccb}
-.nav-card.active{background:var(--gold)}
-.nav-card h4{margin:5px 0 2px;font-size:13px}
-.nav-card span{font-size:11px;color:var(--muted)}
-#gameHUD{position:fixed;top:10px;left:10px;right:10px;z-index:10;display:none;justify-content:space-between;align-items:center;pointer-events:none;gap:6px}
-#gameHUD>*{pointer-events:auto}
-.pill-btn{background:var(--card);color:var(--dark);border:none;padding:8px 12px;border-radius:20px;font-weight:800;font-size:12px;box-shadow:0 3px 10px rgba(0,0,0,.12);cursor:pointer}
-.cart-pill{background:var(--dark);color:var(--gold);display:flex;align-items:center;gap:5px}
-.house-title{text-align:center;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.8)}
-.house-title b{display:block;font-size:14px}
-.house-title small{font-size:11px;opacity:.95}
-#miniMapWrap{position:fixed;top:56px;left:12px;width:124px;height:124px;border-radius:16px;overflow:hidden;border:2px solid var(--gold);box-shadow:0 4px 14px rgba(0,0,0,.28);z-index:11;display:none;background:#cbb48c;cursor:pointer}
-#miniMapCanvas{width:100%;height:100%;display:block}
-.minimap-tag{position:absolute;bottom:0;left:0;right:0;background:rgba(35,31,26,.78);color:#dfa848;font-size:10px;font-weight:bold;text-align:center;padding:2px 0}
-#joy{position:fixed;left:16px;bottom:22px;width:102px;height:102px;border-radius:50%;background:rgba(255,255,255,.28);border:2px solid rgba(255,255,255,.65);display:none;z-index:10}
-#knob{position:absolute;left:31px;top:31px;width:38px;height:38px;border-radius:50%;background:var(--card);box-shadow:0 2px 6px rgba(0,0,0,.2)}
-#sideActions{position:fixed;right:12px;bottom:22px;display:none;flex-direction:column;gap:7px;z-index:10;max-height:75vh;overflow-y:auto}
-.action-btn{background:var(--card);color:var(--dark);border:none;padding:9px 14px;border-radius:15px;font-weight:800;font-size:12px;box-shadow:0 4px 12px rgba(0,0,0,.14);cursor:pointer;white-space:nowrap}
-.action-btn.gold{background:var(--gold)}
-.bottom-sheet{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-radius:24px 24px 0 0;padding:16px;z-index:15;box-shadow:0 -6px 25px rgba(0,0,0,.2);display:none;max-height:72vh;overflow-y:auto}
-.sheet-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.close-circle{width:30px;height:30px;border-radius:50%;background:var(--pill);border:none;font-weight:bold;cursor:pointer}
-.shop-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
-.shop-item{background:#fff;border:1px solid #ebe2d3;border-radius:14px;padding:9px 5px;text-align:center;cursor:pointer;transition:.15s}
-.shop-item:active{transform:scale(.95);border-color:var(--gold)}
-.shop-item .ico{font-size:22px;display:block;margin-bottom:3px}
-.shop-item .nm{font-size:11px;font-weight:bold;display:block}
-.shop-item .pr{font-size:11px;color:var(--muted);font-weight:bold}
-.chat-box{height:28vh;overflow-y:auto;background:#f7f2e7;border-radius:12px;padding:8px;margin-bottom:8px;border:1px solid #e5d8c3}
-.chat-msg{padding:6px 8px;border-bottom:1px solid #e8decb;font-size:13px}
-.chat-row{display:flex;gap:6px}
-.chat-row input,.chat-row select{flex:1;padding:8px;border-radius:10px;border:1px solid #cbbba0;font-size:13px;background:#fff}
-#fullMapCanvas{width:100%;height:290px;border-radius:16px;border:2px solid #cbbba0;background:#cbb48c;display:block;cursor:crosshair}
-.map-legend{display:flex;gap:10px;flex-wrap:wrap;font-size:11px;margin-top:8px;color:var(--muted);font-weight:bold}
-#toast{position:fixed;top:62px;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;padding:8px 16px;border-radius:20px;font-size:13px;z-index:30;display:none;white-space:nowrap}
-</style>
-</head>
-<body>
-<div id="toast"></div>
-<div id="homeScreen">
-  <div style="width:100%;text-align:center;">
-    <div class="top-bar-home">
-      <div class="badge-count">🏘️ <span id="totalHouses">0</span> بيت</div>
-      <div class="badge-count" id="myCoinsBadge">🪙 1000</div>
-    </div>
-    <div class="top-fan">🏆 أكثر المتفاعلين: <span id="topFanName">@ahmad</span></div>
-    <h2 style="margin:12px 0 3px;font-size:23px;">وين تبي تروح؟</h2>
-    <div style="font-size:12px;color:var(--muted);">توزيع تلقائي للمنازل · طرق أسفلتية · خريطة وتضاريس</div>
-  </div>
-  <div class="map-hub">
-    <div class="zone-node zone-center" onclick="enterZone('all')">🏙️<br>المدينة<br><small>(الكل)</small></div>
-    <div class="zone-node z-ne" onclick="enterZone('ne')">القرية<br>الشمالية الشرقية</div>
-    <div class="zone-node z-nw" onclick="enterZone('nw')">القرية<br>الشمالية الغربية</div>
-    <div class="zone-node z-e" onclick="enterZone('e')">القرية<br>الشرقية</div>
-    <div class="zone-node z-w" onclick="enterZone('w')">القرية<br>الغربية</div>
-    <div class="zone-node z-s" onclick="enterZone('s')">القرية<br>الجنوبية</div>
-  </div>
-  <div style="display:flex;flex-direction:column;gap:10px;align-items:center;width:100%;">
-    <div class="user-pill">
-      <button class="btn-dark" id="btnGoMyHouse">🏠 روح لبيتي</button>
-      <input id="usernameInput" placeholder="@username" autocomplete="off">
-    </div>
-    <div id="loginErr" style="color:#c0392b;font-size:12px;font-weight:bold;"></div>
-    <div class="bottom-cards">
-      <div class="nav-card" onclick="enterZone('all', true)"><div style="font-size:20px;">🛋️</div><h4>داخل بيتي</h4><span>أثاث وطوابق</span></div>
-      <div class="nav-card active" onclick="enterZone('all', false, true)"><div style="font-size:20px;">🛒</div><h4>المتجر</h4><span>ترقية وقلعة L10</span></div>
-      <div class="nav-card" onclick="enterZone('all')"><div style="font-size:20px;">🌍</div><h4>كل شي</h4><span>القرية كاملة</span></div>
-    </div>
-  </div>
-</div>
-<div id="gameHUD">
-  <button class="pill-btn cart-pill" onclick="openCart()">🛍️ <span id="cartCount">0</span> · <span id="cartTotal">0</span> 🪙</button>
-  <div class="house-title"><b id="hudUser">@guest</b><small id="hudSub">الحوش والجيران · 🪙 <span id="hudCoins">1000</span></small></div>
-  <button class="pill-btn" onclick="backToMap()">‹ القرية</button>
-</div>
-<div id="miniMapWrap" onclick="openFullMap()" title="اضغط لفتح الخريطة الكاملة">
-  <canvas id="miniMapCanvas" width="124" height="124"></canvas>
-  <div class="minimap-tag">🗺️ خريطة القرية</div>
-</div>
-<div id="joy"><div id="knob"></div></div>
-<div id="sideActions">
-  <button class="action-btn" onclick="openFullMap()">🗺️ الخريطة</button>
-  <button class="action-btn" id="btnToggleInside" onclick="toggleInside()">🚪 ادخل البيت</button>
-  <button class="action-btn" id="btnFloorUp" style="display:none;" onclick="changeFloor(1)">▲ طابق أعلى</button>
-  <button class="action-btn" id="btnFloorDown" style="display:none;" onclick="changeFloor(-1)">▼ طابق أسفل</button>
-  <button class="action-btn" id="btnDrive" style="display:none;" onclick="toggleDrive()">🚗 قيادة</button>
-  <button class="action-btn" onclick="openChat()">💬 محادثات</button>
-  <button class="action-btn" onclick="openNeighbors()">👥 الجيران</button>
-  <button class="action-btn gold" onclick="openShop()">🛍️ تسوّق</button>
-</div>
-<div id="bottomSheet" class="bottom-sheet"></div>
+<script>
+(() => {
+  const MOCK_CONFIG = {
+    ok: true,
+    towns: {},
+    settings: {}
+  };
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  const MOCK_STATE = {
+    ok: true,
+    link: "",
+    rewards: []
+  };
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCVJclfpEp9Jo9879C3RfZKiEdBUibwrxI",
-  authDomain: "ahmad-662ee.firebaseapp.com",
-  databaseURL: "https://ahmad-662ee-default-rtdb.firebaseio.com",
-  projectId: "ahmad-662ee",
-  storageBucket: "ahmad-662ee.firebasestorage.app",
-  messagingSenderId: "740891153734",
-  appId: "1:740891153734:web:1d7c6cd6214a2409618147",
-  measurementId: "G-JCJW8S9CVH"
-};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-let villagers = [], publicProps = [], allMessages = [];
-let envSettings = { streetLights: true, houseLights: true, nightMode: false };
-let me = null, inspectedOwner = null, currentFloor = 0, coins = 1000, cart = [];
-let INSIDE = false, DR = null, currentZone = 'all', chatTab = 'pub', chatTarget = '';
-const deviceKey = "qaryatna_locked_user";
-
-/* [جديد] تفاعل البيوت الإيزومترية */
-const houseGroups = [];
-let hoverHouse = null, selectedHouse = null;
-const esc = s => String(s).replace(/[&<>"']/g, c => '&#' + c.charCodeAt(0) + ';');
-
-const HOUSE_NAMES = {
-  1: 'فيلا مودرن بيضاء بكراج', 2: 'فيلا عصرية خشبية وداكنة', 3: 'فيلا زجاجية بمسبح',
-  4: 'قصر بأعمدة وشرفات', 5: 'قصر عصري بطابقين', 10: '🏰 قلعة ملكية حصينة (فرسان وحراسة)'
-};
-const CAR_SPECS = {
-  sedan: { name: 'سيدان عائلية', color: 0xf1f5f9, len: 3.6, w: 1.75, h: 0.65, low: false },
-  sport: { name: 'رياضية سريعة', color: 0xdc2626, len: 3.9, w: 1.85, h: 0.52, low: true },
-  suv:   { name: 'دفع رباعي SUV', color: 0x1e293b, len: 4.1, w: 2.0, h: 0.9, low: false },
-  limo:  { name: 'ليموزين فاخرة', color: 0x111111, len: 5.4, w: 1.9, h: 0.72, low: false }
-};
-const CAR_COLORS = {
-  red: { label: 'أحمر ناري', hex: 0xdc2626 }, black: { label: 'أسود ملكي', hex: 0x111827 },
-  white: { label: 'أبيض لؤلؤي', hex: 0xf8fafc }, blue: { label: 'أزرق معدني', hex: 0x2563eb },
-  gold: { label: 'ذهبي فاخر', hex: 0xd4af37 }
-};
-const SHOP_ITEMS = [
-  { id: 'upgrade_house', name: 'ترقية شكل البيت', icon: '🏡', price: 500 },
-  { id: 'castle_10', name: 'قلعة المستوى 10', icon: '🏰', price: 2500 },
-  { id: 'car_sedan', name: 'سيارة سيدان', icon: '🚗', price: 250 },
-  { id: 'car_sport', name: 'سيارة رياضية', icon: '🏎️', price: 550 },
-  { id: 'car_suv', name: 'دفع رباعي SUV', icon: '🚙', price: 450 },
-  { id: 'car_limo', name: 'ليموزين فاخرة', icon: '🚐', price: 900 },
-  { id: 'car_spoiler', name: 'جناح وتطوير سيارة', icon: '🏁', price: 220 },
-  { id: 'color_gold', name: 'لون ذهبي للسيارة', icon: '✨', price: 180 },
-  { id: 'color_blue', name: 'لون أزرق للسيارة', icon: '🔵', price: 120 },
-  { id: 'sofa_in', name: 'أثاث كنب مجلس', icon: '🛋️', price: 250 },
-  { id: 'tv_in', name: 'أثاث شاشة وطاولة', icon: '📺', price: 300 },
-  { id: 'rug_in', name: 'سجادة وإضاءة داخلية', icon: '🟫', price: 150 }
-];
-
-const R = new THREE.WebGLRenderer({ antialias: true });
-R.setSize(innerWidth, innerHeight);
-R.setPixelRatio(Math.min(devicePixelRatio, 2));
-document.body.appendChild(R.domElement);
-
-const S = new THREE.Scene();
-S.background = new THREE.Color(0xdccaa8);
-S.fog = new THREE.Fog(0xdccaa8, 130, 420);
-
-/* [معدّل] كاميرا متعامدة = مشهد إيزومتري 2.5D */
-const VIEW = 26;
-const C = new THREE.OrthographicCamera(-1, 1, 1, -1, -400, 800);
-function fitCam() {
-  const a = innerWidth / innerHeight;
-  C.left = -VIEW * a; C.right = VIEW * a; C.top = VIEW; C.bottom = -VIEW;
-  C.updateProjectionMatrix();
-}
-fitCam();
-
-const hemiLight = new THREE.HemisphereLight(0xfff8eb, 0x9e845c, 1.0);
-S.add(hemiLight);
-const sunLight = new THREE.DirectionalLight(0xffffff, 0.65);
-sunLight.position.set(60, 110, 50);
-S.add(sunLight);
-
-const M = c => new THREE.MeshLambertMaterial({ color: c });
-function box(w, h, d, c, x, y, z, p) {
-  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), M(c));
-  m.position.set(x, y, z); (p || S).add(m); return m;
-}
-function cyl(r1, r2, h, c, x, y, z, p, s) {
-  const m = new THREE.Mesh(new THREE.CylinderGeometry(r1, r2, h, s || 12), M(c));
-  m.position.set(x, y, z); (p || S).add(m); return m;
-}
-function makeLabel(text, bg = '#ffffff', fg = '#111111') {
-  const k = document.createElement('canvas'); k.width = 300; k.height = 64;
-  const g = k.getContext('2d');
-  g.fillStyle = bg; g.beginPath(); g.roundRect(10, 8, 280, 48, 20); g.fill();
-  g.fillStyle = fg; g.font = 'bold 24px sans-serif'; g.textAlign = 'center';
-  g.fillText(text, 150, 41);
-  return new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(k) }));
-}
-
-box(560, 0.2, 560, 0xcab48c, 0, -0.1, 0);
-const terrainHills = [
-  { x: -135, z: -130, r: 22, h: 11 }, { x: 140, z: -125, r: 26, h: 14 },
-  { x: -145, z: 135, r: 24, h: 12 }, { x: 135, z: 140, r: 20, h: 10 }, { x: 0, z: -155, r: 28, h: 15 }
-];
-terrainHills.forEach(th => {
-  const hill = new THREE.Mesh(new THREE.ConeGeometry(th.r, th.h, 14), M(0xb3986d));
-  hill.position.set(th.x, th.h / 2 - 0.1, th.z); S.add(hill);
-});
-const terrainTrees = [[-32,-24],[34,-22],[-35,28],[32,30],[-110,20],[112,-25],[22,-112],[-25,115]];
-terrainTrees.forEach(([tx, tz]) => {
-  cyl(0.45, 0.7, 3.6, 0x6b4423, tx, 1.8, tz);
-  const foliage = new THREE.Mesh(new THREE.ConeGeometry(2.8, 5.2, 8), M(0x3f7d36));
-  foliage.position.set(tx, 5.5, tz); S.add(foliage);
-});
-
-const roadGroup = new THREE.Group();
-S.add(roadGroup);
-function addAsphaltRoad(x, z, w, d, horizontal = true) {
-  box(w + 1.4, 0.08, d + 1.4, 0x94a3b8, x, 0.01, z, roadGroup);
-  box(w, 0.12, d, 0x26292e, x, 0.03, z, roadGroup);
-  if (horizontal) { for (let lx = x - w / 2 + 8; lx < x + w / 2 - 6; lx += 16) box(7, 0.14, 0.35, 0xf8fafc, lx, 0.04, z, roadGroup); }
-  else { for (let lz = z - d / 2 + 8; lz < z + d / 2 - 6; lz += 16) box(0.35, 0.14, 7, 0xf8fafc, x, 0.04, lz, roadGroup); }
-}
-addAsphaltRoad(0, 0, 420, 12, true);
-addAsphaltRoad(0, 0, 12, 420, false);
-addAsphaltRoad(0, 75, 400, 9, true);
-addAsphaltRoad(0, -75, 400, 9, true);
-addAsphaltRoad(75, 0, 9, 400, false);
-addAsphaltRoad(-75, 0, 9, 400, false);
-
-const streetLampBulbs = [], streetLampHalos = [];
-const lampPositions = [
-  [-120,7.5],[-80,7.5],[-40,7.5],[0,7.5],[40,7.5],[80,7.5],[120,7.5],
-  [-120,-7.5],[-80,-7.5],[-40,-7.5],[0,-7.5],[40,-7.5],[80,-7.5],[120,-7.5],
-  [7.5,-120],[7.5,-80],[7.5,-40],[7.5,40],[7.5,80],[7.5,120],
-  [-7.5,-120],[-7.5,-80],[-7.5,-40],[-7.5,40],[-7.5,80],[-7.5,120]
-];
-let COLS = [];
-lampPositions.forEach(([lx, lz]) => {
-  cyl(0.12, 0.18, 6.2, 0x1e293b, lx, 3.1, lz, roadGroup);
-  box(1.4, 0.15, 0.25, 0x1e293b, lx + (lz > 0 ? -0.5 : 0.5), 6.2, lz, roadGroup);
-  const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.32, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffd166 }));
-  bulb.position.set(lx + (lz > 0 ? -1.1 : 1.1), 6.05, lz);
-  roadGroup.add(bulb); streetLampBulbs.push(bulb);
-  const halo = new THREE.Mesh(new THREE.SphereGeometry(2.4, 10, 10), new THREE.MeshBasicMaterial({ color: 0xffd166, transparent: true, opacity: 0.22 }));
-  halo.position.copy(bulb.position);
-  roadGroup.add(halo); streetLampHalos.push(halo);
-  COLS.push([lx - 0.6, lx + 0.6, lz - 0.6, lz + 0.6]);
-});
-
-function computeNonOverlappingCoords(list, props) {
-  const placed = [];
-  const blockedCircles = props.map(p => ({ x: p.x || 0, z: p.z || 0, r: 16 }));
-  const isOnRoad = (x, z) => Math.abs(x) < 11 || Math.abs(z) < 11 || Math.abs(x - 75) < 9 || Math.abs(x + 75) < 9 || Math.abs(z - 75) < 9 || Math.abs(z + 75) < 9;
-  return list.map((v, idx) => {
-    let candidateX = typeof v.x === 'number' ? v.x : null;
-    let candidateZ = typeof v.z === 'number' ? v.z : null;
-    const conflicts = (tx, tz) => {
-      if (tx === null || tz === null) return true;
-      if (Math.abs(tx) > 165 || Math.abs(tz) > 165) return true;
-      if (isOnRoad(tx, tz)) return true;
-      for (const b of blockedCircles) if (Math.hypot(tx - b.x, tz - b.z) < b.r + 12) return true;
-      for (const p of placed) if (Math.hypot(tx - p.x, tz - p.z) < 22) return true;
-      return false;
-    };
-    if (conflicts(candidateX, candidateZ)) {
-      let found = false;
-      for (let step = 0; step < 400; step++) {
-        const angle = step * 0.75, radius = 22 + Math.floor(step / 8) * 18;
-        const tx = Math.round(Math.cos(angle) * radius), tz = Math.round(Math.sin(angle) * radius);
-        if (!conflicts(tx, tz)) { candidateX = tx; candidateZ = tz; found = true; break; }
-      }
-      if (!found) { candidateX = 24 + (idx % 10) * 24; candidateZ = 24 + Math.floor(idx / 10) * 24; }
+  const MOCK_HOUSES = [
+    {
+      id: "house-1",
+      username: "abu_yaqoub",
+      name: "بيت أبو يعقوب",
+      country: "sy",
+      town: "maarat_al_numan",
+      level: 3
+    },
+    {
+      id: "house-2",
+      username: "daraya_house",
+      name: "بيت داريا",
+      country: "sy",
+      town: "daraya",
+      level: 2
     }
-    placed.push({ x: candidateX, z: candidateZ });
-    return { ...v, x: candidateX, z: candidateZ };
-  });
-}
+  ];
 
-function createAvatar(shirt = 0x231f1a) {
-  const g = new THREE.Group();
-  box(0.9, 1.4, 0.5, shirt, 0, 1.4, 0, g);
-  const l1 = box(0.32, 0.8, 0.32, 0x3b4252, -0.22, 0.4, 0, g);
-  const l2 = box(0.32, 0.8, 0.32, 0x3b4252, 0.22, 0.4, 0, g);
-  const hd = new THREE.Mesh(new THREE.SphereGeometry(0.45, 16, 12), M(0xf3d2b3)); hd.position.y = 2.55; g.add(hd);
-  const hair = new THREE.Mesh(new THREE.SphereGeometry(0.47, 16, 10, 0, Math.PI * 2, 0, 1.3), M(0x1a1a1a)); hair.position.y = 2.58; g.add(hair);
-  g.userData = { l1, l2 };
-  return g;
-}
-const P = createAvatar();
-S.add(P);
+  const origFetch = window.fetch.bind(window);
+  window.fetch = async (input, init) => {
+    const url = typeof input === "string" ? input : (input && input.url) || "";
+    const clean = url.split("?")[0];
 
-function createKnightGuard(armorColor = 0x64748b, plumeColor = 0xdc2626) {
-  const g = new THREE.Group();
-  box(0.95, 1.45, 0.55, armorColor, 0, 1.45, 0, g);
-  box(0.34, 0.75, 0.34, 0x334155, -0.24, 0.38, 0, g);
-  box(0.34, 0.75, 0.34, 0x334155, 0.24, 0.38, 0, g);
-  const helm = new THREE.Mesh(new THREE.SphereGeometry(0.48, 14, 12), M(0x94a3b8)); helm.position.y = 2.55; g.add(helm);
-  box(0.14, 0.55, 0.35, plumeColor, 0, 3.1, -0.1, g);
-  cyl(0.05, 0.05, 3.2, 0x475569, 0.65, 1.6, 0.35, g);
-  box(0.18, 0.45, 0.06, 0xe2e8f0, 0.65, 3.25, 0.35, g);
-  return g;
-}
+    if (clean.endsWith("/api/config") || clean === "api/config") {
+      return new Response(JSON.stringify(MOCK_CONFIG), {
+        status: 200,
+        headers: { "Content-Type": "application/json" }
+      });
+    }
 
-function buildCarMesh(type = 'sedan', colorKey = null, hasSpoiler = false) {
-  const sp = CAR_SPECS[type] || CAR_SPECS.sedan;
-  const customHex = (colorKey && CAR_COLORS[colorKey]) ? CAR_COLORS[colorKey].hex : sp.color;
-  const g = new THREE.Group();
-  const baseY = sp.low ? 0.42 : 0.58;
-  box(sp.w, sp.h, sp.len, customHex, 0, baseY, 0, g);
-  box(sp.w * 0.84, sp.h * 0.82, sp.len * 0.5, customHex, 0, baseY + sp.h * 0.85, -0.15, g);
-  box(sp.w * 0.86, sp.h * 0.55, sp.len * 0.46, 0x1e293b, 0, baseY + sp.h * 0.85, -0.15, g);
-  [-sp.w * 0.32, sp.w * 0.32].forEach(lx => box(0.32, 0.16, 0.1, 0xfef08a, lx, baseY, sp.len * 0.5 + 0.04, g));
-  if (hasSpoiler) {
-    const rearZ = -sp.len * 0.45;
-    box(0.14, 0.35, 0.25, 0x111111, -sp.w * 0.35, baseY + sp.h * 0.65, rearZ, g);
-    box(0.14, 0.35, 0.25, 0x111111, sp.w * 0.35, baseY + sp.h * 0.65, rearZ, g);
-    box(sp.w * 0.96, 0.12, 0.35, 0x111111, 0, baseY + sp.h * 0.85, rearZ - 0.05, g);
-  }
-  const wPos = sp.len > 4.6 ? [-1.6, 0, 1.6] : [-sp.len * 0.32, sp.len * 0.32];
-  wPos.forEach(wz => [-1, 1].forEach(sx => {
-    const wh = cyl(0.38, 0.38, 0.28, 0x111111, sx * (sp.w * 0.52), 0.38, wz, g, 12); wh.rotation.z = Math.PI / 2;
-    if (hasSpoiler) { const rim = cyl(0.2, 0.2, 0.3, 0xd4af37, sx * (sp.w * 0.52), 0.38, wz, g, 10); rim.rotation.z = Math.PI / 2; }
-  }));
-  return g;
-}
+    if (clean.endsWith("/api/app/state") || clean === "api/app/state") {
+      return new Response(JSON.stringify(MOCK_STATE), {
+        status: 200,
+        headers: { "Content-Type": "application/json" }
+      });
+    }
 
-/* ===== نهاية الجزء 1 من 3 — الجزء 2 يبدأ من: const houseWindowMaterials = []; ===== */
+    if (clean.endsWith("/api/houses") || clean === "api/houses") {
+      return new Response(JSON.stringify({
+        ok: true,
+        coins: 150,
+        flags: { sy: 2 },
+        fv: 1,
+        rev: 1,
+        hasMore: false,
+        houses: MOCK_HOUSES
+      }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" }
+      });
+    }
+
+    if (clean.includes("/api/")) {
+      return new Response(JSON.stringify({ ok: true }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" }
+      });
+    }
+
+    return origFetch(input, init);
+  };
+})();
+</script>
